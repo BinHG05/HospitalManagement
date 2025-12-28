@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hospital_sql
+    ports:
+      - "1434:1433"
+    environment:
+      SA_PASSWORD: "Sa@123456@VeryStrong"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sql_data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  sql_data:
