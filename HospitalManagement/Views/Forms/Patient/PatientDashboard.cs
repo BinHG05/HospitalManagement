@@ -4,6 +4,7 @@ using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace HospitalManagement.Views.Forms.Patient
@@ -51,6 +52,83 @@ namespace HospitalManagement.Views.Forms.Patient
         {
             contentPanel.Controls.Clear();
 
+            switch (contentName)
+            {
+                case "Đặt lịch khám":
+                    LoadAppointmentBooking();
+                    break;
+                case "Lịch sử khám":
+                    LoadAppointmentHistory();
+                    break;
+                case "Hồ sơ sức khỏe":
+                    LoadHealthRecord();
+                    break;
+                case "Thanh toán":
+                    LoadPayment();
+                    break;
+                default:
+                    ShowPlaceholder(contentName);
+                    break;
+            }
+        }
+
+        private void LoadHealthRecord()
+        {
+            var patientId = GetPatientId();
+            
+            var healthRecord = new UserControls.Patient.UC_HealthRecord();
+            healthRecord.Dock = DockStyle.Fill;
+            healthRecord.Initialize(patientId);
+            
+            contentPanel.Controls.Add(healthRecord);
+        }
+
+        private void LoadPayment()
+        {
+            var patientId = GetPatientId();
+            
+            var payment = new UserControls.Patient.UC_Payment();
+            payment.Dock = DockStyle.Fill;
+            payment.Initialize(patientId);
+            
+            contentPanel.Controls.Add(payment);
+        }
+
+        private void LoadAppointmentHistory()
+        {
+            var patientId = GetPatientId();
+            
+            var appointmentHistory = new UserControls.Patient.UC_AppointmentHistory();
+            appointmentHistory.Dock = DockStyle.Fill;
+            appointmentHistory.Initialize(patientId);
+            
+            contentPanel.Controls.Add(appointmentHistory);
+        }
+
+        private void LoadAppointmentBooking()
+        {
+            // Get patient ID from current user
+            var patientId = GetPatientId();
+            
+            var appointmentBooking = new UserControls.Patient.UC_AppointmentBooking();
+            appointmentBooking.Dock = DockStyle.Fill;
+            appointmentBooking.Initialize(patientId);
+            
+            contentPanel.Controls.Add(appointmentBooking);
+        }
+
+        private int GetPatientId()
+        {
+            // Query patient ID from Users
+            using (var context = new Models.EF.HospitalDbContext())
+            {
+                var patient = context.Patients.FirstOrDefault(p => p.UserID == CurrentUser.UserID);
+                return patient?.PatientID ?? 0;
+            }
+        }
+
+        private void ShowPlaceholder(string contentName)
+        {
             var placeholder = new Label
             {
                 Text = $"🚧 {contentName}\n\nTính năng này đang được phát triển...",
@@ -91,106 +169,147 @@ namespace HospitalManagement.Views.Forms.Patient
         {
             var card = new Panel
             {
-                Size = new Size(contentPanel.Width - 60, 120),
-                Location = new Point(10, 10),
+                Size = new Size(contentPanel.Width - 50, 130),
+                Location = new Point(0, 0),
                 BackColor = Color.White,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Padding = new Padding(30)
+            };
+
+            // Blue accent on left
+            var accentBar = new Panel
+            {
+                Size = new Size(5, 130),
+                Location = new Point(0, 0),
+                BackColor = Color.FromArgb(59, 130, 246)
             };
 
             var welcomeText = new Label
             {
-                Text = $"Xin chào, {CurrentUser.FullName}!",
-                Font = new Font("Segoe UI", 18F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(44, 62, 80),
-                Location = new Point(25, 25),
+                Text = $"Xin chào, {CurrentUser.FullName}! 👋",
+                Font = new Font("Segoe UI", 22F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(15, 23, 42),
+                Location = new Point(30, 25),
                 AutoSize = true
             };
 
             var welcomeSubtext = new Label
             {
-                Text = "Chào mừng bạn đến với Hệ thống Quản lý Bệnh viện",
+                Text = "Chào mừng bạn đến với Hệ thống Quản lý Bệnh viện MedCare",
                 Font = new Font("Segoe UI", 11F),
-                ForeColor = Color.FromArgb(127, 140, 141),
-                Location = new Point(25, 60),
+                ForeColor = Color.FromArgb(100, 116, 139),
+                Location = new Point(30, 70),
                 AutoSize = true
             };
 
-            card.Controls.AddRange(new Control[] { welcomeText, welcomeSubtext });
+            card.Controls.AddRange(new Control[] { accentBar, welcomeText, welcomeSubtext });
             return card;
         }
 
         private void CreateQuickActionCards()
         {
-            string[] icons = { "📅", "📋", "💳", "❤️" };
+            string[] icons = { "📅", "📋", "💳", "📋" };
             string[] titles = { "Đặt lịch khám", "Lịch sử khám", "Thanh toán", "Hồ sơ sức khỏe" };
+            string[] descriptions = { "Đặt lịch hẹn mới", "Xem các cuộc hẹn", "Thanh toán hóa đơn", "Xem hồ sơ y tế" };
             Color[] colors = { 
-                Color.FromArgb(0, 102, 204), 
-                Color.FromArgb(0, 168, 107), 
-                Color.FromArgb(241, 196, 15), 
-                Color.FromArgb(231, 76, 60) 
+                Color.FromArgb(59, 130, 246),   // Blue
+                Color.FromArgb(16, 185, 129),   // Emerald
+                Color.FromArgb(245, 158, 11),   // Amber
+                Color.FromArgb(239, 68, 68)     // Red
             };
+
+            int cardWidth = 220;
+            int cardGap = 20;
+            int startX = 0;
 
             for (int i = 0; i < 4; i++)
             {
-                var card = CreateQuickActionCard(icons[i], titles[i], colors[i]);
-                card.Location = new Point(10 + (i * 220), 150);
+                var card = CreateQuickActionCard(icons[i], titles[i], descriptions[i], colors[i]);
+                card.Location = new Point(startX + (i * (cardWidth + cardGap)), 150);
                 contentPanel.Controls.Add(card);
             }
         }
 
-        private Panel CreateQuickActionCard(string icon, string title, Color accentColor)
+        private Panel CreateQuickActionCard(string icon, string title, string description, Color accentColor)
         {
             var card = new Panel
             {
-                Size = new Size(200, 150),
+                Size = new Size(220, 160),
                 BackColor = Color.White,
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                Padding = new Padding(20)
+            };
+
+            // Accent strip at top
+            var accentBar = new Panel
+            {
+                Size = new Size(220, 5),
+                Location = new Point(0, 0),
+                BackColor = accentColor
             };
 
             var iconLabel = new Label
             {
                 Text = icon,
-                Font = new Font("Segoe UI", 36F),
-                Location = new Point(20, 20),
+                Font = new Font("Segoe UI", 32F),
+                Location = new Point(20, 25),
                 AutoSize = true
             };
 
             var titleLabel = new Label
             {
                 Text = title,
-                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(44, 62, 80),
-                Location = new Point(20, 100),
+                Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(15, 23, 42),
+                Location = new Point(20, 90),
                 AutoSize = true
             };
 
-            var accentBar = new Panel
+            var descLabel = new Label
             {
-                Size = new Size(200, 4),
-                Location = new Point(0, 146),
-                BackColor = accentColor
+                Text = description,
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(100, 116, 139),
+                Location = new Point(20, 115),
+                AutoSize = true
             };
 
-            card.Controls.AddRange(new Control[] { iconLabel, titleLabel, accentBar });
+            card.Controls.AddRange(new Control[] { accentBar, iconLabel, titleLabel, descLabel });
 
-            card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 249, 250);
-            card.MouseLeave += (s, e) => card.BackColor = Color.White;
+            // Hover effects
+            card.MouseEnter += (s, e) => {
+                card.BackColor = Color.FromArgb(248, 250, 252);
+            };
+            card.MouseLeave += (s, e) => {
+                card.BackColor = Color.White;
+            };
+
+            // Apply hover to child controls too
+            foreach (Control ctrl in card.Controls)
+            {
+                ctrl.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 250, 252);
+                ctrl.MouseLeave += (s, e) => card.BackColor = Color.White;
+            }
 
             return card;
         }
 
         private void SetActiveButton(Button button)
         {
+            // Modern color scheme - Tailwind Slate/Blue
+            Color activeColor = Color.FromArgb(59, 130, 246);     // Blue-500
+            Color inactiveTextColor = Color.FromArgb(203, 213, 225); // Slate-300
+
             // Reset previous active button
             if (_activeMenuButton != null)
             {
                 _activeMenuButton.BackColor = Color.Transparent;
-                _activeMenuButton.ForeColor = Color.FromArgb(200, 255, 255, 255);
+                _activeMenuButton.ForeColor = inactiveTextColor;
             }
 
-            // Set new active button
+            // Set new active button with accent
             _activeMenuButton = button;
-            button.BackColor = Color.FromArgb(0, 102, 204);
+            button.BackColor = activeColor;
             button.ForeColor = Color.White;
         }
 

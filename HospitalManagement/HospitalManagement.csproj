@@ -323,6 +323,56 @@
     <Compile Include="Views\UserControls\Admin\UC_UserManagement.Designer.cs">
       <DependentUpon>UC_UserManagement.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\Interfaces\IAppointmentService.cs" />
+    <Compile Include="Services\Implementations\AppointmentService.cs" />
+    <Compile Include="Services\Interfaces\IPatientService.cs" />
+    <Compile Include="Services\Implementations\PatientService.cs" />
+    <Compile Include="Services\Interfaces\IPaymentService.cs" />
+    <Compile Include="Services\Implementations\PaymentService.cs" />
+    <Compile Include="Views\Interfaces\Patient\IAppointmentBookingView.cs" />
+    <Compile Include="Views\Interfaces\Patient\IAppointmentHistoryView.cs" />
+    <Compile Include="Views\Interfaces\Patient\IHealthRecordView.cs" />
+    <Compile Include="Views\Interfaces\Patient\IPaymentView.cs" />
+    <Compile Include="Presenters\Patient\AppointmentBookingPresenter.cs" />
+    <Compile Include="Presenters\Patient\AppointmentHistoryPresenter.cs" />
+    <Compile Include="Presenters\Patient\HealthRecordPresenter.cs" />
+    <Compile Include="Presenters\Patient\PaymentPresenter.cs" />
+    <Compile Include="Views\UserControls\Patient\UC_AppointmentHistory.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Patient\UC_AppointmentHistory.Designer.cs">
+      <DependentUpon>UC_AppointmentHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Patient\UC_HealthRecord.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Patient\UC_HealthRecord.Designer.cs">
+      <DependentUpon>UC_HealthRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Patient\UC_Payment.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Patient\UC_Payment.Designer.cs">
+      <DependentUpon>UC_Payment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Interfaces\IDoctorService.cs" />
+    <Compile Include="Services\Implementations\DoctorService.cs" />
+    <Compile Include="Views\Interfaces\Doctor\IPatientQueueView.cs" />
+    <Compile Include="Views\Interfaces\Doctor\IExaminationView.cs" />
+    <Compile Include="Presenters\Doctor\PatientQueuePresenter.cs" />
+    <Compile Include="Presenters\Doctor\ExaminationPresenter.cs" />
+    <Compile Include="Views\UserControls\Doctor\UC_PatientQueue.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_PatientQueue.Designer.cs">
+      <DependentUpon>UC_PatientQueue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_Examination.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_Examination.Designer.cs">
+      <DependentUpon>UC_Examination.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

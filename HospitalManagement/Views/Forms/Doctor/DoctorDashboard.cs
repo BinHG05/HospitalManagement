@@ -3,6 +3,7 @@ using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace HospitalManagement.Views.Forms.Doctor
@@ -50,6 +51,50 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             contentPanel.Controls.Clear();
 
+            switch (contentName)
+            {
+                case "Hàng đợi khám":
+                    LoadPatientQueue();
+                    break;
+                default:
+                    ShowPlaceholder(contentName);
+                    break;
+            }
+        }
+
+        private void LoadPatientQueue()
+        {
+            var doctorId = GetDoctorId();
+            
+            var patientQueue = new UserControls.Doctor.UC_PatientQueue();
+            patientQueue.Dock = DockStyle.Fill;
+            patientQueue.Initialize(doctorId, (appointmentId) => LoadExamination(appointmentId));
+            
+            contentPanel.Controls.Add(patientQueue);
+        }
+
+        private void LoadExamination(int appointmentId)
+        {
+            contentPanel.Controls.Clear();
+            
+            var examination = new UserControls.Doctor.UC_Examination();
+            examination.Dock = DockStyle.Fill;
+            examination.Initialize(appointmentId, () => LoadPatientQueue());
+            
+            contentPanel.Controls.Add(examination);
+        }
+
+        private int GetDoctorId()
+        {
+            using (var context = new Models.EF.HospitalDbContext())
+            {
+                var doctor = context.Doctors.FirstOrDefault(d => d.UserID == CurrentUser.UserID);
+                return doctor?.DoctorID ?? 0;
+            }
+        }
+
+        private void ShowPlaceholder(string contentName)
+        {
             var placeholder = new Label
             {
                 Text = $"🚧 {contentName}\n\nTính năng này đang được phát triển...",
