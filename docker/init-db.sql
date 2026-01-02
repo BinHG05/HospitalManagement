@@ -251,12 +251,14 @@ CREATE INDEX IX_Appointments_PatientID ON Appointments(PatientID);
 CREATE INDEX IX_Appointments_DoctorID ON Appointments(DoctorID);
 CREATE INDEX IX_Appointments_Status ON Appointments(Status);
 CREATE INDEX IX_Appointments_Date ON Appointments(AppointmentDate);
+
 CREATE INDEX IX_Payments_PatientID ON Payments(PatientID);
 CREATE INDEX IX_Payments_Status ON Payments(PaymentStatus);
-CREATE INDEX IX_Examinations_AppointmentID ON Examinations(ExaminationID);
+
+CREATE INDEX IX_Examinations_AppointmentID ON Examinations(AppointmentID);
 CREATE INDEX IX_MedicalRecords_PatientID ON MedicalRecords(PatientID);
 
--- Tạo unique constraint cho số thứ tự trong cùng ca
+-- Tạo unique constraint cho số thứ tự trong cùng ca/lịch
 CREATE UNIQUE INDEX UX_Appointments_Slot 
 ON Appointments(ScheduleID, AppointmentNumber)
 WHERE Status IN ('pending', 'confirmed');
@@ -269,86 +271,86 @@ WHERE Status <> 'cancelled';
 -- DỮ LIỆU MẪU
 -- =============================================
 
--- Thêm Departments mẫu
-INSERT INTO Departments (DepartmentName, Description, Location) VALUES
-(N'Khoa Nội', N'Khám và điều trị bệnh nội khoa', N'Tầng 1'),
-(N'Khoa Ngoại', N'Phẫu thuật và điều trị bệnh ngoại khoa', N'Tầng 2'),
-(N'Khoa Nhi', N'Khám và điều trị bệnh trẻ em', N'Tầng 1'),
-(N'Khoa Sản', N'Khám và chăm sóc sức khỏe phụ nữ', N'Tầng 3'),
-(N'Khoa Mắt', N'Khám và điều trị bệnh về mắt', N'Tầng 2');
-GO
+-- -- Thêm Departments mẫu
+-- INSERT INTO Departments (DepartmentName, Description, Location) VALUES
+-- (N'Khoa Nội', N'Khám và điều trị bệnh nội khoa', N'Tầng 1'),
+-- (N'Khoa Ngoại', N'Phẫu thuật và điều trị bệnh ngoại khoa', N'Tầng 2'),
+-- (N'Khoa Nhi', N'Khám và điều trị bệnh trẻ em', N'Tầng 1'),
+-- (N'Khoa Sản', N'Khám và chăm sóc sức khỏe phụ nữ', N'Tầng 3'),
+-- (N'Khoa Mắt', N'Khám và điều trị bệnh về mắt', N'Tầng 2');
+-- GO
 
--- Thêm Shifts mẫu
-INSERT INTO Shifts (ShiftName, StartTime, EndTime, MaxSlots) VALUES
-(N'Ca sáng', '07:00:00', '11:30:00', 50),
-(N'Ca chiều', '13:00:00', '17:00:00', 50),
-(N'Ca tối', '18:00:00', '21:00:00', 30);
-GO
+-- -- Thêm Shifts mẫu
+-- INSERT INTO Shifts (ShiftName, StartTime, EndTime, MaxSlots) VALUES
+-- (N'Ca sáng', '07:00:00', '11:30:00', 50),
+-- (N'Ca chiều', '13:00:00', '17:00:00', 50),
+-- (N'Ca tối', '18:00:00', '21:00:00', 30);
+-- GO
 
--- Thêm Users mẫu (Admin, Doctor, Patient)
-INSERT INTO Users (Username, Password, Email, Phone, FullName, Role, Status) VALUES
-('admin', 'admin123', 'admin@hospital.com', '0901234567', N'Quản trị viên', 'admin', 'active'),
-('doctor1', 'doctor123', 'doctor1@hospital.com', '0901234568', N'BS. Nguyễn Văn A', 'doctor', 'active'),
-('doctor2', 'doctor123', 'doctor2@hospital.com', '0901234569', N'BS. Trần Thị B', 'doctor', 'active'),
-('patient1', 'patient123', 'patient1@gmail.com', '0901234570', N'Lê Văn C', 'patient', 'active'),
-('patient2', 'patient123', 'patient2@gmail.com', '0901234571', N'Phạm Thị D', 'patient', 'active');
-GO
+-- -- Thêm Users mẫu (Admin, Doctor, Patient)
+-- INSERT INTO Users (Username, Password, Email, Phone, FullName, Role, Status) VALUES
+-- ('admin', 'admin123', 'admin@hospital.com', '0901234567', N'Quản trị viên', 'admin', 'active'),
+-- ('doctor1', 'doctor123', 'doctor1@hospital.com', '0901234568', N'BS. Nguyễn Văn A', 'doctor', 'active'),
+-- ('doctor2', 'doctor123', 'doctor2@hospital.com', '0901234569', N'BS. Trần Thị B', 'doctor', 'active'),
+-- ('patient1', 'patient123', 'patient1@gmail.com', '0901234570', N'Lê Văn C', 'patient', 'active'),
+-- ('patient2', 'patient123', 'patient2@gmail.com', '0901234571', N'Phạm Thị D', 'patient', 'active');
+-- GO
 
--- Thêm Doctor
-INSERT INTO Doctors (UserID, Specialization, DepartmentID, LicenseNumber, YearsOfExperience, Qualifications, ConsultationFee) VALUES
-(2, N'Nội tổng quát', 1, 'DOC001', 10, N'Tiến sĩ Y khoa', 200000),
-(3, N'Nhi khoa', 3, 'DOC002', 8, N'Thạc sĩ Y khoa', 180000);
-GO
+-- -- Thêm Doctor
+-- INSERT INTO Doctors (UserID, Specialization, DepartmentID, LicenseNumber, YearsOfExperience, Qualifications, ConsultationFee) VALUES
+-- (2, N'Nội tổng quát', 1, 'DOC001', 10, N'Tiến sĩ Y khoa', 200000),
+-- (3, N'Nhi khoa', 3, 'DOC002', 8, N'Thạc sĩ Y khoa', 180000);
+-- GO
 
--- Thêm Patient
-INSERT INTO Patients (UserID, DateOfBirth, Gender, Address, BloodType) VALUES
-(4, '1990-05-15', 'male', N'123 Đường ABC, Quận 1, TP.HCM', 'O+'),
-(5, '1985-08-20', 'female', N'456 Đường XYZ, Quận 3, TP.HCM', 'A+');
-GO
+-- -- Thêm Patient
+-- INSERT INTO Patients (UserID, DateOfBirth, Gender, Address, BloodType) VALUES
+-- (4, '1990-05-15', 'male', N'123 Đường ABC, Quận 1, TP.HCM', 'O+'),
+-- (5, '1985-08-20', 'female', N'456 Đường XYZ, Quận 3, TP.HCM', 'A+');
+-- GO
 
--- Thêm DoctorSchedules cho tuần tới
-DECLARE @StartDate DATE = DATEADD(DAY, 1, GETDATE());
-DECLARE @i INT = 0;
+-- -- Thêm DoctorSchedules cho tuần tới
+-- DECLARE @StartDate DATE = DATEADD(DAY, 1, GETDATE());
+-- DECLARE @i INT = 0;
 
-WHILE @i < 7
-BEGIN
-    -- Doctor 1 - Ca sáng
-    INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive) 
-    VALUES (1, 1, 1, DATEADD(DAY, @i, @StartDate), 50, 1);
+-- WHILE @i < 7
+-- BEGIN
+--     -- Doctor 1 - Ca sáng
+--     INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive) 
+--     VALUES (1, 1, 1, DATEADD(DAY, @i, @StartDate), 50, 1);
     
-    -- Doctor 1 - Ca chiều (chỉ T2, T4, T6)
-    IF DATEPART(WEEKDAY, DATEADD(DAY, @i, @StartDate)) IN (2, 4, 6)
-    BEGIN
-        INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive) 
-        VALUES (1, 1, 2, DATEADD(DAY, @i, @StartDate), 50, 1);
-    END
+--     -- Doctor 1 - Ca chiều (chỉ T2, T4, T6)
+--     IF DATEPART(WEEKDAY, DATEADD(DAY, @i, @StartDate)) IN (2, 4, 6)
+--     BEGIN
+--         INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive) 
+--         VALUES (1, 1, 2, DATEADD(DAY, @i, @StartDate), 50, 1);
+--     END
     
-    -- Doctor 2 - Ca sáng (chỉ T3, T5, T7)
-    IF DATEPART(WEEKDAY, DATEADD(DAY, @i, @StartDate)) IN (3, 5, 7)
-    BEGIN
-        INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive) 
-        VALUES (2, 3, 1, DATEADD(DAY, @i, @StartDate), 50, 1);
-    END
+--     -- Doctor 2 - Ca sáng (chỉ T3, T5, T7)
+--     IF DATEPART(WEEKDAY, DATEADD(DAY, @i, @StartDate)) IN (3, 5, 7)
+--     BEGIN
+--         INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive) 
+--         VALUES (2, 3, 1, DATEADD(DAY, @i, @StartDate), 50, 1);
+--     END
     
-    SET @i = @i + 1;
-END
-GO
+--     SET @i = @i + 1;
+-- END
+-- GO
 
--- Thêm một số dịch vụ y tế
-INSERT INTO MedicalServices (ServiceName, ServiceType, Description, Price, DepartmentID, EstimatedTime, IsActive) VALUES
-(N'Xét nghiệm máu tổng quát', 'xet_nghiem', N'Xét nghiệm công thức máu', 150000, 1, 30, 1),
-(N'Siêu âm ổ bụng', 'sieu_am', N'Siêu âm các cơ quan trong ổ bụng', 250000, 1, 20, 1),
-(N'Chụp X-quang phổi', 'chup_xquang', N'Chụp X-quang vùng ngực', 180000, 1, 15, 1),
-(N'Điện tâm đồ', 'khac', N'Đo điện tâm đồ ECG', 120000, 1, 15, 1);
-GO
+-- -- Thêm một số dịch vụ y tế
+-- INSERT INTO MedicalServices (ServiceName, ServiceType, Description, Price, DepartmentID, EstimatedTime, IsActive) VALUES
+-- (N'Xét nghiệm máu tổng quát', 'xet_nghiem', N'Xét nghiệm công thức máu', 150000, 1, 30, 1),
+-- (N'Siêu âm ổ bụng', 'sieu_am', N'Siêu âm các cơ quan trong ổ bụng', 250000, 1, 20, 1),
+-- (N'Chụp X-quang phổi', 'chup_xquang', N'Chụp X-quang vùng ngực', 180000, 1, 15, 1),
+-- (N'Điện tâm đồ', 'khac', N'Đo điện tâm đồ ECG', 120000, 1, 15, 1);
+-- GO
 
--- Thêm một số thuốc
-INSERT INTO Medicines (MedicineName, GenericName, Unit, PricePerUnit, StockQuantity, IsActive) VALUES
-(N'Paracetamol 500mg', 'Paracetamol', N'Viên', 1000, 1000, 1),
-(N'Amoxicillin 500mg', 'Amoxicillin', N'Viên', 2500, 500, 1),
-(N'Vitamin C 1000mg', 'Ascorbic Acid', N'Viên', 1500, 800, 1),
-(N'Omeprazole 20mg', 'Omeprazole', N'Viên', 3000, 400, 1);
-GO
+-- -- Thêm một số thuốc
+-- INSERT INTO Medicines (MedicineName, GenericName, Unit, PricePerUnit, StockQuantity, IsActive) VALUES
+-- (N'Paracetamol 500mg', 'Paracetamol', N'Viên', 1000, 1000, 1),
+-- (N'Amoxicillin 500mg', 'Amoxicillin', N'Viên', 2500, 500, 1),
+-- (N'Vitamin C 1000mg', 'Ascorbic Acid', N'Viên', 1500, 800, 1),
+-- (N'Omeprazole 20mg', 'Omeprazole', N'Viên', 3000, 400, 1);
+-- GO
 
-PRINT N'✅ Database HospitalManagement đã được khởi tạo thành công!';
-GO
+-- PRINT N'✅ Database HospitalManagement đã được khởi tạo thành công!';
+-- GO
