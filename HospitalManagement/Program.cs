@@ -18,6 +18,9 @@ namespace HospitalManagement
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Seed initial data for testing
+            HospitalManagement.Services.Utilities.DataSeeder.SeedSchedules();
+
             // Login loop
             while (true)
             {

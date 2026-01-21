@@ -92,7 +92,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(250, 28);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📅 Đặt lịch khám bệnh";
+            this.lblTitle.Text = "📅 Đặt lịch khám bệnh ";
+            this.lblTitle.UseCompatibleTextRendering = true;
             
             // =============================================
             // panelContent - Scrollable main content

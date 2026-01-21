@@ -24,6 +24,7 @@ namespace HospitalManagement.Views.Interfaces.Patient
         void ShowLoading(bool isLoading);
         void ShowError(string message);
         void ShowSuccess(string message);
+        void ShowPaymentPrompt(int appointmentId, string amount);
         void ClearSelection();
         
         // Navigation

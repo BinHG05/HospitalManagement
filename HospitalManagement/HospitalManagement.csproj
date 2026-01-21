@@ -264,6 +264,10 @@
     <Compile Include="Presenters\LoginPresenter.cs" />
     <Compile Include="Presenters\RegisterPresenter.cs" />
     <Compile Include="Presenters\DashboardPresenter.cs" />
+    <Compile Include="Presenters\Admin\UserManagementPresenter.cs" />
+    <Compile Include="Presenters\Admin\DoctorManagementPresenter.cs" />
+    <Compile Include="Views\Interfaces\Admin\IUserManagementView.cs" />
+    <Compile Include="Views\Interfaces\Admin\IDoctorManagementView.cs" />
     <Compile Include="Views\Forms\BaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -305,6 +309,7 @@
     <Compile Include="Session\UserSession.cs" />
     <Compile Include="Config\AppConfig.cs" />
     <Compile Include="Logs\Logger.cs" />
+    <Compile Include="Services\Utilities\DataSeeder.cs" />
     <Compile Include="Views\UserControls\Patient\UC_AppointmentBooking.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -322,6 +327,12 @@
     </Compile>
     <Compile Include="Views\UserControls\Admin\UC_UserManagement.Designer.cs">
       <DependentUpon>UC_UserManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Admin\UC_DoctorManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Admin\UC_DoctorManagement.Designer.cs">
+      <DependentUpon>UC_DoctorManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Services\Interfaces\IAppointmentService.cs" />
     <Compile Include="Services\Implementations\AppointmentService.cs" />
@@ -372,6 +383,39 @@
     </Compile>
     <Compile Include="Views\UserControls\Doctor\UC_Examination.Designer.cs">
       <DependentUpon>UC_Examination.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Interfaces\Doctor\IPrescriptionView.cs" />
+    <Compile Include="Presenters\Doctor\PrescriptionPresenter.cs" />
+    <Compile Include="Views\UserControls\Doctor\UC_Prescription.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_Prescription.Designer.cs">
+      <DependentUpon>UC_Prescription.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_PatientRecords.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_PatientRecords.Designer.cs">
+      <DependentUpon>UC_PatientRecords.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_DoctorSchedule.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_DoctorSchedule.Designer.cs">
+      <DependentUpon>UC_DoctorSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Interfaces\ActiveExamInfo.cs" />
+    <Compile Include="Views\UserControls\Doctor\UC_ActiveExaminations.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_ActiveExaminations.Designer.cs">
+      <DependentUpon>UC_ActiveExaminations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Forms\Doctor\ServiceAssignmentDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Forms\Doctor\ServiceAssignmentDialog.Designer.cs">
+      <DependentUpon>ServiceAssignmentDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

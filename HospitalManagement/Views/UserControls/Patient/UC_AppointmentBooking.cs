@@ -20,6 +20,9 @@ namespace HospitalManagement.Views.UserControls.Patient
         private int _currentMaxPatients = 15; // Fixed 15 per slot
         private string _selectedShift; // "morning" or "afternoon"
         private string _selectedTimeSlot;
+        private List<TimeSlotInfo> _loadedSlots = new List<TimeSlotInfo>();
+        private int _currentRangeStart = 1;
+        private int _currentRangeEnd = 15;
 
         public int SelectedDepartmentId => _selectedDepartmentId;
         public DateTime SelectedDate => _selectedDate;
@@ -74,22 +77,54 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         public void ShowTimeSlots(IEnumerable<TimeSlotInfo> slots)
         {
-            // Not used - handled by shift selection
+            _loadedSlots = slots.ToList();
+            
+            // If we have a shift selected, refresh the view
+            if (!string.IsNullOrEmpty(_selectedShift))
+            {
+                ShowTimeSlotsForShift(_selectedShift);
+            }
         }
 
         public void ShowQueueNumbers(IEnumerable<int> bookedNumbers, int suggestedNumber, int maxPatients)
         {
-            _currentMaxPatients = 15; // Fixed to 15 per slot
-            _selectedQueueNumber = suggestedNumber;
+            _currentMaxPatients = 60; // Increased capacity
+            
+            // Adjust suggested number to be within range
+            // If suggestedNumber is < startRange, we need to find the first available in range.
+            // But 'suggestedNumber' comes from Service which looks at all schedule.
+            // We should re-calculate locally.
+            
+            var bookedSet = new HashSet<int>(bookedNumbers);
+            
+            // Find first available in current range
+            int localSuggested = -1;
+            for (int i = _currentRangeStart; i <= _currentRangeEnd; i++)
+            {
+                if (!bookedSet.Contains(i))
+                {
+                    localSuggested = i;
+                    break;
+                }
+            }
+            
+            _selectedQueueNumber = localSuggested != -1 ? localSuggested : 0;
 
             flowQueueNumbers.Controls.Clear();
-            lblSuggestedQueue.Text = $"✓ Hệ thống đề xuất: STT {suggestedNumber} (nhỏ nhất còn trống)";
-
-            var bookedSet = new HashSet<int>(bookedNumbers);
-
-            for (int i = 1; i <= 15; i++)
+            if (localSuggested != -1)
             {
-                var btn = CreateQueueButton(i, bookedSet.Contains(i), i == suggestedNumber);
+                lblSuggestedQueue.Text = $"✓ Hệ thống đề xuất: STT {localSuggested} (nhỏ nhất trong khung giờ này)";
+                lblSuggestedQueue.ForeColor = Color.FromArgb(16, 185, 129);
+            }
+            else
+            {
+                lblSuggestedQueue.Text = "⚠️ Khung giờ này đã hết số.";
+                lblSuggestedQueue.ForeColor = Color.Red;
+            }
+
+            for (int i = _currentRangeStart; i <= _currentRangeEnd; i++)
+            {
+                var btn = CreateQueueButton(i, bookedSet.Contains(i), i == localSuggested);
                 flowQueueNumbers.Controls.Add(btn);
             }
 
@@ -100,6 +135,28 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             panelLoading.Visible = isLoading;
             panelLoading.BringToFront();
+        }
+
+        public void ShowPaymentPrompt(int appointmentId, string amount)
+        {
+            var result = MessageBox.Show(
+                $"Đặt lịch thành công! (ID: {appointmentId})\n" +
+                $"Số tiền cần thanh toán: {amount}\n\n" +
+                $"Bạn có muốn thanh toán ngay để xác nhận lịch hẹn không?",
+                "Xác nhận thanh toán",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                _presenter.ConfirmPayment(appointmentId);
+            }
+            else
+            {
+                ShowSuccess("Đặt lịch thành công (Chờ thanh toán). Vui lòng thanh toán sau để hoàn tất.");
+                ClearSelection();
+                GoBackToWeeklyView();
+            }
         }
 
         public void ShowError(string message)
@@ -327,13 +384,13 @@ namespace HospitalManagement.Views.UserControls.Patient
         private void btnMorningShift_Click(object sender, EventArgs e)
         {
             SelectShift("morning");
-            ShowTimeSlotsForShift(MorningSlots);
+            ShowTimeSlotsForShift("morning");
         }
 
         private void btnAfternoonShift_Click(object sender, EventArgs e)
         {
             SelectShift("afternoon");
-            ShowTimeSlotsForShift(AfternoonSlots);
+            ShowTimeSlotsForShift("afternoon");
         }
 
         private void SelectShift(string shift)
@@ -347,27 +404,65 @@ namespace HospitalManagement.Views.UserControls.Patient
             btnAfternoonShift.ForeColor = shift == "afternoon" ? Color.White : Color.FromArgb(15, 23, 42);
         }
 
-        private void ShowTimeSlotsForShift(string[] slots)
+        private void ShowTimeSlotsForShift(string shift)
         {
             flowTimeSlots.Controls.Clear();
+            btnConfirmBooking.Enabled = false; 
+            btnConfirmBooking.BackColor = Color.Gray;
 
-            foreach (var slot in slots)
+            // Find the database schedule for this shift
+            // We assume _loadedSlots contains 1 entry for the whole shift (Morning or Afternoon)
+            var shiftSchedule = _loadedSlots.FirstOrDefault(s => 
+                (shift == "morning" && s.StartTime.Hours < 12) ||
+                (shift == "afternoon" && s.StartTime.Hours >= 12)
+            );
+
+            if (shiftSchedule == null)
             {
+                var lblMs = new Label 
+                { 
+                    Text = "Không có lịch khám nào trong ca này.", 
+                    AutoSize = true, 
+                    ForeColor = Color.Red,
+                    Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                    Padding = new Padding(10)
+                };
+                flowTimeSlots.Controls.Add(lblMs);
+                return;
+            }
+
+            // Use hardcoded slots for display
+            string[] displaySlots = shift == "morning" ? MorningSlots : AfternoonSlots;
+
+            for (int i = 0; i < displaySlots.Length; i++)
+            {
+                string slotText = displaySlots[i];
+                
+                // Calculate range for this slot (e.g., 4 slots, 60 total -> 15 per slot)
+                int startNum = (i * 15) + 1;
+                int endNum = (i + 1) * 15;
+                
+                // Check availability in this specific range
+                // We need to fetch ALL booked numbers for the shift first (should be cached or fetched)
+                // For now, valid visually. Real check happens in LoadQueueNumbers.
+                
                 var btn = new Button
                 {
-                    Text = slot,
-                    Size = new Size(110, 35),
+                    Text = slotText,
+                    Size = new Size(130, 35),
                     Font = new Font("Segoe UI", 10),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.FromArgb(241, 245, 249),
                     ForeColor = Color.FromArgb(15, 23, 42),
                     Cursor = Cursors.Hand,
                     Margin = new Padding(5, 0, 5, 0),
-                    Tag = slot
+                    Tag = new Tuple<TimeSlotInfo, int>(shiftSchedule, i) // Store Schedule AND Index
                 };
+                
                 btn.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
                 btn.FlatAppearance.BorderSize = 1;
                 btn.Click += TimeSlotButton_Click;
+                
                 flowTimeSlots.Controls.Add(btn);
             }
 
@@ -380,7 +475,14 @@ namespace HospitalManagement.Views.UserControls.Patient
             var btn = sender as Button;
             if (btn == null) return;
 
-            _selectedTimeSlot = btn.Tag.ToString();
+            var tagData = btn.Tag as Tuple<TimeSlotInfo, int>;
+            if (tagData == null) return;
+
+            var slotInfo = tagData.Item1;
+            int slotIndex = tagData.Item2;
+
+            _selectedTimeSlot = btn.Text; // "07:30-08:30"
+            _selectedScheduleId = slotInfo.ScheduleId;
 
             // Highlight selected
             foreach (Control ctrl in flowTimeSlots.Controls)
@@ -392,24 +494,31 @@ namespace HospitalManagement.Views.UserControls.Patient
                 }
             }
 
-            // Generate fake schedule ID based on selection
-            _selectedScheduleId = GenerateScheduleId();
+            // Load queue numbers
+            // Calculate range based on index
+            int startRange = (slotIndex * 15) + 1;
+            int endRange = (slotIndex + 1) * 15;
 
-            // Load queue numbers (for now, simulate with empty booked list)
-            lblQueueTitle.Text = $"Chọn số thứ tự - {_selectedTimeSlot}";
-            ShowQueueNumbers(new List<int>(), 1, 15);
+            lblQueueTitle.Text = $"Chọn số thứ tự - {_selectedTimeSlot} (STT {startRange}-{endRange})";
+            
+            // Pass the range to the presenter (or handle filtering in View)
+            // Ideally, we fetch ALL for the schedule, then Filter here.
+            // But LoadQueueNumbers calls Presenter -> Service.
+            // Hack: We'll modify ShowQueueNumbers to take a range, or filter here?
+            // Better: Store the range and let ShowQueueNumbers use it? 
+            // Or just fetch all and filter in ShowQueueNumbers.
+            
+            _currentRangeStart = startRange;
+            _currentRangeEnd = endRange;
+            
+            _presenter.LoadQueueNumbers(_selectedScheduleId, _selectedDate, 60); // Load up to max context
+            
+            // Still disable confirm
+            btnConfirmBooking.Enabled = false;
+            btnConfirmBooking.BackColor = Color.Gray;
         }
-
-        private int GenerateScheduleId()
-        {
-            // Temporary: Generate a unique ID based on date, shift, and time slot
-            // In real implementation, this should come from database
-            return (_selectedDate.GetHashCode() + _selectedShift.GetHashCode() + _selectedTimeSlot.GetHashCode()) % 10000;
-        }
-
-        #endregion
-
-        #region Queue Number Selection
+        
+        // ... (Queue Button Creation omitted for brevity, logic remains same) ...
 
         private Button CreateQueueButton(int number, bool isBooked, bool isSuggested)
         {
@@ -475,6 +584,10 @@ namespace HospitalManagement.Views.UserControls.Patient
                     }
                 }
             }
+            
+            // Enable Confirm Button
+            btnConfirmBooking.Enabled = true;
+            btnConfirmBooking.BackColor = Color.FromArgb(37, 99, 235); // Blue
         }
 
         #endregion
@@ -488,9 +601,10 @@ namespace HospitalManagement.Views.UserControls.Patient
                 _selectedDepartmentId = item.Value;
                 LoadWeeklyCalendar();
                 
-                // If date already selected, show shift selection
+                // If date already selected, show shift selection and load slots
                 if (_selectedDate >= DateTime.Today)
                 {
+                    _presenter.LoadTimeSlots(_selectedDepartmentId, _selectedDate);
                     panelShiftSelection.Visible = true;
                     panelTimeSlots.Visible = false;
                     panelQueueSelection.Visible = false;

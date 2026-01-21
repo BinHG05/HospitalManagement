@@ -113,14 +113,13 @@ namespace HospitalManagement.Presenters.Patient
                     return;
                 }
 
-                var success = _appointmentService.BookAppointment(
+                var appointmentId = _appointmentService.BookAppointment(
                     _patientId, scheduleId, date, queueNumber, reason);
 
-                if (success)
+                if (appointmentId > 0)
                 {
-                    _view.ShowSuccess($"Đặt lịch thành công! Số thứ tự của bạn: {queueNumber}");
-                    _view.ClearSelection();
-                    _view.GoBackToWeeklyView();
+                    // Show Payment Dialog instead of Success immediately
+                    _view.ShowPaymentPrompt(appointmentId, "150,000 VND");
                 }
                 else
                 {
@@ -130,6 +129,34 @@ namespace HospitalManagement.Presenters.Patient
             catch (Exception ex)
             {
                 _view.ShowError($"Lỗi đặt lịch: {ex.Message}");
+            }
+            finally
+            {
+                _view.ShowLoading(false);
+            }
+        }
+
+        public void ConfirmPayment(int appointmentId)
+        {
+            try
+            {
+                _view.ShowLoading(true);
+                bool success = _appointmentService.ConfirmAppointment(appointmentId);
+                
+                if (success)
+                {
+                    _view.ShowSuccess("Thanh toán thành công! Lịch khám của bạn đã được xác nhận.");
+                    _view.ClearSelection();
+                    _view.GoBackToWeeklyView();
+                }
+                else
+                {
+                    _view.ShowError("Lỗi xác nhận thanh toán. Vui lòng thử lại.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi thanh toán: {ex.Message}");
             }
             finally
             {

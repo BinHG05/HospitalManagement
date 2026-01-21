@@ -1,0 +1,245 @@
+using HospitalManagement.Models.EF;
+using HospitalManagement.Views.Interfaces.Doctor;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HospitalManagement.Presenters.Doctor
+{
+    public class PrescriptionPresenter
+    {
+        private readonly IPrescriptionView _view;
+        private readonly int _examinationId;
+        private int _recordId;
+        private int _patientId;
+        private int _doctorId;
+
+        public PrescriptionPresenter(IPrescriptionView view, int examinationId)
+        {
+            _view = view;
+            _examinationId = examinationId;
+            _view.ExaminationId = examinationId;
+
+            _view.SaveRequested += OnSaveRequested;
+            _view.PrintRequested += OnPrintRequested;
+            _view.CancelRequested += OnCancelRequested;
+        }
+
+        public void Initialize()
+        {
+            LoadPatientInfo();
+            LoadMedicines();
+            LoadExistingPrescription();
+        }
+
+        private void LoadPatientInfo()
+        {
+            try
+            {
+                using (var context = new HospitalDbContext())
+                {
+                    var exam = context.Examinations
+                        .Where(e => e.ExaminationID == _examinationId)
+                        .Select(e => new
+                        {
+                            e.PatientID,
+                            e.DoctorID,
+                            PatientName = e.Patient.User.FullName,
+                            e.Patient.DateOfBirth,
+                            e.Patient.Gender,
+                            e.PreliminaryDiagnosis
+                        })
+                        .FirstOrDefault();
+
+                    if (exam != null)
+                    {
+                        _patientId = exam.PatientID ?? 0;
+                        _doctorId = exam.DoctorID ?? 0;
+
+                        int? age = null;
+                        if (exam.DateOfBirth.HasValue)
+                        {
+                            age = DateTime.Today.Year - exam.DateOfBirth.Value.Year;
+                            if (exam.DateOfBirth.Value.Date > DateTime.Today.AddYears(-age.Value))
+                                age--;
+                        }
+
+                        _view.LoadPatientInfo(new PrescriptionPatientDto
+                        {
+                            PatientId = _patientId,
+                            FullName = exam.PatientName,
+                            Age = age,
+                            Gender = exam.Gender == "male" ? "Nam" : 
+                                     exam.Gender == "female" ? "Nữ" : "Khác",
+                            Diagnosis = exam.PreliminaryDiagnosis
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi tải thông tin bệnh nhân: {ex.Message}");
+            }
+        }
+
+        private void LoadMedicines()
+        {
+            try
+            {
+                using (var context = new HospitalDbContext())
+                {
+                    var medicines = context.Medicines
+                        .Where(m => m.IsActive == true && m.StockQuantity > 0)
+                        .Select(m => new MedicineDto
+                        {
+                            MedicineId = m.MedicineID,
+                            MedicineName = m.MedicineName,
+                            GenericName = m.GenericName,
+                            Unit = m.Unit,
+                            PricePerUnit = m.PricePerUnit ?? 0,
+                            StockQuantity = m.StockQuantity ?? 0
+                        })
+                        .OrderBy(m => m.MedicineName)
+                        .ToList();
+
+                    _view.LoadMedicineList(medicines);
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi tải danh sách thuốc: {ex.Message}");
+            }
+        }
+
+        private void LoadExistingPrescription()
+        {
+            try
+            {
+                using (var context = new HospitalDbContext())
+                {
+                    // Find existing MedicalRecord for this examination
+                    var record = context.MedicalRecords
+                        .FirstOrDefault(r => r.ExaminationID == _examinationId);
+
+                    if (record != null)
+                    {
+                        _recordId = record.RecordID;
+                        _view.RecordId = _recordId;
+
+                    // Load existing prescriptions
+                        var prescriptions = context.Prescriptions
+                            .Where(p => p.RecordID == _recordId)
+                            .Select(p => new PrescriptionItemDto
+                            {
+                                MedicineId = p.MedicineID ?? 0,
+                                MedicineName = p.Medicine.MedicineName,
+                                Unit = p.Medicine.Unit,
+                                Dosage = p.Dosage,
+                                Frequency = p.Frequency,
+                                Duration = p.Duration ?? 0,
+                                Quantity = p.Quantity,
+                                Instructions = p.Instructions,
+                                PricePerUnit = p.Medicine.PricePerUnit ?? 0
+                            })
+                            .ToList();
+
+                        foreach (var item in prescriptions)
+                        {
+                            _view.AddPrescriptionItem(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi tải đơn thuốc: {ex.Message}");
+            }
+        }
+
+        private void OnSaveRequested(object sender, EventArgs e)
+        {
+            try
+            {
+                _view.ShowLoading(true);
+
+                var items = _view.GetPrescriptionItems().ToList();
+                if (!items.Any())
+                {
+                    _view.ShowError("Vui lòng thêm ít nhất một loại thuốc vào đơn.");
+                    return;
+                }
+
+                using (var context = new HospitalDbContext())
+                {
+                    // Create or get MedicalRecord
+                    var record = context.MedicalRecords
+                        .FirstOrDefault(r => r.ExaminationID == _examinationId);
+
+                    if (record == null)
+                    {
+                        // Get diagnosis from examination
+                        var exam = context.Examinations.Find(_examinationId);
+                        
+                        record = new Models.Entities.MedicalRecords
+                        {
+                            PatientID = _patientId,
+                            ExaminationID = _examinationId,
+                            Diagnosis = exam?.PreliminaryDiagnosis ?? "Chưa có chẩn đoán",
+                            RecordDate = DateTime.Now,
+                            CreatedBy = _doctorId,
+                            CreatedAt = DateTime.Now
+                        };
+                        context.MedicalRecords.Add(record);
+                        context.SaveChanges();
+                        _recordId = record.RecordID;
+                    }
+
+                    // Remove old prescriptions
+                    var oldPrescriptions = context.Prescriptions
+                        .Where(p => p.RecordID == _recordId)
+                        .ToList();
+                    context.Prescriptions.RemoveRange(oldPrescriptions);
+
+                    // Add new prescriptions
+                    foreach (var item in items)
+                    {
+                        var prescription = new Models.Entities.Prescriptions
+                        {
+                            RecordID = _recordId,
+                            MedicineID = item.MedicineId,
+                            Dosage = item.Dosage,
+                            Frequency = item.Frequency,
+                            Duration = item.Duration,
+                            Quantity = item.Quantity,
+                            Instructions = item.Instructions,
+                            CreatedAt = DateTime.Now
+                        };
+                        context.Prescriptions.Add(prescription);
+                    }
+
+                    context.SaveChanges();
+                    _view.ShowSuccess($"Đã lưu đơn thuốc ({items.Count} loại thuốc)");
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi lưu đơn thuốc: {ex.Message}");
+            }
+            finally
+            {
+                _view.ShowLoading(false);
+            }
+        }
+
+        private void OnPrintRequested(object sender, EventArgs e)
+        {
+            // TODO: Implement print functionality
+            _view.ShowSuccess("Chức năng in đơn thuốc đang được phát triển...");
+        }
+
+        private void OnCancelRequested(object sender, EventArgs e)
+        {
+            _view.ClearPrescriptionItems();
+        }
+    }
+}

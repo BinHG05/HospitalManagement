@@ -47,7 +47,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
             this.panelHeader.Controls.Add(this.btnRefresh);
             this.panelHeader.Controls.Add(this.lblDate);
             this.panelHeader.Controls.Add(this.lblTitle);
@@ -66,7 +66,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(200, 25);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📋 Hàng đợi khám bệnh";
+            this.lblTitle.Text = "📋 Hàng đợi khám bệnh ";
+            this.lblTitle.UseCompatibleTextRendering = true;
             // 
             // lblDate
             // 

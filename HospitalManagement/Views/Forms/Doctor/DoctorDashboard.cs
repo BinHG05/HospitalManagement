@@ -56,6 +56,18 @@ namespace HospitalManagement.Views.Forms.Doctor
                 case "Hàng đợi khám":
                     LoadPatientQueue();
                     break;
+                case "Khám bệnh":
+                    LoadActiveExaminations();
+                    break;
+                case "Kê đơn thuốc":
+                    LoadPrescriptionGuide();
+                    break;
+                case "Hồ sơ bệnh nhân":
+                    LoadPatientRecords();
+                    break;
+                case "Lịch làm việc":
+                    LoadDoctorSchedule();
+                    break;
                 default:
                     ShowPlaceholder(contentName);
                     break;
@@ -71,6 +83,17 @@ namespace HospitalManagement.Views.Forms.Doctor
             patientQueue.Initialize(doctorId, (appointmentId) => LoadExamination(appointmentId));
             
             contentPanel.Controls.Add(patientQueue);
+        }
+
+        private void LoadActiveExaminations()
+        {
+            var doctorId = GetDoctorId();
+            
+            var activeExams = new UserControls.Doctor.UC_ActiveExaminations();
+            activeExams.Dock = DockStyle.Fill;
+            activeExams.Initialize(doctorId, (appointmentId) => LoadExamination(appointmentId));
+            
+            contentPanel.Controls.Add(activeExams);
         }
 
         private void LoadExamination(int appointmentId)
@@ -105,6 +128,107 @@ namespace HospitalManagement.Views.Forms.Doctor
             };
 
             contentPanel.Controls.Add(placeholder);
+        }
+
+        private void LoadPatientRecords()
+        {
+            var patientRecords = new UserControls.Doctor.UC_PatientRecords();
+            patientRecords.Dock = DockStyle.Fill;
+            patientRecords.Initialize(GetDoctorId());
+            contentPanel.Controls.Add(patientRecords);
+        }
+
+        private void LoadDoctorSchedule()
+        {
+            var schedule = new UserControls.Doctor.UC_DoctorSchedule();
+            schedule.Dock = DockStyle.Fill;
+            schedule.Initialize(GetDoctorId());
+            contentPanel.Controls.Add(schedule);
+        }
+
+        public void LoadPrescription(int examinationId)
+        {
+            contentPanel.Controls.Clear();
+            UpdateHeaderTitle("Kê đơn thuốc");
+            
+            var prescription = new UserControls.Doctor.UC_Prescription();
+            prescription.Dock = DockStyle.Fill;
+            prescription.Initialize(examinationId, () => LoadPatientQueue());
+            
+            contentPanel.Controls.Add(prescription);
+        }
+
+        private void LoadPrescriptionGuide()
+        {
+            // Create a nice guide panel
+            var guidePanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(241, 245, 249),
+                Padding = new Padding(50)
+            };
+
+            var cardPanel = new Panel
+            {
+                Size = new Size(500, 300),
+                BackColor = Color.White,
+                Location = new Point((contentPanel.Width - 500) / 2, 100)
+            };
+
+            var iconLabel = new Label
+            {
+                Text = "💊",
+                Font = new Font("Segoe UI", 48F),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 80
+            };
+
+            var titleLabel = new Label
+            {
+                Text = "Kê đơn thuốc",
+                Font = new Font("Segoe UI", 18F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(15, 23, 42),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 40
+            };
+
+            var descLabel = new Label
+            {
+                Text = "Để kê đơn thuốc, vui lòng:\n\n1. Vào \"Hàng đợi khám\" để chọn bệnh nhân\n2. Gọi bệnh nhân để khám\n3. Hoàn tất khám bệnh\n4. Kê đơn thuốc cho bệnh nhân",
+                Font = new Font("Segoe UI", 11F),
+                ForeColor = Color.FromArgb(100, 116, 139),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill,
+                Padding = new Padding(20)
+            };
+
+            var btnGoToQueue = new Button
+            {
+                Text = "Đi tới Hàng đợi khám",
+                Font = new Font("Segoe UI Semibold", 11F),
+                BackColor = Color.FromArgb(59, 130, 246),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(200, 45),
+                Cursor = Cursors.Hand,
+                Location = new Point(150, 240)
+            };
+            btnGoToQueue.FlatAppearance.BorderSize = 0;
+            btnGoToQueue.Click += (s, e) =>
+            {
+                SetActiveButton(btnQueue);
+                _presenter.NavigateTo("Hàng đợi khám");
+            };
+
+            cardPanel.Controls.Add(descLabel);
+            cardPanel.Controls.Add(titleLabel);
+            cardPanel.Controls.Add(iconLabel);
+            cardPanel.Controls.Add(btnGoToQueue);
+
+            guidePanel.Controls.Add(cardPanel);
+            contentPanel.Controls.Add(guidePanel);
         }
 
         public void UpdateHeaderTitle(string title)
@@ -225,15 +349,17 @@ namespace HospitalManagement.Views.Forms.Doctor
 
         private void SetActiveButton(Button button)
         {
+            // Reset previous active button
             if (_activeMenuButton != null)
             {
-                _activeMenuButton.BackColor = Color.Transparent;
-                _activeMenuButton.ForeColor = Color.FromArgb(200, 255, 255, 255);
+                _activeMenuButton.BackColor = System.Drawing.Color.Transparent;
+                _activeMenuButton.ForeColor = System.Drawing.Color.FromArgb(203, 213, 225);
             }
 
+            // Set new active button with Blue-500
             _activeMenuButton = button;
-            button.BackColor = Color.FromArgb(0, 168, 107);
-            button.ForeColor = Color.White;
+            button.BackColor = System.Drawing.Color.FromArgb(59, 130, 246);
+            button.ForeColor = System.Drawing.Color.White;
         }
 
         #endregion
@@ -273,6 +399,12 @@ namespace HospitalManagement.Views.Forms.Doctor
         private void btnLogout_Click(object sender, EventArgs e)
         {
             _presenter.Logout();
+        }
+
+        private void btnPrescription_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnPrescription);
+            _presenter.NavigateTo("Kê đơn thuốc");
         }
 
         #endregion

@@ -32,7 +32,7 @@ namespace HospitalManagement.Services.Implementations
                     .Include(a => a.Patient.User)
                     .Where(a => a.DoctorID == doctorId
                              && a.AppointmentDate == today
-                             && (a.Status == "pending" || a.Status == "confirmed"))
+                             && a.Status == "pending") // Only show PENDING in Queue. Confirmed/Examining goes to Active List.
                     .OrderBy(a => a.AppointmentNumber)
                     .ToList();
 
@@ -43,11 +43,46 @@ namespace HospitalManagement.Services.Implementations
                     PatientName = a.Patient?.User?.FullName ?? "N/A",
                     Gender = a.Patient?.Gender,
                     Age = a.Patient?.DateOfBirth != null
-                        ? (int?)((DateTime.Today - a.Patient.DateOfBirth.Value).TotalDays / 365.25)
+                        ? (int?)((int)((DateTime.Today - a.Patient.DateOfBirth.Value).TotalDays / 365.25))
                         : null,
                     Symptoms = a.Symptoms,
                     Status = a.Status,
                     CreatedAt = a.CreatedAt
+                }).ToList();
+            }
+        }
+
+        public IEnumerable<ActiveExamInfo> GetActiveExaminations(int doctorId)
+        {
+            using (var context = new HospitalDbContext())
+            {
+                var today = DateTime.Today;
+
+                // Active = Confirmed (Examining), Service_Pending, Service_Completed
+                var appointments = context.Appointments
+                    .Include(a => a.Patient)
+                    .Include(a => a.Patient.User)
+                    .Where(a => a.DoctorID == doctorId
+                             && a.AppointmentDate == today
+                             && (a.Status == "confirmed" || a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
+                    .OrderByDescending(a => a.UpdatedAt)
+                    .ToList();
+
+                return appointments.Select(a => new ActiveExamInfo
+                {
+                    AppointmentId = a.AppointmentID,
+                    PatientId = (int)a.PatientID,
+                    PatientName = a.Patient?.User?.FullName ?? "N/A",
+                    Gender = a.Patient?.Gender,
+                    Age = a.Patient?.DateOfBirth != null
+                        ? (int?)((int)((DateTime.Today - a.Patient.DateOfBirth.Value).TotalDays / 365.25))
+                        : null,
+                    Status = a.Status,
+                    // ServiceStatus requires joining with Services/ServiceRequests table which we will implement later.
+                    // For now leaving blank or using placeholder.
+                    ServiceStatus = a.Status == "service_pending" ? "Chờ kết quả" : 
+                                    (a.Status == "service_completed" ? "Đã có kết quả" : ""),
+                    StartedAt = a.UpdatedAt ?? a.CreatedAt
                 }).ToList();
             }
         }
@@ -98,6 +133,35 @@ namespace HospitalManagement.Services.Implementations
 
                     appointment.Status = "confirmed";
                     appointment.UpdatedAt = DateTime.Now;
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool AssignService(int appointmentId, string serviceName, int? targetDoctorId)
+        {
+            try
+            {
+                using (var context = new HospitalDbContext())
+                {
+                    var appointment = context.Appointments.Find(appointmentId);
+                    if (appointment == null) return false;
+
+                    // Update status to 'service_pending'
+                    appointment.Status = "service_pending";
+                    appointment.UpdatedAt = DateTime.Now;
+                    
+                    // Ideally, we should save the service request to a dedicated table (ServiceRequests).
+                    // For this MVP, we might store it in Note or a new field, 
+                    // or just rely on the status and external file export.
+                    // We'll append to Symptoms or create a note for now if no table exists.
+                    // Assuming we just track status.
+                    
                     context.SaveChanges();
                     return true;
                 }

@@ -82,7 +82,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(180, 25);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📋 Hồ sơ bệnh án";
+            this.lblTitle.Text = "📋 Hồ sơ bệnh án ";
+            this.lblTitle.UseCompatibleTextRendering = true;
             // 
             // tabControl
             // 

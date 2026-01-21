@@ -130,6 +130,64 @@ namespace HospitalManagement.Views.UserControls.Doctor
             dtpNextAppt.Enabled = chkNextAppt.Checked;
         }
 
+        private void btnAssignService_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new HospitalManagement.Views.Forms.Doctor.ServiceAssignmentDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    var serviceName = dialog.SelectedService;
+                    var doctorId = dialog.SelectedDoctorId;
+                    var doctorName = dialog.SelectedDoctorName;
+
+                    // 1. Call logic to assign service in DB
+                    var startSuccess = _presenter.AssignService(serviceName, doctorId);
+
+                    if (startSuccess)
+                    {
+                        // 2. Export file logic
+                        try
+                        {
+                            string fileName = $"PhieuChiDinh_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+                            string folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HospitalManagement", "ServiceRequests");
+                            
+                            if (!System.IO.Directory.Exists(folderPath))
+                            {
+                                System.IO.Directory.CreateDirectory(folderPath);
+                            }
+
+                            string filePath = System.IO.Path.Combine(folderPath, fileName);
+                            
+                            string content = $@"
+========================================
+       PHIẾU CHỈ ĐỊNH DỊCH VỤ
+========================================
+Ngày: {DateTime.Now:dd/MM/yyyy HH:mm}
+Bệnh nhân: {lblPatientName.Text}
+
+Dịch vụ yêu cầu: {serviceName}
+Bác sĩ thực hiện: {doctorName}
+
+Ghi chú chẩn đoán sơ bộ:
+{txtDiagnosis.Text}
+
+----------------------------------------
+Bác sĩ chỉ định:
+(Đã ký)
+========================================
+";
+                            System.IO.File.WriteAllText(filePath, content);
+                            MessageBox.Show($"Đã xuất phiếu chỉ định thành công!\nĐường dẫn: {filePath}", "Xuất file", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Lỗi xuất file: {ex.Message}", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
     }
 }

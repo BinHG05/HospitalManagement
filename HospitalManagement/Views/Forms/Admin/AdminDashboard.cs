@@ -50,6 +50,23 @@ namespace HospitalManagement.Views.Forms.Admin
         {
             contentPanel.Controls.Clear();
 
+            if (contentName == "Quản lý User")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_UserManagement();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            if (contentName == "Quản lý Bác sĩ")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_DoctorManagement();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            // Placeholder for others
             var placeholder = new Label
             {
                 Text = $"🚧 {contentName}\n\nTính năng này đang được phát triển...",

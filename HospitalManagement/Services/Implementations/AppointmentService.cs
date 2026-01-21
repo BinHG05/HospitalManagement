@@ -139,7 +139,7 @@ namespace HospitalManagement.Services.Implementations
             return -1; // Đã đầy
         }
 
-        public bool BookAppointment(int patientId, int scheduleId, DateTime appointmentDate, 
+        public int BookAppointment(int patientId, int scheduleId, DateTime appointmentDate, 
                                    int queueNumber, string reason)
         {
             try
@@ -151,7 +151,7 @@ namespace HospitalManagement.Services.Implementations
                         .Include(ds => ds.Doctor)
                         .FirstOrDefault(ds => ds.ScheduleID == scheduleId);
 
-                    if (schedule == null) return false;
+                    if (schedule == null) return -1;
 
                     // Kiểm tra STT đã được đặt chưa
                     var isBooked = context.Appointments.Any(a => 
@@ -159,7 +159,7 @@ namespace HospitalManagement.Services.Implementations
                         && a.AppointmentNumber == queueNumber
                         && (a.Status == "pending" || a.Status == "confirmed"));
 
-                    if (isBooked) return false;
+                    if (isBooked) return -1;
 
                     // Tạo appointment mới
                     var appointment = new Appointments
@@ -180,13 +180,13 @@ namespace HospitalManagement.Services.Implementations
                     context.Appointments.Add(appointment);
                     context.SaveChanges();
 
-                    return true;
+                    return appointment.AppointmentID;
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"BookAppointment Error: {ex.Message}");
-                return false;
+                return -1;
             }
         }
 
@@ -216,6 +216,27 @@ namespace HospitalManagement.Services.Implementations
                     if (appointment == null) return false;
 
                     appointment.Status = "cancelled";
+                    appointment.UpdatedAt = DateTime.Now;
+                    context.SaveChanges();
+
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public bool ConfirmAppointment(int appointmentId)
+        {
+            try
+            {
+                using (var context = new HospitalDbContext())
+                {
+                    var appointment = context.Appointments.Find(appointmentId);
+                    if (appointment == null) return false;
+
+                    appointment.Status = "confirmed";
                     appointment.UpdatedAt = DateTime.Now;
                     context.SaveChanges();
 

@@ -22,13 +22,17 @@ namespace HospitalManagement.Services.Interfaces
         int GetNextAvailableQueueNumber(int scheduleId, DateTime date, int maxPatients);
 
         // Đặt lịch khám
-        bool BookAppointment(int patientId, int scheduleId, DateTime appointmentDate, 
+        // Đặt lịch khám (Return AppointmentID if success, -1 if fail)
+        int BookAppointment(int patientId, int scheduleId, DateTime appointmentDate, 
                             int queueNumber, string reason);
 
         // Lấy lịch hẹn của bệnh nhân
         IEnumerable<Appointments> GetPatientAppointments(int patientId);
 
         // Hủy lịch hẹn
+        // Xác nhận lịch hẹn (Thanh toán)
+        bool ConfirmAppointment(int appointmentId);
+
         bool CancelAppointment(int appointmentId);
     }
 
