@@ -58,7 +58,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
             this.panelHeader.Controls.Add(this.btnBack);
             this.panelHeader.Controls.Add(this.lblTitle);
             this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
@@ -76,7 +76,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(150, 25);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "🩺 Khám bệnh";
+            this.lblTitle.Text = "🩺 Khám bệnh ";
+            this.lblTitle.UseCompatibleTextRendering = true;
             // 
             // btnBack
             // 
@@ -228,17 +229,35 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnSave.Text = "💾 Lưu kết quả";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            
+            // 
+            // btnAssignService
+            // 
+            this.btnAssignService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(145)))), ((int)(((byte)(0)))));
+            this.btnAssignService.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAssignService.FlatAppearance.BorderSize = 0;
+            this.btnAssignService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAssignService.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAssignService.ForeColor = System.Drawing.Color.White;
+            this.btnAssignService.Location = new System.Drawing.Point(370, yPos);
+            this.btnAssignService.Name = "btnAssignService";
+            this.btnAssignService.Size = new System.Drawing.Size(160, 40);
+            this.btnAssignService.TabIndex = 11;
+            this.btnAssignService.Text = "🔬 Chỉ định DV";
+            this.btnAssignService.UseVisualStyleBackColor = false;
+            this.btnAssignService.Click += new System.EventHandler(this.btnAssignService_Click);
+            // 
+            // btnCancel
+            // 
             this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
             this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnCancel.FlatAppearance.BorderSize = 0;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(370, yPos);
+            this.btnCancel.Location = new System.Drawing.Point(550, yPos);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 40);
-            this.btnCancel.TabIndex = 11;
+            this.btnCancel.TabIndex = 12;
             this.btnCancel.Text = "Hủy";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -249,7 +268,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                 this.lblTreatment, this.txtTreatment,
                 this.lblNotes, this.txtNotes,
                 this.chkNextAppt, this.dtpNextAppt,
-                this.btnSave, this.btnCancel
+                this.btnSave, this.btnAssignService, this.btnCancel
             });
             // 
             // panelLoading
@@ -316,6 +335,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private System.Windows.Forms.DateTimePicker dtpNextAppt;
         private System.Windows.Forms.CheckBox chkNextAppt;
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnAssignService;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Panel panelLoading;
         private System.Windows.Forms.Label lblLoading;

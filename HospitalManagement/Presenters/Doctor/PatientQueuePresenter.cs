@@ -85,7 +85,17 @@ namespace HospitalManagement.Presenters.Doctor
 
         public void StartExamination(int appointmentId)
         {
-            _view.OpenExamination(appointmentId);
+            // Ensure status is updated to 'confirmed' (or 'examining') in DB
+            // so it appears in the Active Examinations list.
+            var success = _doctorService.CallPatient(appointmentId);
+            if (success)
+            {
+                _view.OpenExamination(appointmentId);
+            }
+            else
+            {
+                _view.ShowError("Có lỗi khi bắt đầu khám. Vui lòng thử lại.");
+            }
         }
     }
 }

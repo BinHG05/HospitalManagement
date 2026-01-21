@@ -90,5 +90,35 @@ namespace HospitalManagement.Presenters.Doctor
                 _view.ShowLoading(false);
             }
         }
+        public bool AssignService(string serviceName, int? targetDoctorId)
+        {
+            try
+            {
+                _view.ShowLoading(true);
+
+                var success = _doctorService.AssignService(_appointmentId, serviceName, targetDoctorId);
+
+                if (success)
+                {
+                    _view.ShowSuccess($"Đã chỉ định dịch vụ: {serviceName}\nBệnh nhân đã được chuyển sang danh sách chờ dịch vụ.");
+                    _view.CloseView();
+                    return true;
+                }
+                else
+                {
+                    _view.ShowError("Không thể chỉ định dịch vụ. Vui lòng thử lại.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                _view.ShowLoading(false);
+            }
+        }
     }
 }
