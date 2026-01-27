@@ -65,5 +65,19 @@ namespace HospitalManagement.Views.Interfaces.Patient
         }
 
         public bool CanPay => InvoiceStatus == "unpaid";
+
+        public DateTime? PaymentDeadline
+        {
+            get
+            {
+                if (PaymentType == "appointment" && AppointmentDate.HasValue && InvoiceStatus == "unpaid")
+                {
+                    // Hạn là 19h30 ngày trước ngày khám (hoặc ngày hiện tại nếu đăng ký trong ngày?)
+                    // Theo logic UC_AppointmentBooking: Ngày trước ngày khám 19:30
+                    return AppointmentDate.Value.AddDays(-1).Date.AddHours(19).AddMinutes(30);
+                }
+                return null;
+            }
+        }
     }
 }

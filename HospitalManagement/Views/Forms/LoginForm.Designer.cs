@@ -25,6 +25,8 @@ namespace HospitalManagement.Views.Forms
             this.panelLogin = new System.Windows.Forms.Panel();
             this.lnkRegister = new System.Windows.Forms.LinkLabel();
             this.lblNoAccount = new System.Windows.Forms.Label();
+            this.lnkForgotPassword = new System.Windows.Forms.LinkLabel();
+            this.lblForgotPassword = new System.Windows.Forms.Label();
             this.btnLogin = new System.Windows.Forms.Button();
             this.lblError = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
@@ -41,7 +43,7 @@ namespace HospitalManagement.Views.Forms
             // 
             // panelLeft
             // 
-            this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
+            this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.panelLeft.Controls.Add(this.lblSubtitle);
             this.panelLeft.Controls.Add(this.lblTitle);
             this.panelLeft.Controls.Add(this.lblLogo);
@@ -55,7 +57,7 @@ namespace HospitalManagement.Views.Forms
             // 
             this.lblSubtitle.AutoSize = true;
             this.lblSubtitle.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.lblSubtitle.Location = new System.Drawing.Point(100, 370);
             this.lblSubtitle.Name = "lblSubtitle";
             this.lblSubtitle.Size = new System.Drawing.Size(199, 20);
@@ -66,7 +68,7 @@ namespace HospitalManagement.Views.Forms
             // 
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 28F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.lblTitle.Location = new System.Drawing.Point(80, 270);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(248, 102);
@@ -98,6 +100,8 @@ namespace HospitalManagement.Views.Forms
             // 
             // panelLogin
             // 
+            this.panelLogin.Controls.Add(this.lnkForgotPassword);
+            this.panelLogin.Controls.Add(this.lblForgotPassword);
             this.panelLogin.Controls.Add(this.lnkRegister);
             this.panelLogin.Controls.Add(this.lblNoAccount);
             this.panelLogin.Controls.Add(this.btnLogin);
@@ -116,11 +120,11 @@ namespace HospitalManagement.Views.Forms
             // lnkRegister
             // 
             this.lnkRegister.AutoSize = true;
-            this.lnkRegister.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.lnkRegister.Location = new System.Drawing.Point(195, 345);
+            this.lnkRegister.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lnkRegister.Location = new System.Drawing.Point(200, 360);
             this.lnkRegister.Name = "lnkRegister";
-            this.lnkRegister.Size = new System.Drawing.Size(93, 20);
-            this.lnkRegister.TabIndex = 9;
+            this.lnkRegister.Size = new System.Drawing.Size(94, 19);
+            this.lnkRegister.TabIndex = 11;
             this.lnkRegister.TabStop = true;
             this.lnkRegister.Text = "Đăng ký ngay";
             this.lnkRegister.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkRegister_LinkClicked);
@@ -128,17 +132,40 @@ namespace HospitalManagement.Views.Forms
             // lblNoAccount
             // 
             this.lblNoAccount.AutoSize = true;
-            this.lblNoAccount.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.lblNoAccount.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblNoAccount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
-            this.lblNoAccount.Location = new System.Drawing.Point(60, 345);
+            this.lblNoAccount.Location = new System.Drawing.Point(55, 360);
             this.lblNoAccount.Name = "lblNoAccount";
-            this.lblNoAccount.Size = new System.Drawing.Size(138, 20);
-            this.lblNoAccount.TabIndex = 8;
+            this.lblNoAccount.Size = new System.Drawing.Size(122, 19);
+            this.lblNoAccount.TabIndex = 10;
             this.lblNoAccount.Text = "Chưa có tài khoản?";
+            // 
+            // lnkForgotPassword
+            // 
+            this.lnkForgotPassword.AutoSize = true;
+            this.lnkForgotPassword.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lnkForgotPassword.Location = new System.Drawing.Point(200, 335);
+            this.lnkForgotPassword.Name = "lnkForgotPassword";
+            this.lnkForgotPassword.Size = new System.Drawing.Size(109, 19);
+            this.lnkForgotPassword.TabIndex = 9;
+            this.lnkForgotPassword.TabStop = true;
+            this.lnkForgotPassword.Text = "Lấy lại mật khẩu";
+            this.lnkForgotPassword.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkForgotPassword_LinkClicked);
+            // 
+            // lblForgotPassword
+            // 
+            this.lblForgotPassword.AutoSize = true;
+            this.lblForgotPassword.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblForgotPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
+            this.lblForgotPassword.Location = new System.Drawing.Point(55, 335);
+            this.lblForgotPassword.Name = "lblForgotPassword";
+            this.lblForgotPassword.Size = new System.Drawing.Size(142, 19);
+            this.lblForgotPassword.TabIndex = 8;
+            this.lblForgotPassword.Text = "Bạn quên mật khẩu?";
             // 
             // btnLogin
             // 
-            this.btnLogin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(204)))));
+            this.btnLogin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this.btnLogin.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnLogin.FlatAppearance.BorderSize = 0;
             this.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -205,25 +232,25 @@ namespace HospitalManagement.Views.Forms
             // 
             // lblInstruction
             // 
-            this.lblInstruction.AutoSize = true;
             this.lblInstruction.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.lblInstruction.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
-            this.lblInstruction.Location = new System.Drawing.Point(0, 40);
+            this.lblInstruction.Location = new System.Drawing.Point(0, 50);
             this.lblInstruction.Name = "lblInstruction";
-            this.lblInstruction.Size = new System.Drawing.Size(212, 20);
+            this.lblInstruction.Size = new System.Drawing.Size(350, 25);
             this.lblInstruction.TabIndex = 1;
             this.lblInstruction.Text = "Vui lòng đăng nhập để tiếp tục";
+            this.lblInstruction.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblWelcome
             // 
-            this.lblWelcome.AutoSize = true;
-            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
-            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
+            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.lblWelcome.Location = new System.Drawing.Point(0, 0);
             this.lblWelcome.Name = "lblWelcome";
-            this.lblWelcome.Size = new System.Drawing.Size(230, 32);
+            this.lblWelcome.Size = new System.Drawing.Size(350, 50);
             this.lblWelcome.TabIndex = 0;
             this.lblWelcome.Text = "Chào mừng trở lại!";
+            this.lblWelcome.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnClose
             // 
@@ -280,5 +307,7 @@ namespace HospitalManagement.Views.Forms
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.Label lblNoAccount;
         private System.Windows.Forms.LinkLabel lnkRegister;
+        private System.Windows.Forms.Label lblForgotPassword;
+        private System.Windows.Forms.LinkLabel lnkForgotPassword;
     }
 }

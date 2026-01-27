@@ -48,7 +48,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             // panelHeader
             // 
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
+            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.panelHeader.Controls.Add(this.lblTitle);
             this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelHeader.Location = new System.Drawing.Point(0, 0);
@@ -60,7 +60,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.lblTitle.Location = new System.Drawing.Point(20, 12);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(180, 25);
@@ -200,13 +200,13 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelDetails.Controls.Add(this.lblDetailsTitle);
             this.panelDetails.Location = new System.Drawing.Point(200, 150);
             this.panelDetails.Name = "panelDetails";
-            this.panelDetails.Size = new System.Drawing.Size(500, 320);
+            this.panelDetails.Size = new System.Drawing.Size(500, 450);
             this.panelDetails.TabIndex = 3;
             this.panelDetails.Visible = false;
             // 
             // lblDetailsTitle
             // 
-            this.lblDetailsTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
+            this.lblDetailsTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.lblDetailsTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblDetailsTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.lblDetailsTitle.ForeColor = System.Drawing.Color.White;
@@ -223,7 +223,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblDetailsContent.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblDetailsContent.Location = new System.Drawing.Point(20, 50);
             this.lblDetailsContent.Name = "lblDetailsContent";
-            this.lblDetailsContent.Size = new System.Drawing.Size(458, 160);
+            this.lblDetailsContent.Size = new System.Drawing.Size(458, 300);
             this.lblDetailsContent.TabIndex = 1;
             this.lblDetailsContent.Text = "Nội dung chi tiết...";
             // 
@@ -231,7 +231,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             this.lblPaymentMethod.AutoSize = true;
             this.lblPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblPaymentMethod.Location = new System.Drawing.Point(20, 220);
+            this.lblPaymentMethod.Location = new System.Drawing.Point(20, 355);
             this.lblPaymentMethod.Name = "lblPaymentMethod";
             this.lblPaymentMethod.Size = new System.Drawing.Size(120, 19);
             this.lblPaymentMethod.TabIndex = 2;
@@ -241,7 +241,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             this.cmbPaymentMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbPaymentMethod.Location = new System.Drawing.Point(160, 217);
+            this.cmbPaymentMethod.Location = new System.Drawing.Point(160, 352);
             this.cmbPaymentMethod.Name = "cmbPaymentMethod";
             this.cmbPaymentMethod.Size = new System.Drawing.Size(180, 25);
             this.cmbPaymentMethod.TabIndex = 3;
@@ -254,7 +254,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnPay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPay.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnPay.ForeColor = System.Drawing.Color.White;
-            this.btnPay.Location = new System.Drawing.Point(250, 265);
+            this.btnPay.Location = new System.Drawing.Point(250, 400);
             this.btnPay.Name = "btnPay";
             this.btnPay.Size = new System.Drawing.Size(120, 35);
             this.btnPay.TabIndex = 4;
@@ -270,7 +270,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(380, 265);
+            this.btnClose.Location = new System.Drawing.Point(380, 400);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(100, 35);
             this.btnClose.TabIndex = 5;

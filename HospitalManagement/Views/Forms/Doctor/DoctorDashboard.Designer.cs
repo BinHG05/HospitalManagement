@@ -161,7 +161,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.btnExam.Text = "   🩺   Khám bệnh";
             this.btnExam.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnExam.UseVisualStyleBackColor = false;
-            this.btnExam.Click += (s, e) => { SetActiveButton(btnExam); LoadContent("Khám bệnh"); };
+            this.btnExam.Click += new System.EventHandler(this.btnExam_Click);
             // 
             // btnQueue - Hàng đợi khám
             // 

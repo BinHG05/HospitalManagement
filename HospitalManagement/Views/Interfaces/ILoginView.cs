@@ -11,5 +11,6 @@ namespace HospitalManagement.Views.Interfaces
         void ClearFields();
         void SetLoginResult(Users user);
         void OpenRegisterForm();
+        void OpenForgotPasswordForm();
     }
 }

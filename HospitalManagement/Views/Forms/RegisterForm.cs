@@ -26,6 +26,12 @@ namespace HospitalManagement.Views.Forms
             // Create service and presenter
             IAuthService authService = new AuthService();
             _presenter = new RegisterPresenter(this, authService);
+
+            // Thiết lập phong cách Luxury nổi bật
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(251, 191, 36); // Vàng Gold
+            lblBranding.ForeColor = System.Drawing.Color.FromArgb(248, 250, 252); // Trắng bạc
+            lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184); // Bạc Slate
+            lblLogo.ForeColor = System.Drawing.Color.White;
         }
 
         public void ShowError(string message)

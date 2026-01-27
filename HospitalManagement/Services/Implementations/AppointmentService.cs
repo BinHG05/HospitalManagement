@@ -180,6 +180,35 @@ namespace HospitalManagement.Services.Implementations
                     context.Appointments.Add(appointment);
                     context.SaveChanges();
 
+                    // Tự động tạo Payment và Invoice cho lượt khám này
+                    var doctor = context.Doctors.Find(schedule.DoctorID);
+                    var amount = doctor?.ConsultationFee ?? 150000;
+
+                    var payment = new Payments
+                    {
+                        AppointmentID = appointment.AppointmentID,
+                        PatientID = patientId,
+                        PaymentType = "appointment",
+                        Amount = amount,
+                        PaymentStatus = "pending",
+                        CreatedAt = DateTime.Now
+                    };
+                    context.Payments.Add(payment);
+                    context.SaveChanges();
+
+                    var invoice = new Invoices
+                    {
+                        PaymentID = payment.PaymentID,
+                        InvoiceNumber = "INV" + DateTime.Now.ToString("yyyyMMdd") + appointment.AppointmentID.ToString().PadLeft(4, '0'),
+                        InvoiceDate = DateTime.Now,
+                        TotalAmount = amount,
+                        FinalAmount = amount,
+                        InvoiceStatus = "unpaid",
+                        CreatedAt = DateTime.Now
+                    };
+                    context.Invoices.Add(invoice);
+                    context.SaveChanges();
+
                     return appointment.AppointmentID;
                 }
             }

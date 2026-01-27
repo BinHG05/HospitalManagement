@@ -91,6 +91,13 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             _selectedInvoice = invoice;
 
+            string deadlineInfo = "";
+            if (invoice.PaymentDeadline.HasValue)
+            {
+                deadlineInfo = $"\n\n⚠️ Hạn thanh toán: {invoice.PaymentDeadline.Value:HH:mm dd/MM/yyyy}\n" +
+                               $"(Vui lòng thanh toán trước thời gian này để tránh bị hủy lịch)";
+            }
+
             lblDetailsContent.Text =
                 $"📄 Số hóa đơn: {invoice.InvoiceNumber}\n\n" +
                 $"📅 Ngày: {invoice.InvoiceDate:dd/MM/yyyy}\n\n" +
@@ -100,7 +107,8 @@ namespace HospitalManagement.Views.UserControls.Patient
                 $"💰 Tổng tiền: {invoice.TotalAmount:N0} đ\n" +
                 $"🏷️ Giảm giá: {invoice.DiscountAmount:N0} đ\n" +
                 $"💵 Thành tiền: {invoice.FinalAmount:N0} đ\n\n" +
-                $"📊 Trạng thái: {invoice.StatusDisplay}";
+                $"📊 Trạng thái: {invoice.StatusDisplay}" +
+                deadlineInfo;
 
             btnPay.Visible = invoice.CanPay;
             cmbPaymentMethod.Visible = invoice.CanPay;

@@ -23,6 +23,11 @@ namespace HospitalManagement.Views.Forms.Patient
             CurrentUser = user;
             _presenter = new DashboardPresenter(this);
             
+            // Thiết lập phong cách Luxury
+            lblLogo.ForeColor = Color.FromArgb(251, 191, 36); // Gold
+            lblUserName.ForeColor = Color.FromArgb(248, 250, 252); // Silver/White
+            lblUserIcon.BackColor = Color.FromArgb(251, 191, 36); // Icon Gold
+
             InitializeUserInfo();
             SetActiveButton(btnHome);
             LoadHomeContent();
