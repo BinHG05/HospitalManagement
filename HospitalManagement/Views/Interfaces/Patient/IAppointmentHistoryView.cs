@@ -55,6 +55,7 @@ namespace HospitalManagement.Views.Interfaces.Patient
                 {
                     case "pending": return "Chờ xác nhận";
                     case "confirmed": return "Đã xác nhận";
+                    case "examining": return "Đang khám";
                     case "completed": return "Hoàn thành";
                     case "cancelled": return "Đã hủy";
                     case "no-show": return "Vắng mặt";

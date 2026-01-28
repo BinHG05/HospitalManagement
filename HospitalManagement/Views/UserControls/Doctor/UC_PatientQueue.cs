@@ -153,6 +153,14 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
         }
 
+        private void btnNoShow_Click(object sender, EventArgs e)
+        {
+            if (_selectedAppointmentId > 0)
+            {
+                _presenter.NoShowPatient(_selectedAppointmentId);
+            }
+        }
+
         private void btnCloseDetails_Click(object sender, EventArgs e)
         {
             panelDetails.Visible = false;

@@ -34,6 +34,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblDetailsTitle = new System.Windows.Forms.Label();
             this.lblDetailsContent = new System.Windows.Forms.Label();
             this.btnStartExam = new System.Windows.Forms.Button();
+            this.btnNoShow = new System.Windows.Forms.Button();
             this.btnCallPatient = new System.Windows.Forms.Button();
             this.btnCloseDetails = new System.Windows.Forms.Button();
             this.panelLoading = new System.Windows.Forms.Panel();
@@ -176,6 +177,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             // 
             this.panelDetails.BackColor = System.Drawing.Color.White;
             this.panelDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelDetails.Controls.Add(this.btnNoShow);
             this.panelDetails.Controls.Add(this.btnCloseDetails);
             this.panelDetails.Controls.Add(this.btnStartExam);
             this.panelDetails.Controls.Add(this.btnCallPatient);
@@ -183,9 +185,25 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.panelDetails.Controls.Add(this.lblDetailsTitle);
             this.panelDetails.Location = new System.Drawing.Point(200, 100);
             this.panelDetails.Name = "panelDetails";
-            this.panelDetails.Size = new System.Drawing.Size(500, 350);
+            this.panelDetails.Size = new System.Drawing.Size(550, 350); // Increased width for 4 buttons
             this.panelDetails.TabIndex = 3;
             this.panelDetails.Visible = false;
+            // 
+            // btnNoShow
+            // 
+            this.btnNoShow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnNoShow.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnNoShow.FlatAppearance.BorderSize = 0;
+            this.btnNoShow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnNoShow.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnNoShow.ForeColor = System.Drawing.Color.White;
+            this.btnNoShow.Location = new System.Drawing.Point(340, 295);
+            this.btnNoShow.Name = "btnNoShow";
+            this.btnNoShow.Size = new System.Drawing.Size(100, 35);
+            this.btnNoShow.TabIndex = 5;
+            this.btnNoShow.Text = "❌ Vắng mặt";
+            this.btnNoShow.UseVisualStyleBackColor = false;
+            this.btnNoShow.Click += new System.EventHandler(this.btnNoShow_Click);
             // 
             // lblDetailsTitle
             // 
@@ -218,9 +236,9 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnCallPatient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCallPatient.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnCallPatient.ForeColor = System.Drawing.Color.White;
-            this.btnCallPatient.Location = new System.Drawing.Point(120, 295);
+            this.btnCallPatient.Location = new System.Drawing.Point(20, 295);
             this.btnCallPatient.Name = "btnCallPatient";
-            this.btnCallPatient.Size = new System.Drawing.Size(110, 35);
+            this.btnCallPatient.Size = new System.Drawing.Size(90, 35);
             this.btnCallPatient.TabIndex = 2;
             this.btnCallPatient.Text = "📢 Gọi";
             this.btnCallPatient.UseVisualStyleBackColor = false;
@@ -234,9 +252,9 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnStartExam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStartExam.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnStartExam.ForeColor = System.Drawing.Color.White;
-            this.btnStartExam.Location = new System.Drawing.Point(250, 295);
+            this.btnStartExam.Location = new System.Drawing.Point(120, 295);
             this.btnStartExam.Name = "btnStartExam";
-            this.btnStartExam.Size = new System.Drawing.Size(120, 35);
+            this.btnStartExam.Size = new System.Drawing.Size(210, 35);
             this.btnStartExam.TabIndex = 3;
             this.btnStartExam.Text = "🩺 Bắt đầu khám";
             this.btnStartExam.UseVisualStyleBackColor = false;
@@ -250,9 +268,9 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnCloseDetails.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCloseDetails.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnCloseDetails.ForeColor = System.Drawing.Color.White;
-            this.btnCloseDetails.Location = new System.Drawing.Point(390, 295);
+            this.btnCloseDetails.Location = new System.Drawing.Point(450, 295);
             this.btnCloseDetails.Name = "btnCloseDetails";
-            this.btnCloseDetails.Size = new System.Drawing.Size(90, 35);
+            this.btnCloseDetails.Size = new System.Drawing.Size(80, 35);
             this.btnCloseDetails.TabIndex = 4;
             this.btnCloseDetails.Text = "Đóng";
             this.btnCloseDetails.UseVisualStyleBackColor = false;
@@ -321,6 +339,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private System.Windows.Forms.Button btnCallPatient;
         private System.Windows.Forms.Button btnStartExam;
         private System.Windows.Forms.Button btnCloseDetails;
+        private System.Windows.Forms.Button btnNoShow;
         private System.Windows.Forms.Panel panelLoading;
         private System.Windows.Forms.Label lblLoading;
     }

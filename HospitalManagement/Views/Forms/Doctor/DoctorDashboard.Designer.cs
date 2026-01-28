@@ -135,7 +135,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.btnSchedule.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnSchedule.Size = new System.Drawing.Size(230, 56);
             this.btnSchedule.TabIndex = 3;
-            this.btnSchedule.Text = "   📆   Lịch làm việc";
+            this.btnSchedule.Text = "   📆 Lịch làm việc";
             this.btnSchedule.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnSchedule.UseVisualStyleBackColor = false;
             this.btnSchedule.Click += new System.EventHandler(this.btnSchedule_Click);

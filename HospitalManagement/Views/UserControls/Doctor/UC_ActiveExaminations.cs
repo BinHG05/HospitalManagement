@@ -49,23 +49,22 @@ namespace HospitalManagement.Views.UserControls.Doctor
                 panelLoading.Visible = true;
                 panelLoading.BringToFront();
 
-                // For now, we simulate data or use a new method from DoctorService
-                // I will add GetActiveExaminations to DoctorService soon.
-                // Assuming it returns a list of active exams.
-                var activeExams = _doctorService.GetActiveExaminations(_doctorId);
+                // Show all active exams in the hospital, not just for this doctor
+                var activeExams = _doctorService.GetAllActiveExaminations();
 
                 dgvExaminations.Rows.Clear();
                 int index = 1;
 
-                foreach (var exam in activeExams)
+                foreach (HospitalActiveExamInfo exam in activeExams)
                 {
                     dgvExaminations.Rows.Add(
                         index++,
                         exam.PatientName,
                         exam.Age,
                         exam.Gender == "male" ? "Nam" : (exam.Gender == "female" ? "Nữ" : exam.Gender),
+                        exam.DoctorName,
                         GetStatusDisplay(exam.Status),
-                        GetServiceStatusDisplay(exam.ServiceStatus), // Assume this property exists in DTO
+                        GetServiceStatusDisplay(exam.ServiceStatus),
                         "Tiếp tục"
                     );
                     

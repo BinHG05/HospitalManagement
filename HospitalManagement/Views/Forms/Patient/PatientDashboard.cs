@@ -2,6 +2,7 @@ using HospitalManagement.Infrastructure.Common;
 using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
+using HospitalManagement.Views.UserControls.Patient;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace HospitalManagement.Views.Forms.Patient
     {
         private readonly DashboardPresenter _presenter;
         private Button _activeMenuButton;
+        private Timer _statusTimer;
+        private System.Collections.Generic.HashSet<int> _notifiedAppointments = new System.Collections.Generic.HashSet<int>();
 
         public Users CurrentUser { get; set; }
 
@@ -31,6 +34,55 @@ namespace HospitalManagement.Views.Forms.Patient
             InitializeUserInfo();
             SetActiveButton(btnHome);
             LoadHomeContent();
+            InitializeStatusTimer();
+        }
+
+        private void InitializeStatusTimer()
+        {
+            _statusTimer = new Timer();
+            _statusTimer.Interval = 5000; // Check every 5 seconds
+            _statusTimer.Tick += StatusTimer_Tick;
+            _statusTimer.Start();
+        }
+
+        private void StatusTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                var patientId = GetPatientId();
+                if (patientId <= 0) return;
+
+                using (var context = new Models.EF.HospitalDbContext())
+                {
+                    var today = DateTime.Today;
+                    var activeAppointment = context.Appointments
+                        .Where(a => a.PatientID == patientId 
+                                 && a.AppointmentDate == today 
+                                 && a.Status == "examining")
+                        .OrderByDescending(a => a.UpdatedAt)
+                        .FirstOrDefault();
+
+                    if (activeAppointment != null && !_notifiedAppointments.Contains(activeAppointment.AppointmentID))
+                    {
+                        _notifiedAppointments.Add(activeAppointment.AppointmentID);
+                        ShowTurnNotification(activeAppointment);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Status polling error: {ex.Message}");
+            }
+        }
+
+        private void ShowTurnNotification(Appointments appointment)
+        {
+            // Flash the form or show a message
+            string message = $"🔔 ĐÃ ĐẾN LƯỢT KHÁM CỦA BẠN!\n\n" +
+                            $"Vui lòng di chuyển đến phòng khám của bác sĩ ngay lập tức.\n" +
+                            $"Số thứ tự của bạn: {appointment.AppointmentNumber}";
+            
+            MessageBox.Show(this, message, "Thông báo gọi khám", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void InitializeUserInfo()
@@ -51,6 +103,13 @@ namespace HospitalManagement.Views.Forms.Patient
 
             // Quick action cards
             CreateQuickActionCards();
+
+            // Status Board (Real-time monitoring for patients)
+            var statusBoard = new UserControls.Patient.UC_HospitalStatusBoard();
+            statusBoard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            statusBoard.Location = new Point(0, 330); // Below quick actions (130 + 160 + gap)
+            statusBoard.Size = new Size(contentPanel.Width - 10, contentPanel.Height - 340);
+            contentPanel.Controls.Add(statusBoard);
         }
 
         public void LoadContent(string contentName)

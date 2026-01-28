@@ -27,6 +27,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colAge = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colGender = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDoctor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colServiceStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAction = new System.Windows.Forms.DataGridViewButtonColumn();
             this.panelLoading = new System.Windows.Forms.Panel();
@@ -101,6 +102,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                 this.colPatientName,
                 this.colAge,
                 this.colGender,
+                this.colDoctor,
                 this.colStatus,
                 this.colServiceStatus,
                 this.colAction
@@ -141,7 +143,14 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colStatus.HeaderText = "Trạng thái khám";
             this.colStatus.Name = "colStatus";
             this.colStatus.ReadOnly = true;
-            this.colStatus.Width = 150;
+            this.colStatus.Width = 120;
+            // 
+            // colDoctor
+            // 
+            this.colDoctor.HeaderText = "Bác sĩ";
+            this.colDoctor.Name = "colDoctor";
+            this.colDoctor.ReadOnly = true;
+            this.colDoctor.Width = 150;
 
             this.colServiceStatus.HeaderText = "Trạng thái Dịch vụ";
             this.colServiceStatus.Name = "colServiceStatus";
@@ -208,6 +217,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private System.Windows.Forms.DataGridViewTextBoxColumn colPatientName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colAge;
         private System.Windows.Forms.DataGridViewTextBoxColumn colGender;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDoctor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn colServiceStatus;
         private System.Windows.Forms.DataGridViewButtonColumn colAction;

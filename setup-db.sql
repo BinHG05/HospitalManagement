@@ -106,7 +106,7 @@ CREATE TABLE Appointments (
     ShiftID INT FOREIGN KEY REFERENCES Shifts(ShiftID),
     AppointmentNumber INT NOT NULL,
     Symptoms NVARCHAR(500),
-    Status VARCHAR(20) DEFAULT 'pending' CHECK (Status IN ('pending', 'confirmed', 'cancelled', 'completed', 'no-show')),
+    Status VARCHAR(20) DEFAULT 'pending' CHECK (Status IN ('pending', 'confirmed', 'cancelled', 'completed', 'no-show', 'examining', 'service_pending', 'service_completed')),
     CreatedAt DATETIME DEFAULT GETDATE(),
     UpdatedAt DATETIME DEFAULT GETDATE()
 );

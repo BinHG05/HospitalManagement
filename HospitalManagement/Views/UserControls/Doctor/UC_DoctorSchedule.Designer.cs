@@ -48,7 +48,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblTitle.ForeColor = System.Drawing.Color.White;
             this.lblTitle.Location = new System.Drawing.Point(20, 13);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Text = "📆 Lịch làm việc";
+            this.lblTitle.Text = "📅 Lịch làm việc";
+            this.lblTitle.UseCompatibleTextRendering = true;
 
             // =============================================
             // panelWeekNav

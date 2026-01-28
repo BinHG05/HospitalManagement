@@ -349,11 +349,11 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnConfirmBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfirmBooking.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnConfirmBooking.ForeColor = System.Drawing.Color.White;
-            this.btnConfirmBooking.Location = new System.Drawing.Point(580, 130);
+            this.btnConfirmBooking.Location = new System.Drawing.Point(540, 130);
             this.btnConfirmBooking.Name = "btnConfirmBooking";
-            this.btnConfirmBooking.Size = new System.Drawing.Size(180, 50);
+            this.btnConfirmBooking.Size = new System.Drawing.Size(150, 45);
             this.btnConfirmBooking.TabIndex = 4;
-            this.btnConfirmBooking.Text = "✓ XÁC NHẬN ĐẶT LỊCH";
+            this.btnConfirmBooking.Text = "XÁC NHẬN";
             this.btnConfirmBooking.Click += new System.EventHandler(this.btnConfirmBooking_Click);
             
             this.btnCancelBooking.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
@@ -362,7 +362,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnCancelBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelBooking.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnCancelBooking.ForeColor = System.Drawing.Color.White;
-            this.btnCancelBooking.Location = new System.Drawing.Point(750, 130);
+            this.btnCancelBooking.Location = new System.Drawing.Point(700, 130);
             this.btnCancelBooking.Name = "btnCancelBooking";
             this.btnCancelBooking.Size = new System.Drawing.Size(100, 45);
             this.btnCancelBooking.TabIndex = 5;

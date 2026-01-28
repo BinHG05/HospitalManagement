@@ -7,6 +7,8 @@ namespace HospitalManagement.Services.Interfaces
         public int AppointmentId { get; set; }
         public int PatientId { get; set; }
         public string PatientName { get; set; }
+        public string DoctorName { get; set; }
+        public string DepartmentName { get; set; }
         public string Gender { get; set; }
         public int? Age { get; set; }
         public string Status { get; set; }

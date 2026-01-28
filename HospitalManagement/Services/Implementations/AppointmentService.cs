@@ -225,6 +225,7 @@ namespace HospitalManagement.Services.Implementations
             {
                 return context.Appointments
                     .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
                     .Include(a => a.Department)
                     .Include(a => a.Schedule)
                     .Include(a => a.Shift)
