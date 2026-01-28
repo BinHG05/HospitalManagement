@@ -285,6 +285,9 @@
     <Compile Include="Views\Forms\Doctor\DoctorDashboard.Designer.cs">
       <DependentUpon>DoctorDashboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Forms\Doctor\Form_PrescriptionPrint.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Views\Forms\Admin\AdminDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -402,6 +405,9 @@
     </Compile>
     <Compile Include="Views\UserControls\Doctor\UC_ActiveExaminations.Designer.cs">
       <DependentUpon>UC_ActiveExaminations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_PrescriptionQueue.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\Forms\Doctor\ServiceAssignmentDialog.cs">
       <SubType>Form</SubType>

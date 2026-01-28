@@ -153,11 +153,11 @@ namespace HospitalManagement.Services.Implementations
 
                     if (schedule == null) return -1;
 
-                    // Kiểm tra STT đã được đặt chưa
+                    // Kiểm tra STT đã được đặt chưa (Bất kỳ trạng thái nào trừ 'cancelled')
                     var isBooked = context.Appointments.Any(a => 
                         a.ScheduleID == scheduleId 
                         && a.AppointmentNumber == queueNumber
-                        && (a.Status == "pending" || a.Status == "confirmed"));
+                        && a.Status != "cancelled");
 
                     if (isBooked) return -1;
 

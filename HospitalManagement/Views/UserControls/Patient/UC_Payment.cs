@@ -64,6 +64,7 @@ namespace HospitalManagement.Views.UserControls.Patient
                 row.Cells["colInvoiceNumber"].Value = invoice.InvoiceNumber;
                 row.Cells["colDate"].Value = invoice.InvoiceDate?.ToString("dd/MM/yyyy") ?? "-";
                 row.Cells["colType"].Value = invoice.PaymentTypeDisplay;
+                row.Cells["colDescription"].Value = invoice.Description ?? "-";
                 row.Cells["colAmount"].Value = invoice.FinalAmount.ToString("N0") + " đ";
                 row.Cells["colStatus"].Value = invoice.StatusDisplay;
                 row.Tag = invoice;
@@ -102,6 +103,7 @@ namespace HospitalManagement.Views.UserControls.Patient
                 $"📄 Số hóa đơn: {invoice.InvoiceNumber}\n\n" +
                 $"📅 Ngày: {invoice.InvoiceDate:dd/MM/yyyy}\n\n" +
                 $"📋 Loại: {invoice.PaymentTypeDisplay}\n\n" +
+                $"🔍 Nội dung: {invoice.Description ?? "-"}\n\n" +
                 $"🏥 Khoa: {invoice.DepartmentName ?? "N/A"}\n\n" +
                 $"👨‍⚕️ Bác sĩ: {invoice.DoctorName ?? "N/A"}\n\n" +
                 $"💰 Tổng tiền: {invoice.TotalAmount:N0} đ\n" +

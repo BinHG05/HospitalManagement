@@ -103,13 +103,6 @@ namespace HospitalManagement.Views.Forms.Patient
 
             // Quick action cards
             CreateQuickActionCards();
-
-            // Status Board (Real-time monitoring for patients)
-            var statusBoard = new UserControls.Patient.UC_HospitalStatusBoard();
-            statusBoard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-            statusBoard.Location = new Point(0, 330); // Below quick actions (130 + 160 + gap)
-            statusBoard.Size = new Size(contentPanel.Width - 10, contentPanel.Height - 340);
-            contentPanel.Controls.Add(statusBoard);
         }
 
         public void LoadContent(string contentName)
@@ -121,7 +114,7 @@ namespace HospitalManagement.Views.Forms.Patient
                 case "Đặt lịch khám":
                     LoadAppointmentBooking();
                     break;
-                case "Lịch sử khám":
+                case "Lịch sử đặt khám":
                     LoadAppointmentHistory();
                     break;
                 case "Hồ sơ sức khỏe":
@@ -273,7 +266,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void CreateQuickActionCards()
         {
             string[] icons = { "📅", "📋", "💳", "📋" };
-            string[] titles = { "Đặt lịch khám", "Lịch sử khám", "Thanh toán", "Hồ sơ sức khỏe" };
+            string[] titles = { "Đặt lịch khám", "Lịch sử đặt khám", "Thanh toán", "Hồ sơ sức khỏe" };
             string[] descriptions = { "Đặt lịch hẹn mới", "Xem các cuộc hẹn", "Thanh toán hóa đơn", "Xem hồ sơ y tế" };
             Color[] colors = { 
                 Color.FromArgb(59, 130, 246),   // Blue
@@ -396,7 +389,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void btnHistory_Click(object sender, EventArgs e)
         {
             SetActiveButton(btnHistory);
-            _presenter.NavigateTo("Lịch sử khám");
+            _presenter.NavigateTo("Lịch sử đặt khám");
         }
 
         private void btnHealth_Click(object sender, EventArgs e)
