@@ -103,13 +103,6 @@ namespace HospitalManagement.Views.Forms.Patient
 
             // Quick action cards
             CreateQuickActionCards();
-
-            // Status Board (Real-time monitoring for patients)
-            var statusBoard = new UserControls.Patient.UC_HospitalStatusBoard();
-            statusBoard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-            statusBoard.Location = new Point(0, 330); // Below quick actions (130 + 160 + gap)
-            statusBoard.Size = new Size(contentPanel.Width - 10, contentPanel.Height - 340);
-            contentPanel.Controls.Add(statusBoard);
         }
 
         public void LoadContent(string contentName)
