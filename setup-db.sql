@@ -350,16 +350,16 @@ SET IDENTITY_INSERT DoctorSchedules OFF;
 
 -- 7. Appointments
 INSERT INTO Appointments (PatientID, DoctorID, DepartmentID, ScheduleID, AppointmentDate, ShiftID, AppointmentNumber, Symptoms, Status) VALUES
-(1, 1, 1, 1, '2026-02-01', 1, 1, N'Đau bụng âm ỉ', 'confirmed'),
+(1, 1, 1, 1, '2026-02-01', 1, 1, N'Đau bụng âm ỉ', 'pending'),
 (2, 3, 3, 3, '2026-02-01', 1, 1, N'Bé sốt cao', 'pending'),
 (3, 1, 1, 1, '2026-02-01', 1, 2, N'Kiểm tra sức khỏe định kỳ', 'confirmed'),
 (4, 2, 2, 2, '2026-02-01', 3, 1, N'Đau khớp gối', 'cancelled'),
 (5, 5, 5, 5, '2026-02-01', 5, 1, N'Đau thắt ngực', 'completed'),
 (6, 6, 1, 6, '2026-02-02', 2, 1, N'Ho khan kéo dài', 'pending'),
-(7, 7, 2, 7, '2026-02-02', 4, 1, N'Nhức đầu chóng mặt', 'confirmed'),
+(7, 7, 2, 7, '2026-02-02', 4, 1, N'Nhức đầu chóng mặt', 'pending'),
 (8, 8, 3, 8, '2026-02-02', 2, 1, N'Trẻ biếng ăn', 'pending'),
-(9, 9, 4, 9, '2026-02-02', 4, 1, N'Khám thai định kỳ', 'confirmed'),
-(10, 10, 5, 10, '2026-02-02', 10, 1, N'Nhịp tim không đều', 'completed');
+(9, 9, 4, 9, '2026-02-02', 4, 1, N'Khám sức khỏe tổng quát', 'pending'),
+(10, 10, 5, 10, '2026-02-02', 10, 1, N'Rối loạn nhịp tim', 'confirmed');
 
 -- 8. Examinations
 INSERT INTO Examinations (AppointmentID, DoctorID, PatientID, Symptoms, PreliminaryDiagnosis, Status) VALUES
@@ -480,16 +480,16 @@ INSERT INTO Prescriptions (RecordID, MedicineID, Dosage, Frequency, Duration, Qu
 
 -- 17. MedicalHistory
 INSERT INTO MedicalHistory (PatientID, RecordID, VisitDate, DoctorID, Diagnosis, Treatment) VALUES
-(1, 1, '2026-02-01', 1, N'Viêm dạ dày cấp', N'Uống thuốc theo đơn'),
-(3, 2, '2026-02-01', 1, N'Suy nhược cơ thể', N'Nghỉ ngơi 3 ngày'),
-(5, 3, '2026-02-01', 5, N'Bệnh tim thiếu máu', N'Uống thuốc và theo dõi'),
-(7, 4, '2026-02-02', 7, N'Rối loạn tiền đình', N'Hoạt huyết dưỡng não'),
-(10, 5, '2026-02-02', 10, N'Hở van tim 2 lá', N'Tái khám sau 3 tháng'),
-(1, 6, '2026-02-05', 1, N'Khám lại dạ dày', N'Tiếp tục liệu trình'),
-(5, 8, '2026-01-20', 5, N'Viêm phế quản cũ', N'Đã điều trị ổn định'),
-(10, 10, '2026-01-15', 10, N'Loạn nhịp cũ', N'Duy trì thuốc'),
-(1, 1, '2026-02-01', 1, N'Khám đầu tiên', N'Chưa rõ'),
-(7, 9, '2026-02-02', 7, N'Thiếu máu não', N'Uống thuốc 10 ngày');
+(1, 1, '2026-02-01', 1, N'Viêm dạ dày cấp tính', N'Uống thuốc kháng axit và bảo vệ niêm mạc'),
+(3, 2, '2026-02-01', 1, N'Suy nhược cơ thể', N'Nghỉ ngơi và bổ sung vitamin nhóm B'),
+(5, 3, '2026-02-01', 5, N'Bệnh tim thiếu máu cục bộ', N'Uống thuốc vận mạch và theo dõi nhịp tim'),
+(7, 4, '2026-02-02', 7, N'Rối loạn tiền đình', N'Uống hoạt huyết dưỡng não và nghỉ ngơi'),
+(10, 5, '2026-02-02', 10, N'Hở van tim 2 lá 1/4', N'Tái khám sau 3 tháng, tránh vận động mạnh'),
+(1, 6, '2026-02-05', 1, N'Viêm dạ dày trào ngược', N'Tiếp tục liệu trình thuốc PPI và kiêng chất kích thích'),
+(5, 8, '2026-01-20', 5, N'Viêm phế quản mãn tính', N'Điều trị đợt cấp, dùng thuốc giãn phế quản'),
+(10, 10, '2026-01-15', 10, N'Rối loạn nhịp tim chậm', N'Duy trì thuốc ổn định nhịp'),
+(1, 1, '2026-01-10', 1, N'Đau thượng vị vô căn', N'Theo dõi triệu chứng và làm xét nghiệm HP'),
+(7, 9, '2026-02-02', 7, N'Thiếu máu não tuần hoàn', N'Uống thuốc tăng cường tuần hoàn não');
 
 PRINT N'✅ Database HospitalManagement and full sample data initialized successfully!';
 GO

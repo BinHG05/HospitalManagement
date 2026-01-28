@@ -39,20 +39,37 @@ namespace HospitalManagement.Services.Implementations
                     .OrderByDescending(i => i.InvoiceDate)
                     .ToList();
 
-                return invoices.Select(i => new InvoiceDisplayInfo
-                {
-                    InvoiceId = i.InvoiceID,
-                    InvoiceNumber = i.InvoiceNumber,
-                    InvoiceDate = i.InvoiceDate,
-                    TotalAmount = i.TotalAmount,
-                    DiscountAmount = i.DiscountAmount ?? 0,
-                    FinalAmount = i.FinalAmount,
-                    InvoiceStatus = i.InvoiceStatus,
-                    PaymentType = i.Payment?.PaymentType,
-                    PaymentMethod = i.Payment?.PaymentMethod,
-                    AppointmentDate = i.Payment?.Appointment?.AppointmentDate,
-                    DepartmentName = i.Payment?.Appointment?.Department?.DepartmentName,
-                    DoctorName = i.Payment?.Appointment?.Doctor?.User?.FullName
+                return invoices.Select(i => {
+                    var info = new InvoiceDisplayInfo
+                    {
+                        InvoiceId = i.InvoiceID,
+                        InvoiceNumber = i.InvoiceNumber,
+                        InvoiceDate = i.InvoiceDate,
+                        TotalAmount = i.TotalAmount,
+                        DiscountAmount = i.DiscountAmount ?? 0,
+                        FinalAmount = i.FinalAmount,
+                        InvoiceStatus = i.InvoiceStatus,
+                        PaymentType = i.Payment?.PaymentType,
+                        PaymentMethod = i.Payment?.PaymentMethod,
+                        AppointmentDate = i.Payment?.Appointment?.AppointmentDate,
+                        DepartmentName = i.Payment?.Appointment?.Department?.DepartmentName,
+                        DoctorName = i.Payment?.Appointment?.Doctor?.User?.FullName
+                    };
+
+                    if (info.PaymentType == "appointment")
+                    {
+                        info.Description = "Khám " + (info.DepartmentName ?? "Tổng quát");
+                    }
+                    else if (info.PaymentType == "medicine")
+                    {
+                        info.Description = "Mua thuốc theo đơn";
+                    }
+                    else if (info.PaymentType == "service")
+                    {
+                        info.Description = "Dịch vụ cận lâm sàng";
+                    }
+
+                    return info;
                 }).ToList();
             }
         }
@@ -70,6 +87,7 @@ namespace HospitalManagement.Services.Implementations
                 {
                     var invoice = context.Invoices
                         .Include(i => i.Payment)
+                        .Include(i => i.Payment.Appointment)
                         .FirstOrDefault(i => i.InvoiceID == invoiceId);
 
                     if (invoice == null) return false;
@@ -81,6 +99,13 @@ namespace HospitalManagement.Services.Implementations
                         invoice.Payment.PaymentStatus = "completed";
                         invoice.Payment.PaymentMethod = paymentMethod;
                         invoice.Payment.PaymentDate = DateTime.Now;
+
+                        // Tự động xác nhận lịch khám nếu đây là hóa đơn tiền khám
+                        if (invoice.Payment.PaymentType == "appointment" && invoice.Payment.Appointment != null)
+                        {
+                            invoice.Payment.Appointment.Status = "confirmed";
+                            invoice.Payment.Appointment.UpdatedAt = DateTime.Now;
+                        }
                     }
 
                     context.SaveChanges();

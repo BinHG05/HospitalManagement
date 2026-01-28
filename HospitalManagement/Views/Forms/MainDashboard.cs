@@ -209,8 +209,8 @@ namespace HospitalManagement.Views.Forms
             menuPanel.Controls.Add(btnAppointment);
             yPos += 50;
 
-            var btnHistory = CreateMenuButton("📋  Lịch sử khám", yPos);
-            btnHistory.Click += (s, e) => { SetActiveMenu(btnHistory, "Lịch sử khám"); LoadPlaceholder("Lịch sử khám"); };
+            var btnHistory = CreateMenuButton("📋  Lịch sử đặt khám", yPos);
+            btnHistory.Click += (s, e) => { SetActiveMenu(btnHistory, "Lịch sử đặt khám"); LoadPlaceholder("Lịch sử đặt khám"); };
             menuPanel.Controls.Add(btnHistory);
             yPos += 50;
 
@@ -357,7 +357,7 @@ namespace HospitalManagement.Views.Forms
             int cardHeight = 150;
 
             string[] icons = { "📅", "📋", "💳", "❤️" };
-            string[] titles = { "Đặt lịch khám", "Lịch sử khám", "Thanh toán", "Hồ sơ sức khỏe" };
+            string[] titles = { "Đặt lịch khám", "Lịch sử đặt khám", "Thanh toán", "Hồ sơ sức khỏe" };
             Color[] colors = { AppColors.Primary, AppColors.Secondary, AppColors.Warning, AppColors.Accent };
 
             for (int i = 0; i < 4; i++)

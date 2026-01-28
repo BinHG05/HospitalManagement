@@ -114,7 +114,7 @@ namespace HospitalManagement.Views.Forms.Patient
                 case "Đặt lịch khám":
                     LoadAppointmentBooking();
                     break;
-                case "Lịch sử khám":
+                case "Lịch sử đặt khám":
                     LoadAppointmentHistory();
                     break;
                 case "Hồ sơ sức khỏe":
@@ -266,7 +266,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void CreateQuickActionCards()
         {
             string[] icons = { "📅", "📋", "💳", "📋" };
-            string[] titles = { "Đặt lịch khám", "Lịch sử khám", "Thanh toán", "Hồ sơ sức khỏe" };
+            string[] titles = { "Đặt lịch khám", "Lịch sử đặt khám", "Thanh toán", "Hồ sơ sức khỏe" };
             string[] descriptions = { "Đặt lịch hẹn mới", "Xem các cuộc hẹn", "Thanh toán hóa đơn", "Xem hồ sơ y tế" };
             Color[] colors = { 
                 Color.FromArgb(59, 130, 246),   // Blue
@@ -389,7 +389,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void btnHistory_Click(object sender, EventArgs e)
         {
             SetActiveButton(btnHistory);
-            _presenter.NavigateTo("Lịch sử khám");
+            _presenter.NavigateTo("Lịch sử đặt khám");
         }
 
         private void btnHealth_Click(object sender, EventArgs e)

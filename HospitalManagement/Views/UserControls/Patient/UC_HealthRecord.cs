@@ -14,6 +14,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             InitializeComponent();
             tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
+            dgvHistory.CellClick += DgvHistory_CellClick;
         }
 
         public void Initialize(int patientId)
@@ -31,11 +32,14 @@ namespace HospitalManagement.Views.UserControls.Patient
             lblPhoneValue.Text = profile.Phone ?? "-";
             lblDobValue.Text = profile.DateOfBirth?.ToString("dd/MM/yyyy") ?? "-";
             lblGenderValue.Text = profile.GenderDisplay ?? "-";
+            lblAgeValue.Text = profile.Age.HasValue ? $"{profile.Age} Tuổi" : "-";
             lblAddressValue.Text = profile.Address ?? "-";
             lblBloodTypeValue.Text = profile.BloodType ?? "-";
             lblInsuranceValue.Text = profile.InsuranceNumber ?? "-";
+            lblPatientIdValue.Text = $"ID: BN{profile.PatientId:D4}";
+            lblJoinDateValue.Text = $"Thành viên từ: {profile.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A"}";
             lblEmergencyValue.Text = !string.IsNullOrEmpty(profile.EmergencyContact) 
-                ? $"{profile.EmergencyContact} - {profile.EmergencyPhone}" 
+                ? $"{profile.EmergencyContact} ({profile.EmergencyPhone})" 
                 : "-";
         }
 
@@ -52,6 +56,7 @@ namespace HospitalManagement.Views.UserControls.Patient
                 row.Cells["colDoctor"].Value = item.DoctorName;
                 row.Cells["colDepartment"].Value = item.DepartmentName;
                 row.Cells["colDiagnosis"].Value = item.Diagnosis ?? "-";
+                row.Cells["colTreatment"].Value = item.Treatment ?? "-";
                 row.Tag = item.RecordId;
             }
 
@@ -82,6 +87,18 @@ namespace HospitalManagement.Views.UserControls.Patient
             if (tabControl.SelectedTab == tabHistory && _presenter != null)
             {
                 _presenter.LoadMedicalHistory();
+            }
+        }
+
+        private void DgvHistory_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dgvHistory.Columns[e.ColumnIndex].Name == "colTreatment")
+            {
+                var val = dgvHistory.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+                if (!string.IsNullOrEmpty(val) && val != "-")
+                {
+                    MessageBox.Show(val, "Chi tiết phác đồ & Hướng điều trị", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
