@@ -61,7 +61,7 @@ namespace HospitalManagement.Views.Forms.Doctor
                     LoadActiveExaminations();
                     break;
                 case "Kê đơn thuốc":
-                    LoadPrescriptionGuide();
+                    LoadPrescriptionQueue();
                     break;
                 case "Hồ sơ bệnh nhân":
                     LoadPatientRecords();
@@ -158,83 +158,23 @@ namespace HospitalManagement.Views.Forms.Doctor
             
             var prescription = new UserControls.Doctor.UC_Prescription();
             prescription.Dock = DockStyle.Fill;
-            prescription.Initialize(examinationId, () => LoadPatientQueue());
+            prescription.Initialize(examinationId, () => LoadPrescriptionQueue());
             
             contentPanel.Controls.Add(prescription);
         }
 
-        private void LoadPrescriptionGuide()
+        private void LoadPrescriptionQueue()
         {
-            // Create a nice guide panel
-            var guidePanel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(241, 245, 249),
-                Padding = new Padding(50)
-            };
-
-            var cardPanel = new Panel
-            {
-                Size = new Size(500, 300),
-                BackColor = Color.White,
-                Location = new Point((contentPanel.Width - 500) / 2, 100)
-            };
-
-            var iconLabel = new Label
-            {
-                Text = "💊",
-                Font = new Font("Segoe UI", 48F),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 80
-            };
-
-            var titleLabel = new Label
-            {
-                Text = "Kê đơn thuốc",
-                Font = new Font("Segoe UI", 18F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(15, 23, 42),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 40
-            };
-
-            var descLabel = new Label
-            {
-                Text = "Để kê đơn thuốc, vui lòng:\n\n1. Vào \"Hàng đợi khám\" để chọn bệnh nhân\n2. Gọi bệnh nhân để khám\n3. Hoàn tất khám bệnh\n4. Kê đơn thuốc cho bệnh nhân",
-                Font = new Font("Segoe UI", 11F),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill,
-                Padding = new Padding(20)
-            };
-
-            var btnGoToQueue = new Button
-            {
-                Text = "Đi tới Hàng đợi khám",
-                Font = new Font("Segoe UI Semibold", 11F),
-                BackColor = Color.FromArgb(59, 130, 246),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(200, 45),
-                Cursor = Cursors.Hand,
-                Location = new Point(150, 240)
-            };
-            btnGoToQueue.FlatAppearance.BorderSize = 0;
-            btnGoToQueue.Click += (s, e) =>
-            {
-                SetActiveButton(btnQueue);
-                _presenter.NavigateTo("Hàng đợi khám");
-            };
-
-            cardPanel.Controls.Add(descLabel);
-            cardPanel.Controls.Add(titleLabel);
-            cardPanel.Controls.Add(iconLabel);
-            cardPanel.Controls.Add(btnGoToQueue);
-
-            guidePanel.Controls.Add(cardPanel);
-            contentPanel.Controls.Add(guidePanel);
+            contentPanel.Controls.Clear();
+            var doctorId = GetDoctorId();
+            var queue = new UserControls.Doctor.UC_PrescriptionQueue();
+            queue.Dock = DockStyle.Fill;
+            queue.Initialize(doctorId, (examId) => LoadPrescription(examId));
+            
+            contentPanel.Controls.Add(queue);
         }
+
+
 
         public void UpdateHeaderTitle(string title)
         {

@@ -70,7 +70,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                     dgvPatients.Rows.Clear();
                     foreach (var p in patients)
                     {
-                        var gender = p.Gender == "male" ? "Nam" : p.Gender == "female" ? "Nu" : "Khac";
+                        var gender = p.Gender == "male" ? "Nam" : p.Gender == "female" ? "Nữ" : "Khác";
                         var dob = p.DateOfBirth.HasValue ? p.DateOfBirth.Value.ToString("dd/MM/yyyy") : "N/A";
                         
                         dgvPatients.Rows.Add(
@@ -86,7 +86,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi tai danh sach benh nhan: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tải danh sách bệnh nhân: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -123,7 +123,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                     dgvPatients.Rows.Clear();
                     foreach (var p in patients)
                     {
-                        var gender = p.Gender == "male" ? "Nam" : p.Gender == "female" ? "Nu" : "Khac";
+                        var gender = p.Gender == "male" ? "Nam" : p.Gender == "female" ? "Nữ" : "Khác";
                         var dob = p.DateOfBirth.HasValue ? p.DateOfBirth.Value.ToString("dd/MM/yyyy") : "N/A";
 
                         dgvPatients.Rows.Add(
@@ -139,7 +139,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi tim kiem: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -166,7 +166,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
 
                     if (patient == null) return;
 
-                    var gender = patient.Gender == "male" ? "Nam" : patient.Gender == "female" ? "Nu" : "Khac";
+                    var gender = patient.Gender == "male" ? "Nam" : patient.Gender == "female" ? "Nữ" : "Khác";
                     int? age = null;
                     if (patient.DateOfBirth.HasValue)
                     {
@@ -176,10 +176,10 @@ namespace HospitalManagement.Views.UserControls.Doctor
                     }
 
                     lblPatientName.Text = patient.FullName;
-                    lblPatientInfo.Text = $"{gender}, {(age.HasValue ? age + " tuoi" : "N/A")}\n" +
-                                          $"SDT: {patient.Phone}\n" +
-                                          $"Dia chi: {patient.Address ?? "Chua co"}\n" +
-                                          $"BHYT: {patient.InsuranceNumber ?? "Khong co"}";
+                    lblPatientInfo.Text = $"{gender}, {(age.HasValue ? age + " tuổi" : "N/A")}\n" +
+                                          $"SĐT: {patient.Phone}\n" +
+                                          $"Địa chỉ: {patient.Address ?? "Chưa có"}\n" +
+                                          $"BHYT: {patient.InsuranceNumber ?? "Không có"}";
 
                     // Load medical history
                     var history = context.MedicalRecords
@@ -207,7 +207,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi tai chi tiet: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tải chi tiết: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

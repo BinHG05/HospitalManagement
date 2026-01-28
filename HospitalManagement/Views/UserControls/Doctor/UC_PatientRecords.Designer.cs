@@ -92,7 +92,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblSearchHint.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblSearchHint.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
             this.lblSearchHint.Location = new System.Drawing.Point(25, 22);
-            this.lblSearchHint.Text = "Tim kiem:";
+            this.lblSearchHint.Text = "Tìm kiếm:";
 
             this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.txtSearch.Location = new System.Drawing.Point(110, 18);
@@ -113,7 +113,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(100, 32);
             this.btnSearch.TabIndex = 1;
-            this.btnSearch.Text = "Tim kiem";
+            this.btnSearch.Text = "Tìm kiếm";
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
 
             this.panelSearch.Controls.Add(this.lblSearchHint);
@@ -160,32 +160,32 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvPatients.TabIndex = 0;
             this.dgvPatients.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPatients_CellClick);
 
-            this.colPatientId.HeaderText = "Ma BN";
+            this.colPatientId.HeaderText = "Mã BN";
             this.colPatientId.Name = "colPatientId";
             this.colPatientId.ReadOnly = true;
             this.colPatientId.Width = 60;
 
-            this.colFullName.HeaderText = "Ho ten";
+            this.colFullName.HeaderText = "Họ tên";
             this.colFullName.Name = "colFullName";
             this.colFullName.ReadOnly = true;
             this.colFullName.Width = 150;
 
-            this.colPhone.HeaderText = "SDT";
+            this.colPhone.HeaderText = "SĐT";
             this.colPhone.Name = "colPhone";
             this.colPhone.ReadOnly = true;
             this.colPhone.Width = 100;
 
-            this.colGender.HeaderText = "Gioi tinh";
+            this.colGender.HeaderText = "Giới tính";
             this.colGender.Name = "colGender";
             this.colGender.ReadOnly = true;
             this.colGender.Width = 70;
 
-            this.colDOB.HeaderText = "Ngay sinh";
+            this.colDOB.HeaderText = "Ngày sinh";
             this.colDOB.Name = "colDOB";
             this.colDOB.ReadOnly = true;
             this.colDOB.Width = 90;
 
-            this.colBloodType.HeaderText = "Nhom mau";
+            this.colBloodType.HeaderText = "Nhóm máu";
             this.colBloodType.Name = "colBloodType";
             this.colBloodType.ReadOnly = true;
             this.colBloodType.Width = 70;
@@ -208,7 +208,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblDetailsTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
             this.lblDetailsTitle.ForeColor = System.Drawing.Color.White;
             this.lblDetailsTitle.Location = new System.Drawing.Point(15, 10);
-            this.lblDetailsTitle.Text = "Chi tiet benh nhan";
+            this.lblDetailsTitle.Text = "Chi tiết bệnh nhân";
             this.lblDetailsTitle.UseCompatibleTextRendering = true;
 
             this.panelDetailHeader.Controls.Add(this.lblDetailsTitle);
@@ -224,14 +224,14 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblPatientName.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.lblPatientName.ForeColor = System.Drawing.Color.FromArgb(15, 23, 42);
             this.lblPatientName.Location = new System.Drawing.Point(15, 15);
-            this.lblPatientName.Text = "Chon benh nhan";
+            this.lblPatientName.Text = "Chọn bệnh nhân";
 
             this.lblPatientInfo.AutoSize = true;
             this.lblPatientInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblPatientInfo.ForeColor = System.Drawing.Color.FromArgb(100, 116, 139);
             this.lblPatientInfo.Location = new System.Drawing.Point(15, 45);
             this.lblPatientInfo.MaximumSize = new System.Drawing.Size(360, 0);
-            this.lblPatientInfo.Text = "Chon mot benh nhan tu danh sach de xem chi tiet";
+            this.lblPatientInfo.Text = "Chọn một bệnh nhân từ danh sách để xem chi tiết";
 
             this.panelPatientCard.Controls.Add(this.lblPatientName);
             this.panelPatientCard.Controls.Add(this.lblPatientInfo);
@@ -246,7 +246,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblHistoryTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
             this.lblHistoryTitle.ForeColor = System.Drawing.Color.White;
             this.lblHistoryTitle.Location = new System.Drawing.Point(15, 8);
-            this.lblHistoryTitle.Text = "Lich su kham benh";
+            this.lblHistoryTitle.Text = "Lịch sử khám bệnh";
             this.lblHistoryTitle.UseCompatibleTextRendering = true;
 
             this.panelHistoryHeader.Controls.Add(this.lblHistoryTitle);
@@ -270,17 +270,17 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvHistory.Size = new System.Drawing.Size(396, 275);
             this.dgvHistory.TabIndex = 0;
 
-            this.colHistDate.HeaderText = "Ngay kham";
+            this.colHistDate.HeaderText = "Ngày khám";
             this.colHistDate.Name = "colHistDate";
             this.colHistDate.ReadOnly = true;
             this.colHistDate.Width = 80;
 
-            this.colHistDoctor.HeaderText = "Bac si";
+            this.colHistDoctor.HeaderText = "Bác sĩ";
             this.colHistDoctor.Name = "colHistDoctor";
             this.colHistDoctor.ReadOnly = true;
             this.colHistDoctor.Width = 120;
 
-            this.colHistDiagnosis.HeaderText = "Chan doan";
+            this.colHistDiagnosis.HeaderText = "Chẩn đoán";
             this.colHistDiagnosis.Name = "colHistDiagnosis";
             this.colHistDiagnosis.ReadOnly = true;
             this.colHistDiagnosis.Width = 180;

@@ -41,6 +41,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dtpNextAppt = new System.Windows.Forms.DateTimePicker();
             this.chkNextAppt = new System.Windows.Forms.CheckBox();
             this.btnSave = new System.Windows.Forms.Button();
+            this.btnAssignService = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             
             this.panelLoading = new System.Windows.Forms.Panel();
