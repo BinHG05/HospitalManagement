@@ -44,7 +44,7 @@ namespace HospitalManagement.Views.Forms.Patient
             // 
             // sidebarPanel - Modern dark gradient sidebar
             // 
-            this.sidebarPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.sidebarPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.sidebarPanel.Controls.Add(this.menuPanel);
             this.sidebarPanel.Controls.Add(this.userPanel);
             this.sidebarPanel.Controls.Add(this.logoPanel);
@@ -56,7 +56,7 @@ namespace HospitalManagement.Views.Forms.Patient
             // 
             // menuPanel
             // 
-            this.menuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.menuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.menuPanel.Controls.Add(this.btnPayment);
             this.menuPanel.Controls.Add(this.btnHealth);
             this.menuPanel.Controls.Add(this.btnHistory);
@@ -163,7 +163,7 @@ namespace HospitalManagement.Views.Forms.Patient
             // 
             // btnHome - Active state with accent color
             // 
-            this.btnHome.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
+            this.btnHome.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this.btnHome.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnHome.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnHome.FlatAppearance.BorderSize = 0;
@@ -230,7 +230,7 @@ namespace HospitalManagement.Views.Forms.Patient
             // 
             this.lblUserName.AutoSize = true;
             this.lblUserName.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold);
-            this.lblUserName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            this.lblUserName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.lblUserName.Location = new System.Drawing.Point(65, 22);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Size = new System.Drawing.Size(79, 20);
@@ -263,7 +263,7 @@ namespace HospitalManagement.Views.Forms.Patient
             // 
             this.lblLogo.AutoSize = true;
             this.lblLogo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
-            this.lblLogo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
+            this.lblLogo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(191)))), ((int)(((byte)(36)))));
             this.lblLogo.Location = new System.Drawing.Point(15, 35);
             this.lblLogo.Name = "lblLogo";
             this.lblLogo.Size = new System.Drawing.Size(161, 32);

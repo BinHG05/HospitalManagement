@@ -49,5 +49,10 @@ namespace HospitalManagement.Presenters
         {
             _view.OpenRegisterForm();
         }
+
+        public void ForgotPassword()
+        {
+            _view.OpenForgotPasswordForm();
+        }
     }
 }

@@ -75,7 +75,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             // =============================================
             // panelHeader
             // =============================================
-            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(59, 130, 246);
+            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.panelHeader.Controls.Add(this.lblTitle);
             this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelHeader.Location = new System.Drawing.Point(0, 0);
@@ -85,14 +85,13 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelHeader.TabIndex = 0;
             
             // lblTitle
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.lblTitle.Location = new System.Drawing.Point(20, 13);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(250, 28);
+            this.lblTitle.Size = new System.Drawing.Size(400, 32);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "📅 Đặt lịch khám bệnh ";
+            this.lblTitle.Text = "📅 Đặt lịch khám bệnh";
             this.lblTitle.UseCompatibleTextRendering = true;
             
             // =============================================
@@ -278,7 +277,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelTimeSlots.BackColor = System.Drawing.Color.White;
             this.panelTimeSlots.Location = new System.Drawing.Point(25, 320);
             this.panelTimeSlots.Name = "panelTimeSlots";
-            this.panelTimeSlots.Size = new System.Drawing.Size(900, 70);
+            this.panelTimeSlots.Size = new System.Drawing.Size(900, 100);
             this.panelTimeSlots.TabIndex = 4;
             this.panelTimeSlots.Visible = false;
             this.panelTimeSlots.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
@@ -292,7 +291,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             
             this.flowTimeSlots.Location = new System.Drawing.Point(0, 28);
             this.flowTimeSlots.Name = "flowTimeSlots";
-            this.flowTimeSlots.Size = new System.Drawing.Size(900, 42);
+            this.flowTimeSlots.Size = new System.Drawing.Size(900, 60);
             this.flowTimeSlots.TabIndex = 1;
             this.flowTimeSlots.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             
@@ -305,7 +304,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelQueueSelection.BackColor = System.Drawing.Color.White;
             this.panelQueueSelection.Location = new System.Drawing.Point(25, 400);
             this.panelQueueSelection.Name = "panelQueueSelection";
-            this.panelQueueSelection.Size = new System.Drawing.Size(900, 180);
+            this.panelQueueSelection.Size = new System.Drawing.Size(900, 250);
             this.panelQueueSelection.TabIndex = 5;
             this.panelQueueSelection.Visible = false;
             this.panelQueueSelection.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
@@ -344,17 +343,17 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.txtSymptoms.Size = new System.Drawing.Size(400, 45);
             this.txtSymptoms.TabIndex = 3;
             
-            this.btnConfirmBooking.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
+            this.btnConfirmBooking.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(5)))), ((int)(((byte)(150)))), ((int)(((byte)(105)))));
             this.btnConfirmBooking.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnConfirmBooking.FlatAppearance.BorderSize = 0;
             this.btnConfirmBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnConfirmBooking.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold);
+            this.btnConfirmBooking.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnConfirmBooking.ForeColor = System.Drawing.Color.White;
-            this.btnConfirmBooking.Location = new System.Drawing.Point(580, 130);
+            this.btnConfirmBooking.Location = new System.Drawing.Point(540, 130);
             this.btnConfirmBooking.Name = "btnConfirmBooking";
             this.btnConfirmBooking.Size = new System.Drawing.Size(150, 45);
             this.btnConfirmBooking.TabIndex = 4;
-            this.btnConfirmBooking.Text = "✓ XÁC NHẬN";
+            this.btnConfirmBooking.Text = "XÁC NHẬN";
             this.btnConfirmBooking.Click += new System.EventHandler(this.btnConfirmBooking_Click);
             
             this.btnCancelBooking.BackColor = System.Drawing.Color.FromArgb(239, 68, 68);
@@ -363,7 +362,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnCancelBooking.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelBooking.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnCancelBooking.ForeColor = System.Drawing.Color.White;
-            this.btnCancelBooking.Location = new System.Drawing.Point(750, 130);
+            this.btnCancelBooking.Location = new System.Drawing.Point(700, 130);
             this.btnCancelBooking.Name = "btnCancelBooking";
             this.btnCancelBooking.Size = new System.Drawing.Size(100, 45);
             this.btnCancelBooking.TabIndex = 5;

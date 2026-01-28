@@ -1,6 +1,7 @@
 using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
+using HospitalManagement.Views.UserControls.Patient;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -99,10 +100,14 @@ namespace HospitalManagement.Views.Forms.Doctor
         private void LoadExamination(int appointmentId)
         {
             contentPanel.Controls.Clear();
+            UpdateHeaderTitle("Khám bệnh");
             
             var examination = new UserControls.Doctor.UC_Examination();
             examination.Dock = DockStyle.Fill;
-            examination.Initialize(appointmentId, () => LoadPatientQueue());
+            examination.Initialize(appointmentId, 
+                () => LoadPatientQueue(),
+                (examId) => LoadPrescription(examId)
+            );
             
             contentPanel.Controls.Add(examination);
         }

@@ -1,7 +1,6 @@
 ﻿using HospitalManagement.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Configuration;
 

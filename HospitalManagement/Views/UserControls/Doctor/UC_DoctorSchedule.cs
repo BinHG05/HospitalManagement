@@ -14,7 +14,49 @@ namespace HospitalManagement.Views.UserControls.Doctor
         public UC_DoctorSchedule()
         {
             InitializeComponent();
+            InitializeLegend();
             _currentWeekStart = GetWeekStart(DateTime.Today);
+        }
+
+        private void InitializeLegend()
+        {
+            var legendMorning = CreateLegendItem("Ca sáng (7:30-11:30)", Color.FromArgb(59, 130, 246), 20);
+            var legendAfternoon = CreateLegendItem("Ca chiều (13:30-17:30)", Color.FromArgb(16, 185, 129), 250);
+            var legendOff = CreateLegendItem("Nghỉ", Color.FromArgb(148, 163, 184), 500);
+
+            panelLegend.Controls.Clear();
+            panelLegend.Controls.Add(legendMorning);
+            panelLegend.Controls.Add(legendAfternoon);
+            panelLegend.Controls.Add(legendOff);
+        }
+
+        private Panel CreateLegendItem(string text, Color color, int x)
+        {
+            var panel = new Panel
+            {
+                Location = new Point(x, 10),
+                Size = new Size(200, 30)
+            };
+
+            var colorBox = new Panel
+            {
+                Location = new Point(0, 5),
+                Size = new Size(20, 20),
+                BackColor = color
+            };
+
+            var label = new Label
+            {
+                AutoSize = true,
+                Location = new Point(25, 5),
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(15, 23, 42),
+                Text = text
+            };
+
+            panel.Controls.Add(colorBox);
+            panel.Controls.Add(label);
+            return panel;
         }
 
         public void Initialize(int doctorId)

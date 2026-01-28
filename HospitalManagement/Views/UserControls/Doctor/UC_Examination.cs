@@ -10,6 +10,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
     {
         private ExaminationPresenter _presenter;
         private Action _onClose;
+        private Action<int> _onPrescribe;
 
         public string Symptoms
         {
@@ -53,9 +54,10 @@ namespace HospitalManagement.Views.UserControls.Doctor
             InitializeComponent();
         }
 
-        public void Initialize(int appointmentId, Action onClose = null)
+        public void Initialize(int appointmentId, Action onClose = null, Action<int> onPrescribe = null)
         {
             _onClose = onClose;
+            _onPrescribe = onPrescribe;
             _presenter = new ExaminationPresenter(this, appointmentId);
             _presenter.LoadPatient();
         }
@@ -95,6 +97,11 @@ namespace HospitalManagement.Views.UserControls.Doctor
         public void CloseView()
         {
             _onClose?.Invoke();
+        }
+
+        public void NavigateToPrescription(int examinationId)
+        {
+            _onPrescribe?.Invoke(examinationId);
         }
 
         #endregion

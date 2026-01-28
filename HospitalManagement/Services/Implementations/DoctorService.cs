@@ -26,13 +26,15 @@ namespace HospitalManagement.Services.Implementations
             using (var context = new HospitalDbContext())
             {
                 var today = DateTime.Today;
-
+                // For demonstration, we allow any year if month and day match today
+                // or just stay with strict Today for real production
                 var appointments = context.Appointments
+                    .AsNoTracking()
                     .Include(a => a.Patient)
-                    .Include(a => a.Patient.User)
+                    .ThenInclude(p => p.User)
                     .Where(a => a.DoctorID == doctorId
                              && a.AppointmentDate == today
-                             && a.Status == "pending") // Only show PENDING in Queue. Confirmed/Examining goes to Active List.
+                             && a.Status == "confirmed") 
                     .OrderBy(a => a.AppointmentNumber)
                     .ToList();
 
@@ -59,12 +61,16 @@ namespace HospitalManagement.Services.Implementations
                 var today = DateTime.Today;
 
                 // Active = Confirmed (Examining), Service_Pending, Service_Completed
+                // Active = Examining, Service_Pending, Service_Completed
                 var appointments = context.Appointments
                     .Include(a => a.Patient)
-                    .Include(a => a.Patient.User)
+                    .ThenInclude(p => p.User)
+                    .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
+                    .Include(a => a.Department)
                     .Where(a => a.DoctorID == doctorId
                              && a.AppointmentDate == today
-                             && (a.Status == "confirmed" || a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
+                             && (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
                     .OrderByDescending(a => a.UpdatedAt)
                     .ToList();
 
@@ -73,6 +79,8 @@ namespace HospitalManagement.Services.Implementations
                     AppointmentId = a.AppointmentID,
                     PatientId = (int)a.PatientID,
                     PatientName = a.Patient?.User?.FullName ?? "N/A",
+                    DoctorName = a.Doctor?.User?.FullName ?? "N/A",
+                    DepartmentName = a.Department?.DepartmentName ?? "N/A",
                     Gender = a.Patient?.Gender,
                     Age = a.Patient?.DateOfBirth != null
                         ? (int?)((int)((DateTime.Today - a.Patient.DateOfBirth.Value).TotalDays / 365.25))
@@ -83,6 +91,43 @@ namespace HospitalManagement.Services.Implementations
                     ServiceStatus = a.Status == "service_pending" ? "Chờ kết quả" : 
                                     (a.Status == "service_completed" ? "Đã có kết quả" : ""),
                     StartedAt = a.UpdatedAt ?? a.CreatedAt
+                }).ToList();
+            }
+        }
+
+        public IEnumerable<HospitalActiveExamInfo> GetAllActiveExaminations()
+        {
+            using (var context = new HospitalDbContext())
+            {
+                var today = DateTime.Today;
+
+                var appointments = context.Appointments
+                    .AsNoTracking()
+                    .Include(a => a.Patient)
+                    .ThenInclude(p => p.User)
+                    .Include(a => a.Doctor)
+                    .ThenInclude(d => d.User)
+                    .Include(a => a.Department)
+                    .Where(a => a.AppointmentDate == today
+                             && (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
+                    .OrderByDescending(a => a.UpdatedAt)
+                    .ToList();
+
+                return appointments.Select(a => new HospitalActiveExamInfo
+                {
+                    AppointmentId = a.AppointmentID,
+                    QueueNumber = a.AppointmentNumber,
+                    PatientName = a.Patient?.User?.FullName ?? "N/A",
+                    DoctorName = a.Doctor?.User?.FullName ?? "N/A",
+                    DepartmentName = a.Department?.DepartmentName ?? "N/A",
+                    Gender = a.Patient?.Gender,
+                    Age = a.Patient?.DateOfBirth != null
+                        ? (int?)((int)((DateTime.Today - a.Patient.DateOfBirth.Value).TotalDays / 365.25))
+                        : null,
+                    Status = a.Status,
+                    ServiceStatus = a.Status == "service_pending" ? "Chờ kết quả" : 
+                                    (a.Status == "service_completed" ? "Đã có kết quả" : ""),
+                    StartedAt = a.UpdatedAt ?? a.CreatedAt ?? DateTime.Now
                 }).ToList();
             }
         }
@@ -131,8 +176,32 @@ namespace HospitalManagement.Services.Implementations
                     var appointment = context.Appointments.Find(appointmentId);
                     if (appointment == null) return false;
 
-                    appointment.Status = "confirmed";
+                    appointment.Status = "examining"; // Set to examining when doctor calls the patient
                     appointment.UpdatedAt = DateTime.Now;
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool MarkAsNoShow(int appointmentId)
+        {
+            try
+            {
+                using (var context = new HospitalDbContext())
+                {
+                    var appointment = context.Appointments.Find(appointmentId);
+                    if (appointment == null) return false;
+
+                    // Move back to confirmed (waiting list) but update UpdatedAt 
+                    // so if we order by CreatedAt it stays, but if we want to "re-queue"
+                    // we can use UpdatedAt. For now, let's just keep confirmed.
+                    appointment.Status = "confirmed"; 
+                    appointment.UpdatedAt = DateTime.Now; // Update time to show they were recently handled
                     context.SaveChanges();
                     return true;
                 }
@@ -172,7 +241,7 @@ namespace HospitalManagement.Services.Implementations
             }
         }
 
-        public bool CompleteExamination(int appointmentId, ExaminationData data)
+        public int CompleteExamination(int appointmentId, ExaminationData data)
         {
             try
             {
@@ -182,7 +251,7 @@ namespace HospitalManagement.Services.Implementations
                         .Include(a => a.Patient)
                         .FirstOrDefault(a => a.AppointmentID == appointmentId);
 
-                    if (appointment == null) return false;
+                    if (appointment == null) return -1;
 
                     // Create examination record
                     var examination = new Examinations
@@ -212,6 +281,7 @@ namespace HospitalManagement.Services.Implementations
                         CreatedAt = DateTime.Now
                     };
                     context.MedicalRecords.Add(record);
+                    context.SaveChanges(); // Ensure RecordID is generated
 
                     // Create medical history
                     var history = new MedicalHistory
@@ -232,13 +302,13 @@ namespace HospitalManagement.Services.Implementations
                     appointment.UpdatedAt = DateTime.Now;
 
                     context.SaveChanges();
-                    return true;
+                    return examination.ExaminationID;
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"CompleteExamination Error: {ex.Message}");
-                return false;
+                return -1;
             }
         }
 

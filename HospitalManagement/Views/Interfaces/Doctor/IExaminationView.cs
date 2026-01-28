@@ -20,5 +20,6 @@ namespace HospitalManagement.Views.Interfaces.Doctor
         void ShowError(string message);
         void ShowSuccess(string message);
         void CloseView();
+        void NavigateToPrescription(int examinationId);
     }
 }

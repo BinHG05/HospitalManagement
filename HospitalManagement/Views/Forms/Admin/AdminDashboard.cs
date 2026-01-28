@@ -1,6 +1,7 @@
 using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
+using HospitalManagement.Views.UserControls.Patient;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -44,6 +45,13 @@ namespace HospitalManagement.Views.Forms.Admin
 
             // Quick action cards
             CreateQuickActionCards();
+
+            // Status Board (Real-time monitoring for Admins)
+            var statusBoard = new UserControls.Patient.UC_HospitalStatusBoard();
+            statusBoard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            statusBoard.Location = new Point(10, 310); // Below quick actions
+            statusBoard.Size = new Size(contentPanel.Width - 20, contentPanel.Height - 320);
+            contentPanel.Controls.Add(statusBoard);
         }
 
         public void LoadContent(string contentName)

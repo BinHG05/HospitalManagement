@@ -1,7 +1,19 @@
-create database HospitalManagement;
-go
-use HospitalManagement;
-go
+USE master;
+GO
+
+-- Drop the database if it exists to ensure a clean initialization
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'HospitalManagement')
+BEGIN
+    ALTER DATABASE HospitalManagement SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE HospitalManagement;
+END
+GO
+
+CREATE DATABASE HospitalManagement;
+GO
+
+USE HospitalManagement;
+GO
 
 
 -- Bảng chung cho tất cả người dùng

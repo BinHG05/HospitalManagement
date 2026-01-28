@@ -12,6 +12,7 @@ namespace HospitalManagement.Services.Interfaces
         // Get today's patient queue
         IEnumerable<QueuePatientInfo> GetTodayQueue(int doctorId);
         IEnumerable<ActiveExamInfo> GetActiveExaminations(int doctorId);
+        IEnumerable<HospitalActiveExamInfo> GetAllActiveExaminations();
         bool AssignService(int appointmentId, string serviceName, int? targetDoctorId);
 
         // Get patient by appointment
@@ -19,9 +20,10 @@ namespace HospitalManagement.Services.Interfaces
 
         // Call next patient
         bool CallPatient(int appointmentId);
+        bool MarkAsNoShow(int appointmentId);
 
         // Complete examination
-        bool CompleteExamination(int appointmentId, ExaminationData data);
+        int CompleteExamination(int appointmentId, ExaminationData data);
 
         // Get doctor's schedule
         IEnumerable<DoctorScheduleInfo> GetDoctorSchedule(int doctorId, DateTime weekStart);
@@ -92,5 +94,19 @@ namespace HospitalManagement.Services.Interfaces
         public bool IsActive { get; set; }
 
         public string TimeRange => $"{StartTime:hh\\:mm} - {EndTime:hh\\:mm}";
+    }
+
+    public class HospitalActiveExamInfo
+    {
+        public int AppointmentId { get; set; }
+        public int QueueNumber { get; set; }
+        public string PatientName { get; set; }
+        public string DoctorName { get; set; }
+        public string DepartmentName { get; set; }
+        public string Gender { get; set; }
+        public int? Age { get; set; }
+        public string Status { get; set; }
+        public string ServiceStatus { get; set; }
+        public DateTime StartedAt { get; set; }
     }
 }

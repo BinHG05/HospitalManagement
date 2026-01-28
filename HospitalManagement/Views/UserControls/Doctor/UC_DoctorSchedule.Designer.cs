@@ -48,7 +48,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblTitle.ForeColor = System.Drawing.Color.White;
             this.lblTitle.Location = new System.Drawing.Point(20, 13);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Text = "📆 Lịch làm việc";
+            this.lblTitle.Text = "📅 Lịch làm việc";
+            this.lblTitle.UseCompatibleTextRendering = true;
 
             // =============================================
             // panelWeekNav
@@ -129,15 +130,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.panelLegend.Name = "panelLegend";
             this.panelLegend.Size = new System.Drawing.Size(950, 50);
             this.panelLegend.TabIndex = 3;
-
-            var legendMorning = CreateLegendItem("Ca sáng (7:30-11:30)", System.Drawing.Color.FromArgb(59, 130, 246), 20);
-            var legendAfternoon = CreateLegendItem("Ca chiều (13:30-17:30)", System.Drawing.Color.FromArgb(16, 185, 129), 250);
-            var legendOff = CreateLegendItem("Nghỉ", System.Drawing.Color.FromArgb(148, 163, 184), 500);
+            // panelLegend (Sẽ được khởi tạo từ Code-behind để tránh lỗi Designer)
             
-            this.panelLegend.Controls.Add(legendMorning);
-            this.panelLegend.Controls.Add(legendAfternoon);
-            this.panelLegend.Controls.Add(legendOff);
-
             // =============================================
             // UC_DoctorSchedule
             // =============================================
@@ -156,35 +150,6 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.panelWeekNav.ResumeLayout(false);
             this.panelLegend.ResumeLayout(false);
             this.ResumeLayout(false);
-        }
-
-        private System.Windows.Forms.Panel CreateLegendItem(string text, System.Drawing.Color color, int x)
-        {
-            var panel = new System.Windows.Forms.Panel
-            {
-                Location = new System.Drawing.Point(x, 10),
-                Size = new System.Drawing.Size(200, 30)
-            };
-
-            var colorBox = new System.Windows.Forms.Panel
-            {
-                Location = new System.Drawing.Point(0, 5),
-                Size = new System.Drawing.Size(20, 20),
-                BackColor = color
-            };
-
-            var label = new System.Windows.Forms.Label
-            {
-                AutoSize = true,
-                Location = new System.Drawing.Point(25, 5),
-                Font = new System.Drawing.Font("Segoe UI", 9F),
-                ForeColor = System.Drawing.Color.FromArgb(15, 23, 42),
-                Text = text
-            };
-
-            panel.Controls.Add(colorBox);
-            panel.Controls.Add(label);
-            return panel;
         }
 
         #endregion

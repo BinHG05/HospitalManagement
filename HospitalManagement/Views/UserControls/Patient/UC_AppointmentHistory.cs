@@ -69,6 +69,9 @@ namespace HospitalManagement.Views.UserControls.Patient
                     case "confirmed":
                         row.Cells["colStatus"].Style.ForeColor = Color.FromArgb(0, 168, 107);
                         break;
+                    case "examining":
+                        row.Cells["colStatus"].Style.ForeColor = Color.FromArgb(155, 89, 182); // Purple for examining
+                        break;
                     case "completed":
                         row.Cells["colStatus"].Style.ForeColor = Color.FromArgb(0, 102, 204);
                         break;
@@ -76,6 +79,19 @@ namespace HospitalManagement.Views.UserControls.Patient
                         row.Cells["colStatus"].Style.ForeColor = Color.FromArgb(231, 76, 60);
                         break;
                 }
+            }
+        }
+
+        private string GetStatusDisplay(string status)
+        {
+            switch (status)
+            {
+                case "pending": return "Chờ xác nhận";
+                case "confirmed": return "Đã xác nhận";
+                case "examining": return "Đang khám";
+                case "completed": return "Hoàn thành";
+                case "cancelled": return "Đã hủy";
+                default: return status;
             }
         }
 

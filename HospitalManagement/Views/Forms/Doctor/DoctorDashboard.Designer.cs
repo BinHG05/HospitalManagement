@@ -135,7 +135,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.btnSchedule.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnSchedule.Size = new System.Drawing.Size(230, 56);
             this.btnSchedule.TabIndex = 3;
-            this.btnSchedule.Text = "   📆   Lịch làm việc";
+            this.btnSchedule.Text = "   📆 Lịch làm việc";
             this.btnSchedule.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnSchedule.UseVisualStyleBackColor = false;
             this.btnSchedule.Click += new System.EventHandler(this.btnSchedule_Click);
@@ -161,7 +161,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.btnExam.Text = "   🩺   Khám bệnh";
             this.btnExam.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnExam.UseVisualStyleBackColor = false;
-            this.btnExam.Click += (s, e) => { SetActiveButton(btnExam); LoadContent("Khám bệnh"); };
+            this.btnExam.Click += new System.EventHandler(this.btnExam_Click);
             // 
             // btnQueue - Hàng đợi khám
             // 

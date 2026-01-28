@@ -2,6 +2,7 @@ using HospitalManagement.Services.Implementations;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces.Doctor;
 using System;
+using System.Windows.Forms;
 
 namespace HospitalManagement.Presenters.Doctor
 {
@@ -69,12 +70,26 @@ namespace HospitalManagement.Presenters.Doctor
                     NextAppointmentDate = _view.NextAppointmentDate
                 };
 
-                var success = _doctorService.CompleteExamination(_appointmentId, data);
+                var examId = _doctorService.CompleteExamination(_appointmentId, data);
 
-                if (success)
+                if (examId > 0)
                 {
-                    _view.ShowSuccess("Đã lưu kết quả khám bệnh!");
-                    _view.CloseView();
+                    // _view.ShowSuccess("Đã lưu kết quả khám bệnh!");
+                    
+                    var result = MessageBox.Show(
+                        "Đã lưu kết quả khám bệnh. Bạn có muốn kê đơn thuốc cho bệnh nhân này không?",
+                        "Kê đơn thuốc",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        _view.NavigateToPrescription(examId);
+                    }
+                    else
+                    {
+                        _view.CloseView();
+                    }
                 }
                 else
                 {

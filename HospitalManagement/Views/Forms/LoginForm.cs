@@ -3,6 +3,7 @@ using HospitalManagement.Presenters;
 using HospitalManagement.Services.Implementations;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces;
+using HospitalManagement.Views.Forms;
 using System;
 using System.Windows.Forms;
 
@@ -25,6 +26,17 @@ namespace HospitalManagement.Views.Forms
             // Create service and presenter
             IAuthService authService = new AuthService();
             _presenter = new LoginPresenter(this, authService);
+
+            // Thiết lập phong cách Luxury nổi bật
+            lblTitle.ForeColor = System.Drawing.Color.FromArgb(251, 191, 36); // Vàng Gold nổi bật
+            lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184); // Bạc Slate hiện đại
+            lblLogo.ForeColor = System.Drawing.Color.FromArgb(251, 191, 36); 
+
+            // Thiết lập nội dung cho cả hai chức năng
+            lblNoAccount.Text = "Chưa có tài khoản?";
+            lnkRegister.Text = "Đăng ký ngay";
+            lblForgotPassword.Text = "Bạn quên mật khẩu?";
+            lnkForgotPassword.Text = "Lấy lại mật khẩu";
         }
 
         public void ShowError(string message)
@@ -50,9 +62,13 @@ namespace HospitalManagement.Views.Forms
         public void OpenRegisterForm()
         {
             var registerForm = new RegisterForm();
-            this.Hide();
             registerForm.ShowDialog();
-            this.Show();
+        }
+
+        public void OpenForgotPasswordForm()
+        {
+            var forgotForm = new ForgotPasswordForm();
+            forgotForm.ShowDialog();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -69,6 +85,11 @@ namespace HospitalManagement.Views.Forms
         private void lnkRegister_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             _presenter.OpenRegister();
+        }
+
+        private void lnkForgotPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            _presenter.ForgotPassword();
         }
     }
 }

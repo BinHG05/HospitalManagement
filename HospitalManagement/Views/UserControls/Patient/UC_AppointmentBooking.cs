@@ -139,23 +139,43 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         public void ShowPaymentPrompt(int appointmentId, string amount)
         {
-            var result = MessageBox.Show(
-                $"Đặt lịch thành công! (ID: {appointmentId})\n" +
-                $"Số tiền cần thanh toán: {amount}\n\n" +
-                $"Bạn có muốn thanh toán ngay để xác nhận lịch hẹn không?",
-                "Xác nhận thanh toán",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
+            var isToday = _selectedDate.Date == DateTime.Today;
 
-            if (result == DialogResult.Yes)
+            if (isToday)
             {
+                MessageBox.Show(
+                    $"Đặt lịch thành công!\n" +
+                    $"Số tiền cần thanh toán: {amount}\n\n" +
+                    $"⚠️ LƯU Ý: Vì bạn đặt lịch khám vào HÔM NAY, bạn cần thực hiện thanh toán ngay bây giờ để hoàn tất xác thực lịch hẹn.",
+                    "Yêu cầu thanh toán",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
                 _presenter.ConfirmPayment(appointmentId);
             }
             else
             {
-                ShowSuccess("Đặt lịch thành công (Chờ thanh toán). Vui lòng thanh toán sau để hoàn tất.");
-                ClearSelection();
-                GoBackToWeeklyView();
+                var deadline = DateTime.Today.AddHours(19).AddMinutes(30);
+                var result = MessageBox.Show(
+                    $"Đặt lịch thành công!\n" +
+                    $"Số tiền cần thanh toán: {amount}\n\n" +
+                    $"Hạt chót thanh toán: {deadline:HH:mm} tối hôm nay.\n" +
+                    $"Nếu sau thời gian này bạn chưa thanh toán, lịch hẹn sẽ tự động bị hủy.\n\n" +
+                    $"Bạn có muốn thực hiện thanh toán ngay bây giờ không?",
+                    "Xác nhận thanh toán",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information);
+
+                if (result == DialogResult.Yes)
+                {
+                    _presenter.ConfirmPayment(appointmentId);
+                }
+                else
+                {
+                    ShowSuccess($"Đặt lịch thành công (Chờ thanh toán).\nVui lòng thanh toán trước {deadline:HH:mm} để hoàn tất.");
+                    ClearSelection();
+                    GoBackToWeeklyView();
+                }
             }
         }
 
@@ -410,6 +430,10 @@ namespace HospitalManagement.Views.UserControls.Patient
             btnConfirmBooking.Enabled = false; 
             btnConfirmBooking.BackColor = Color.Gray;
 
+            // Đảm bảo panel hiển thị trước khi kiểm tra schedule
+            panelTimeSlots.Visible = true;
+            panelQueueSelection.Visible = false;
+
             // Find the database schedule for this shift
             // We assume _loadedSlots contains 1 entry for the whole shift (Morning or Afternoon)
             var shiftSchedule = _loadedSlots.FirstOrDefault(s => 
@@ -465,9 +489,10 @@ namespace HospitalManagement.Views.UserControls.Patient
                 
                 flowTimeSlots.Controls.Add(btn);
             }
-
-            panelTimeSlots.Visible = true;
-            panelQueueSelection.Visible = false;
+            
+            // Auto scroll to time slots
+            panelContent.VerticalScroll.Value = Math.Min(panelContent.VerticalScroll.Maximum, 320);
+            UpdateBookingSummary();
         }
 
         private void TimeSlotButton_Click(object sender, EventArgs e)
@@ -587,7 +612,33 @@ namespace HospitalManagement.Views.UserControls.Patient
             
             // Enable Confirm Button
             btnConfirmBooking.Enabled = true;
-            btnConfirmBooking.BackColor = Color.FromArgb(37, 99, 235); // Blue
+            btnConfirmBooking.BackColor = Color.FromArgb(16, 185, 129); // Green
+            
+            UpdateBookingSummary();
+        }
+
+        private void UpdateBookingSummary()
+        {
+            if (string.IsNullOrEmpty(_selectedShift) && string.IsNullOrEmpty(_selectedTimeSlot)) return;
+
+            string info = $"Khoa: {cmbDepartment.Text} | Ngày: {_selectedDate:dd/MM/yyyy}";
+            if (!string.IsNullOrEmpty(_selectedTimeSlot)) info += $" | Giờ: {_selectedTimeSlot}";
+            if (_selectedQueueNumber > 0) info += $" | STT: {_selectedQueueNumber}";
+
+            lblQueueTitle.Text = $"Thông tin đặt lịch: {info}";
+            
+            // Highlight the deadline or immediate payment requirement
+            if (_selectedDate.Date == DateTime.Today)
+            {
+                lblSuggestedQueue.Text = $"⚠️ LƯU Ý: Lịch khám hôm nay yêu cầu thanh toán NGAY LẬP TỨC để xác nhận.";
+                lblSuggestedQueue.ForeColor = Color.FromArgb(220, 38, 38);
+            }
+            else
+            {
+                lblSuggestedQueue.Text = $"⚠️ LƯU Ý: Bạn cần thanh toán trước 19:30 tối hôm nay để giữ lịch hẹn này.";
+                lblSuggestedQueue.ForeColor = Color.FromArgb(220, 38, 38);
+            }
+            lblSuggestedQueue.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         }
 
         #endregion
@@ -707,14 +758,21 @@ namespace HospitalManagement.Views.UserControls.Patient
             }
 
             // Show confirmation with payment warning
-            var deadline = _selectedDate.AddDays(-1).Date.AddHours(19).AddMinutes(30);
+            var isToday = _selectedDate.Date == DateTime.Today;
+            var deadline = DateTime.Now.Date.AddHours(19).AddMinutes(30);
+            
+            string paymentRequirement = isToday 
+                ? "- BẮT BUỘC: Bạn cần thanh toán NGAY LẬP TỨC sau bước này.\n- Nếu không thanh toán, lịch hẹn sẽ không được ghi nhận.\n"
+                : $"- HẠN CHÓT: Trước {deadline:HH:mm} tối hôm nay.\n- Sau {deadline:HH:mm}, nếu chưa thanh toán, lịch sẽ bị HỦY TỰ ĐỘNG.\n";
+
             var message = $"XÁC NHẬN ĐẶT LỊCH KHÁM\n\n" +
+                         $"🏥 Khoa: {cmbDepartment.Text}\n" +
                          $"📅 Ngày: {_selectedDate:dd/MM/yyyy}\n" +
-                         $"⏰ Khung giờ: {_selectedTimeSlot}\n" +
+                         $"⏰ Giờ: {_selectedTimeSlot}\n" +
                          $"🔢 Số thứ tự: {_selectedQueueNumber}\n\n" +
-                         $"⚠️ LƯU Ý: Bạn cần thanh toán trước {deadline:HH:mm dd/MM/yyyy}.\n" +
-                         $"Nếu không thanh toán, lịch hẹn sẽ tự động bị hủy.\n\n" +
-                         $"Bạn có muốn tiếp tục?";
+                         $"QUY ĐỊNH THANH TOÁN:\n" +
+                         paymentRequirement + "\n" +
+                         $"Bạn có xác nhận đặt lịch này không?";
 
             var result = MessageBox.Show(message, "Xác nhận đặt lịch", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             

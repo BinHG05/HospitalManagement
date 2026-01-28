@@ -62,6 +62,32 @@ namespace HospitalManagement.Presenters.Doctor
                 _view.ShowLoading(false);
             }
         }
+        public void NoShowPatient(int appointmentId)
+        {
+            try
+            {
+                _view.ShowLoading(true);
+                var success = _doctorService.MarkAsNoShow(appointmentId);
+
+                if (success)
+                {
+                    _view.ShowSuccess("Đã chuyển bệnh nhân về hàng chờ.");
+                    _view.RefreshQueue();
+                }
+                else
+                {
+                    _view.ShowError("Có lỗi khi xử lý vắng mặt.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi: {ex.Message}");
+            }
+            finally
+            {
+                _view.ShowLoading(false);
+            }
+        }
 
         public void ViewPatientDetails(int appointmentId)
         {

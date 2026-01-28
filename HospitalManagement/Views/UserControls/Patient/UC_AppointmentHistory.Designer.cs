@@ -205,7 +205,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelDetails.Controls.Add(this.lblDetailsTitle);
             this.panelDetails.Location = new System.Drawing.Point(200, 150);
             this.panelDetails.Name = "panelDetails";
-            this.panelDetails.Size = new System.Drawing.Size(500, 300);
+            this.panelDetails.Size = new System.Drawing.Size(500, 420);
             this.panelDetails.TabIndex = 3;
             this.panelDetails.Visible = false;
             // 
@@ -228,7 +228,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblDetailsContent.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblDetailsContent.Location = new System.Drawing.Point(20, 50);
             this.lblDetailsContent.Name = "lblDetailsContent";
-            this.lblDetailsContent.Size = new System.Drawing.Size(458, 180);
+            this.lblDetailsContent.Size = new System.Drawing.Size(458, 280);
             this.lblDetailsContent.TabIndex = 1;
             this.lblDetailsContent.Text = "Nội dung chi tiết...";
             // 
@@ -240,7 +240,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(250, 250);
+            this.btnCancel.Location = new System.Drawing.Point(250, 360);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(120, 35);
             this.btnCancel.TabIndex = 2;
@@ -256,7 +256,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(380, 250);
+            this.btnClose.Location = new System.Drawing.Point(380, 360);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(100, 35);
             this.btnClose.TabIndex = 3;
