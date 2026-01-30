@@ -148,6 +148,16 @@ namespace HospitalManagement.Models.EF
                     .WithMany(p => p.DoctorSchedules)
                     .HasForeignKey(d => d.ShiftID)
                     .HasConstraintName("FK__DoctorSch__Shift__5441852A");
+
+                // New Approval Workflow Columns
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .HasDefaultValueSql("('Approved')");
+
+                entity.HasOne(d => d.ApprovedByUser)
+                    .WithMany()
+                    .HasForeignKey(d => d.ApprovedByUserID)
+                    .HasConstraintName("FK_DoctorSchedules_ApprovedByUser");
             });
 
             modelBuilder.Entity<Doctors>(entity =>
@@ -176,6 +186,10 @@ namespace HospitalManagement.Models.EF
                     .WithMany(p => p.Doctors)
                     .HasForeignKey(d => d.UserID)
                     .HasConstraintName("FK__Doctors__UserID__44FF419A");
+
+                // New Quota Columns
+                entity.Property(e => e.MinShiftsPerMonth).HasDefaultValueSql("((15))");
+                entity.Property(e => e.MaxShiftsPerMonth).HasDefaultValueSql("((25))");
             });
 
             modelBuilder.Entity<Examinations>(entity =>
@@ -443,6 +457,10 @@ namespace HospitalManagement.Models.EF
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.MaxSlots).HasDefaultValueSql("((100))");
+
+                // New Quota Columns
+                entity.Property(e => e.MinDoctorsPerShift).HasDefaultValueSql("((2))");
+                entity.Property(e => e.MaxDoctorsPerShift).HasDefaultValueSql("((5))");
             });
 
             modelBuilder.Entity<Users>(entity =>

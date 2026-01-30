@@ -19,6 +19,7 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             this.sidebarPanel = new System.Windows.Forms.Panel();
             this.menuPanel = new System.Windows.Forms.Panel();
+            this.btnShiftRegistration = new System.Windows.Forms.Button();
             this.btnPrescription = new System.Windows.Forms.Button();
             this.btnPatients = new System.Windows.Forms.Button();
             this.btnSchedule = new System.Windows.Forms.Button();
@@ -58,6 +59,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             // menuPanel
             // 
             this.menuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.menuPanel.Controls.Add(this.btnShiftRegistration);
             this.menuPanel.Controls.Add(this.btnPrescription);
             this.menuPanel.Controls.Add(this.btnPatients);
             this.menuPanel.Controls.Add(this.btnSchedule);
@@ -70,6 +72,29 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.menuPanel.Padding = new System.Windows.Forms.Padding(15, 30, 15, 0);
             this.menuPanel.Size = new System.Drawing.Size(260, 540);
             this.menuPanel.TabIndex = 2;
+            // 
+            // btnShiftRegistration - Đăng ký ca trực
+            // 
+            this.btnShiftRegistration.BackColor = System.Drawing.Color.Transparent;
+            this.btnShiftRegistration.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnShiftRegistration.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnShiftRegistration.FlatAppearance.BorderSize = 0;
+            this.btnShiftRegistration.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this.btnShiftRegistration.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            this.btnShiftRegistration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnShiftRegistration.Font = new System.Drawing.Font("Segoe UI Semibold", 10.5F);
+            this.btnShiftRegistration.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.btnShiftRegistration.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnShiftRegistration.Location = new System.Drawing.Point(15, 366);
+            this.btnShiftRegistration.Margin = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.btnShiftRegistration.Name = "btnShiftRegistration";
+            this.btnShiftRegistration.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnShiftRegistration.Size = new System.Drawing.Size(230, 56);
+            this.btnShiftRegistration.TabIndex = 6;
+            this.btnShiftRegistration.Text = "   ✍️   Đăng ký ca trực";
+            this.btnShiftRegistration.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnShiftRegistration.UseVisualStyleBackColor = false;
+            this.btnShiftRegistration.Click += new System.EventHandler(this.btnShiftRegistration_Click);
             // 
             // btnPrescription - Kê đơn thuốc
             // 
@@ -373,6 +398,7 @@ namespace HospitalManagement.Views.Forms.Doctor
         private System.Windows.Forms.Label lblUserName;
         private System.Windows.Forms.Label lblUserIcon;
         private System.Windows.Forms.Panel menuPanel;
+        private System.Windows.Forms.Button btnShiftRegistration;
         private System.Windows.Forms.Button btnPrescription;
         private System.Windows.Forms.Button btnPatients;
         private System.Windows.Forms.Button btnSchedule;

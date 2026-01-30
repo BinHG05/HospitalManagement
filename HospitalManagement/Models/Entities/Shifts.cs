@@ -28,6 +28,10 @@ namespace HospitalManagement.Models.Entities
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
 
+        // Quota: Min/Max doctors per shift
+        public int MinDoctorsPerShift { get; set; } = 2;
+        public int MaxDoctorsPerShift { get; set; } = 5;
+
         [InverseProperty("Shift")]
         public virtual ICollection<Appointments> Appointments { get; set; }
         [InverseProperty("Shift")]

@@ -61,15 +61,31 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.groupBox1.SuspendLayout();
             this.panelActions.SuspendLayout();
             this.SuspendLayout();
-            // 
             // panelHeader
             // 
+            this.panelHeader.Controls.Add(this.btnAddNew);
             this.panelHeader.Controls.Add(this.label1);
             this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelHeader.Location = new System.Drawing.Point(0, 0);
             this.panelHeader.Name = "panelHeader";
             this.panelHeader.Size = new System.Drawing.Size(1000, 60);
             this.panelHeader.TabIndex = 0;
+
+            // 
+            // btnAddNew
+            // 
+            this.btnAddNew = new System.Windows.Forms.Button();
+            this.btnAddNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddNew.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnAddNew.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddNew.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAddNew.ForeColor = System.Drawing.Color.White;
+            this.btnAddNew.Location = new System.Drawing.Point(850, 15);
+            this.btnAddNew.Name = "btnAddNew";
+            this.btnAddNew.Size = new System.Drawing.Size(130, 35);
+            this.btnAddNew.TabIndex = 1;
+            this.btnAddNew.Text = "➕ Thêm User";
+            this.btnAddNew.UseVisualStyleBackColor = false;
             // 
             // label1
             // 
@@ -385,5 +401,6 @@ namespace HospitalManagement.Views.UserControls.Admin
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnAddNew;
     }
 }

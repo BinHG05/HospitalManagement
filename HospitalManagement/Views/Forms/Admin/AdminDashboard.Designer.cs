@@ -23,6 +23,7 @@ namespace HospitalManagement.Views.Forms.Admin
             this.btnReports = new System.Windows.Forms.Button();
             this.btnServices = new System.Windows.Forms.Button();
             this.btnDepts = new System.Windows.Forms.Button();
+            this.btnShifts = new System.Windows.Forms.Button();
             this.btnDoctors = new System.Windows.Forms.Button();
             this.btnUsers = new System.Windows.Forms.Button();
             this.btnHome = new System.Windows.Forms.Button();
@@ -60,6 +61,7 @@ namespace HospitalManagement.Views.Forms.Admin
             // 
             this.menuPanel.Controls.Add(this.btnSettings);
             this.menuPanel.Controls.Add(this.btnReports);
+            this.menuPanel.Controls.Add(this.btnShifts);
             this.menuPanel.Controls.Add(this.btnServices);
             this.menuPanel.Controls.Add(this.btnDepts);
             this.menuPanel.Controls.Add(this.btnDoctors);
@@ -81,7 +83,7 @@ namespace HospitalManagement.Views.Forms.Admin
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnSettings.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.btnSettings.Location = new System.Drawing.Point(0, 320);
+            this.btnSettings.Location = new System.Drawing.Point(0, 370);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
             this.btnSettings.Size = new System.Drawing.Size(250, 50);
@@ -100,7 +102,7 @@ namespace HospitalManagement.Views.Forms.Admin
             this.btnReports.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnReports.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnReports.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.btnReports.Location = new System.Drawing.Point(0, 270);
+            this.btnReports.Location = new System.Drawing.Point(0, 320);
             this.btnReports.Name = "btnReports";
             this.btnReports.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
             this.btnReports.Size = new System.Drawing.Size(250, 50);
@@ -109,6 +111,26 @@ namespace HospitalManagement.Views.Forms.Admin
             this.btnReports.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnReports.UseVisualStyleBackColor = true;
             this.btnReports.Click += new System.EventHandler(this.btnReports_Click);
+            // 
+            // btnShifts
+            // 
+            this.btnShifts.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnShifts.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnShifts.FlatAppearance.BorderSize = 0;
+            this.btnShifts.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(156)))), ((int)(((byte)(39)))), ((int)(((byte)(176)))));
+            this.btnShifts.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnShifts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnShifts.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnShifts.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.btnShifts.Location = new System.Drawing.Point(0, 270);
+            this.btnShifts.Name = "btnShifts";
+            this.btnShifts.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            this.btnShifts.Size = new System.Drawing.Size(250, 50);
+            this.btnShifts.TabIndex = 5;
+            this.btnShifts.Text = "🕒  Phân ca trực";
+            this.btnShifts.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnShifts.UseVisualStyleBackColor = true;
+            this.btnShifts.Click += new System.EventHandler(this.btnShifts_Click);
             // 
             // btnServices
             // 
@@ -373,6 +395,7 @@ namespace HospitalManagement.Views.Forms.Admin
         private System.Windows.Forms.Panel menuPanel;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnReports;
+        private System.Windows.Forms.Button btnShifts;
         private System.Windows.Forms.Button btnServices;
         private System.Windows.Forms.Button btnDepts;
         private System.Windows.Forms.Button btnDoctors;
