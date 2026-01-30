@@ -28,6 +28,24 @@ namespace HospitalManagement.Models.Entities
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
 
+        // Approval Workflow Fields
+        [StringLength(20)]
+        public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected
+
+        [Column(TypeName = "datetime")]
+        public DateTime? RequestedAt { get; set; }
+
+        public int? ApprovedByUserID { get; set; }
+
+        [Column(TypeName = "datetime")]
+        public DateTime? ApprovedAt { get; set; }
+
+        [StringLength(500)]
+        public string RejectionReason { get; set; }
+
+        [ForeignKey(nameof(ApprovedByUserID))]
+        public virtual Users ApprovedByUser { get; set; }
+
         [ForeignKey(nameof(DepartmentID))]
         [InverseProperty(nameof(Departments.DoctorSchedules))]
         public virtual Departments Department { get; set; }

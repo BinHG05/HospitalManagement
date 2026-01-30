@@ -41,6 +41,7 @@ namespace HospitalManagement.Views.UserControls.Admin
                     _presenter.DeleteDoctor(_selectedDoctorId.Value);
             };
             btnClear.Click += (s, e) => ClearInputs();
+            btnAddNew.Click += (s, e) => ClearInputs();
             btnSearch.Click += (s, e) => _presenter.LoadData(); // Re-load triggers logic if I impl search filter in Presenter
             
             // For now, simpler filtering in UI or reload with logic? 

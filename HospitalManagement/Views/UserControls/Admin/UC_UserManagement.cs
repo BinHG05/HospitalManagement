@@ -37,6 +37,7 @@ namespace HospitalManagement.Views.UserControls.Admin
                     _presenter.DeleteUser(_selectedUserId.Value);
             };
             btnClear.Click += (s, e) => ClearInputs();
+            btnAddNew.Click += (s, e) => ClearInputs();
             dgvUsers.SelectionChanged += DgvUsers_SelectionChanged;
 
             // Search on Enter

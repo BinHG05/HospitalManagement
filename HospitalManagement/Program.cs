@@ -18,8 +18,8 @@ namespace HospitalManagement
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Seed initial data for testing
-            HospitalManagement.Services.Utilities.DataSeeder.SeedSchedules();
+            // Initialize fresh database in Docker
+            HospitalManagement.Infrastructure.DatabaseInitializer.Initialize();
 
             // Login loop
             while (true)

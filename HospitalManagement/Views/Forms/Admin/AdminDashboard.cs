@@ -45,6 +45,13 @@ namespace HospitalManagement.Views.Forms.Admin
 
             // Quick action cards
             CreateQuickActionCards();
+
+            // Status Board (Real-time monitoring for Admins)
+            // var statusBoard = new UserControls.Patient.UC_HospitalStatusBoard();
+            // statusBoard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            // statusBoard.Location = new Point(10, 310); // Below quick actions
+            // statusBoard.Size = new Size(contentPanel.Width - 20, contentPanel.Height - 320);
+            // contentPanel.Controls.Add(statusBoard);
         }
 
         public void LoadContent(string contentName)
@@ -62,6 +69,30 @@ namespace HospitalManagement.Views.Forms.Admin
             if (contentName == "Quản lý Bác sĩ")
             {
                 var uc = new HospitalManagement.Views.UserControls.Admin.UC_DoctorManagement();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            if (contentName == "Phòng ban")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_DepartmentManagement();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            if (contentName == "Dịch vụ y tế")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_ServiceManagement();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            if (contentName == "Phân ca trực")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_ShiftApproval(CurrentUser.UserID);
                 uc.Dock = DockStyle.Fill;
                 contentPanel.Controls.Add(uc);
                 return;
@@ -241,6 +272,12 @@ namespace HospitalManagement.Views.Forms.Admin
         {
             SetActiveButton(btnServices);
             _presenter.NavigateTo("Dịch vụ y tế");
+        }
+
+        private void btnShifts_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnShifts);
+            _presenter.NavigateTo("Phân ca trực");
         }
 
         private void btnReports_Click(object sender, EventArgs e)
