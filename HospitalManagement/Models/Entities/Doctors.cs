@@ -39,6 +39,10 @@ namespace HospitalManagement.Models.Entities
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
 
+        // Monthly Quota: Min/Max shifts per month
+        public int MinShiftsPerMonth { get; set; } = 15;
+        public int MaxShiftsPerMonth { get; set; } = 25;
+
         [ForeignKey(nameof(DepartmentID))]
         [InverseProperty("Doctors")]
         public virtual Departments Department { get; set; }

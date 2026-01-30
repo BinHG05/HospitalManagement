@@ -69,6 +69,9 @@ namespace HospitalManagement.Views.Forms.Doctor
                 case "Lịch làm việc":
                     LoadDoctorSchedule();
                     break;
+                case "Đăng ký ca trực":
+                    LoadShiftRegistration();
+                    break;
                 default:
                     ShowPlaceholder(contentName);
                     break;
@@ -149,6 +152,14 @@ namespace HospitalManagement.Views.Forms.Doctor
             schedule.Dock = DockStyle.Fill;
             schedule.Initialize(GetDoctorId());
             contentPanel.Controls.Add(schedule);
+        }
+
+        private void LoadShiftRegistration()
+        {
+            var doctorId = GetDoctorId();
+            var registration = new UserControls.Doctor.UC_ShiftRegistration(doctorId, CurrentUser.UserID);
+            registration.Dock = DockStyle.Fill;
+            contentPanel.Controls.Add(registration);
         }
 
         public void LoadPrescription(int examinationId)
@@ -410,6 +421,12 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             SetActiveButton(btnPrescription);
             _presenter.NavigateTo("Kê đơn thuốc");
+        }
+
+        private void btnShiftRegistration_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnShiftRegistration);
+            _presenter.NavigateTo("Đăng ký ca trực");
         }
 
         #endregion

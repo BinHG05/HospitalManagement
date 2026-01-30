@@ -60,6 +60,19 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.lblTitle.Text = "Quản lý Bác sĩ";
 
             // 
+            // btnAddNew
+            // 
+            this.btnAddNew = new System.Windows.Forms.Button();
+            this.btnAddNew.BackColor = System.Drawing.Color.FromArgb(46, 204, 113);
+            this.btnAddNew.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddNew.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAddNew.ForeColor = System.Drawing.Color.White;
+            this.btnAddNew.Location = new System.Drawing.Point(870, 15);
+            this.btnAddNew.Name = "btnAddNew";
+            this.btnAddNew.Size = new System.Drawing.Size(150, 35);
+            this.btnAddNew.Text = "➕ Thêm Bác sĩ";
+
+            // 
             // grpSearch
             // 
             this.grpSearch.Controls.Add(this.txtSearch);
@@ -222,6 +235,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             // UC_DoctorManagement
             // 
             this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.btnAddNew);
             this.Controls.Add(this.grpSearch);
             this.Controls.Add(this.dgvDoctors);
             this.Controls.Add(this.grpInfo);
@@ -265,5 +279,6 @@ namespace HospitalManagement.Views.UserControls.Admin
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnAddNew;
     }
 }
