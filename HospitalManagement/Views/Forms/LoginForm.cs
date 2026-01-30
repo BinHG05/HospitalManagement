@@ -27,11 +27,11 @@ namespace HospitalManagement.Views.Forms
             IAuthService authService = new AuthService();
             _presenter = new LoginPresenter(this, authService);
 
-            // Thiết lập phong cách Luxury nổi bật
-            lblTitle.ForeColor = System.Drawing.Color.FromArgb(251, 191, 36); // Vàng Gold nổi bật
-            lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(148, 163, 184); // Bạc Slate hiện đại
-            lblLogo.ForeColor = System.Drawing.Color.FromArgb(251, 191, 36); 
-
+            // Thiết lập phong cách "Nhẹ nhàng & Sang trọng" (Charcoal Blue)
+            panelLeft.BackColor = System.Drawing.Color.FromArgb(44, 62, 80); // Màu xanh than trầm, sang trọng và dịu mắt
+            lblTitle.ForeColor = System.Drawing.Color.White;
+            lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(212, 212, 216); // Màu bạc xám nhẹ
+            lblLogo.ForeColor = System.Drawing.Color.White;
             // Thiết lập nội dung cho cả hai chức năng
             lblNoAccount.Text = "Chưa có tài khoản?";
             lnkRegister.Text = "Đăng ký ngay";
@@ -61,14 +61,20 @@ namespace HospitalManagement.Views.Forms
 
         public void OpenRegisterForm()
         {
+            this.Hide();
             var registerForm = new RegisterForm();
+            registerForm.StartPosition = FormStartPosition.CenterScreen;
             registerForm.ShowDialog();
+            this.Show();
         }
 
         public void OpenForgotPasswordForm()
         {
+            this.Hide();
             var forgotForm = new ForgotPasswordForm();
+            forgotForm.StartPosition = FormStartPosition.CenterScreen;
             forgotForm.ShowDialog();
+            this.Show();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)

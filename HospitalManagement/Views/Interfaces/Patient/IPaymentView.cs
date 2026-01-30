@@ -35,6 +35,7 @@ namespace HospitalManagement.Views.Interfaces.Patient
         public DateTime? AppointmentDate { get; set; }
         public string DepartmentName { get; set; }
         public string DoctorName { get; set; }
+        public string Description { get; set; }
 
         public string StatusDisplay
         {

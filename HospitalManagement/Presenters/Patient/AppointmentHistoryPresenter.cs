@@ -27,20 +27,23 @@ namespace HospitalManagement.Presenters.Patient
 
                 var appointments = _appointmentService.GetPatientAppointments(_patientId);
                 
-                var displayList = appointments.Select(a => new AppointmentDisplayInfo
-                {
-                    AppointmentId = a.AppointmentID,
-                    AppointmentDate = a.AppointmentDate,
-                    AppointmentNumber = a.AppointmentNumber,
-                    DepartmentName = a.Department?.DepartmentName ?? "N/A",
-                    DoctorName = a.Doctor?.User?.FullName ?? "N/A",
-                    ShiftName = a.Shift?.ShiftName ?? "N/A",
-                    ShiftStartTime = a.Shift?.StartTime,
-                    ShiftEndTime = a.Shift?.EndTime,
-                    Symptoms = a.Symptoms,
-                    Status = a.Status,
-                    CreatedAt = a.CreatedAt
-                });
+                var displayList = appointments
+                    .GroupBy(a => a.AppointmentID)
+                    .Select(g => g.First())
+                    .Select(a => new AppointmentDisplayInfo
+                    {
+                        AppointmentId = a.AppointmentID,
+                        AppointmentDate = a.AppointmentDate,
+                        AppointmentNumber = a.AppointmentNumber,
+                        DepartmentName = a.Department?.DepartmentName ?? "N/A",
+                        DoctorName = a.Doctor?.User?.FullName ?? "N/A",
+                        ShiftName = a.Shift?.ShiftName ?? "N/A",
+                        ShiftStartTime = a.Shift?.StartTime,
+                        ShiftEndTime = a.Shift?.EndTime,
+                        Symptoms = a.Symptoms,
+                        Status = a.Status,
+                        CreatedAt = a.CreatedAt
+                    });
 
                 // Apply filter
                 if (statusFilter != "all")

@@ -19,6 +19,8 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             this.panelHeader = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.panelWarning = new System.Windows.Forms.Panel();
+            this.lblWarning = new System.Windows.Forms.Label();
             this.panelFilter = new System.Windows.Forms.Panel();
             this.cmbStatusFilter = new System.Windows.Forms.ComboBox();
             this.lblFilter = new System.Windows.Forms.Label();
@@ -27,6 +29,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.colInvoiceNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colActions = new System.Windows.Forms.DataGridViewButtonColumn();
@@ -68,6 +71,30 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblTitle.Text = "💳 Thanh toán ";
             this.lblTitle.UseCompatibleTextRendering = true;
             // 
+            // panelWarning
+            // 
+            this.panelWarning.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(251)))), ((int)(((byte)(235)))));
+            this.panelWarning.Controls.Add(this.lblWarning);
+            this.panelWarning.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelWarning.Location = new System.Drawing.Point(0, 50);
+            this.panelWarning.Name = "panelWarning";
+            this.panelWarning.Size = new System.Drawing.Size(900, 40);
+            this.panelWarning.TabIndex = 4;
+            // 
+            // lblWarning
+            // 
+            this.lblWarning.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblWarning.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblWarning.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(185)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.lblWarning.Location = new System.Drawing.Point(0, 0);
+            this.lblWarning.Name = "lblWarning";
+            this.lblWarning.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
+            this.lblWarning.Size = new System.Drawing.Size(900, 40);
+            this.lblWarning.TabIndex = 0;
+            this.lblWarning.Text = "⚠️ Lưu ý: Vui lòng thanh toán tiền khám trước 19:30 ngày trước ngày khám để tránh " +
+    "hệ thống tự động hủy lịch.";
+            this.lblWarning.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // panelFilter
             // 
             this.panelFilter.BackColor = System.Drawing.Color.White;
@@ -75,7 +102,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelFilter.Controls.Add(this.cmbStatusFilter);
             this.panelFilter.Controls.Add(this.lblFilter);
             this.panelFilter.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelFilter.Location = new System.Drawing.Point(0, 50);
+            this.panelWarning.Location = new System.Drawing.Point(0, 50); // This will be adjusted by Dock
+            this.panelFilter.Location = new System.Drawing.Point(0, 90);
             this.panelFilter.Name = "panelFilter";
             this.panelFilter.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
             this.panelFilter.Size = new System.Drawing.Size(900, 50);
@@ -128,19 +156,20 @@ namespace HospitalManagement.Views.UserControls.Patient
                 this.colInvoiceNumber,
                 this.colDate,
                 this.colType,
+                this.colDescription,
                 this.colAmount,
                 this.colStatus,
                 this.colActions
             });
             this.dgvInvoices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvInvoices.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.dgvInvoices.Location = new System.Drawing.Point(0, 100);
+            this.dgvInvoices.Location = new System.Drawing.Point(0, 140);
             this.dgvInvoices.MultiSelect = false;
             this.dgvInvoices.Name = "dgvInvoices";
             this.dgvInvoices.ReadOnly = true;
             this.dgvInvoices.RowHeadersVisible = false;
             this.dgvInvoices.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvInvoices.Size = new System.Drawing.Size(900, 400);
+            this.dgvInvoices.Size = new System.Drawing.Size(900, 360);
             this.dgvInvoices.TabIndex = 2;
             this.dgvInvoices.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvInvoices_CellClick);
             // 
@@ -163,14 +192,21 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.colType.HeaderText = "Loại";
             this.colType.Name = "colType";
             this.colType.ReadOnly = true;
-            this.colType.Width = 140;
+            this.colType.Width = 100;
+            // 
+            // colDescription
+            // 
+            this.colDescription.HeaderText = "Nội dung";
+            this.colDescription.Name = "colDescription";
+            this.colDescription.ReadOnly = true;
+            this.colDescription.Width = 180;
             // 
             // colAmount
             // 
             this.colAmount.HeaderText = "Số tiền";
             this.colAmount.Name = "colAmount";
             this.colAmount.ReadOnly = true;
-            this.colAmount.Width = 150;
+            this.colAmount.Width = 120;
             // 
             // colStatus
             // 
@@ -209,7 +245,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblDetailsTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.lblDetailsTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblDetailsTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblDetailsTitle.ForeColor = System.Drawing.Color.White;
+            this.lblDetailsTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.lblDetailsTitle.Location = new System.Drawing.Point(0, 0);
             this.lblDetailsTitle.Name = "lblDetailsTitle";
             this.lblDetailsTitle.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
@@ -217,6 +253,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblDetailsTitle.TabIndex = 0;
             this.lblDetailsTitle.Text = "Chi tiết hóa đơn";
             this.lblDetailsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblDetailsTitle.UseCompatibleTextRendering = true;
             // 
             // lblDetailsContent
             // 
@@ -309,6 +346,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.Controls.Add(this.panelDetails);
             this.Controls.Add(this.dgvInvoices);
             this.Controls.Add(this.panelFilter);
+            this.Controls.Add(this.panelWarning);
             this.Controls.Add(this.panelHeader);
             this.Name = "UC_Payment";
             this.Size = new System.Drawing.Size(900, 500);
@@ -327,6 +365,8 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         private System.Windows.Forms.Panel panelHeader;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Panel panelWarning;
+        private System.Windows.Forms.Label lblWarning;
         private System.Windows.Forms.Panel panelFilter;
         private System.Windows.Forms.ComboBox cmbStatusFilter;
         private System.Windows.Forms.Label lblFilter;
@@ -335,6 +375,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn colType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
         private System.Windows.Forms.DataGridViewTextBoxColumn colAmount;
         private System.Windows.Forms.DataGridViewTextBoxColumn colStatus;
         private System.Windows.Forms.DataGridViewButtonColumn colActions;

@@ -1,7 +1,7 @@
 using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
-using HospitalManagement.Views.UserControls.Patient;
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;
