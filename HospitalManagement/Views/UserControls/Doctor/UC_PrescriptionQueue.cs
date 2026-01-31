@@ -51,7 +51,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                         {
                             e.ExaminationID,
                             PatientName = e.Patient.User.FullName,
-                            PatientInfo = (e.Patient.Gender == "male" ? "Nam" : "Nữ") + ", " + 
+                            PatientInfo = ((e.Patient.Gender == "Nam" || e.Patient.Gender == "male") ? "Nam" : (e.Patient.Gender == "Nữ" || e.Patient.Gender == "female") ? "Nữ" : "Khác") + ", " + 
                                          (DateTime.Today.Year - (e.Patient.DateOfBirth.HasValue ? e.Patient.DateOfBirth.Value.Year : DateTime.Today.Year)) + " tuổi",
                             Time = e.CreatedAt,
                             Diagnosis = e.PreliminaryDiagnosis,

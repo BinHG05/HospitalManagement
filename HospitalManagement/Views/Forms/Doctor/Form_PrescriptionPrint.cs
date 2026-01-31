@@ -12,12 +12,26 @@ namespace HospitalManagement.Views.Forms.Doctor
         private PrescriptionPatientDto _patient;
         private List<PrescriptionItemDto> _items;
         private decimal _totalAmount;
+        private decimal _discountAmount;
+        private decimal _finalAmount;
 
         public Form_PrescriptionPrint(PrescriptionPatientDto patient, IEnumerable<PrescriptionItemDto> items)
         {
             _patient = patient;
             _items = items.ToList();
             _totalAmount = _items.Sum(i => i.PricePerUnit * i.Quantity);
+            
+            // Tính giảm giá BHYT 50%
+            if (!string.IsNullOrWhiteSpace(_patient.InsuranceNumber))
+            {
+                _discountAmount = _totalAmount * 0.5m;
+            }
+            else
+            {
+                _discountAmount = 0;
+            }
+            _finalAmount = _totalAmount - _discountAmount;
+
             InitializeComponent();
         }
 
@@ -199,15 +213,17 @@ namespace HospitalManagement.Views.Forms.Doctor
             pnlTableContainer.Controls.Add(dgv);
 
             // FOOTER SECTION
-            Panel pnlFooter = new Panel { Dock = DockStyle.Bottom, Height = 200 };
+            Panel pnlFooter = new Panel { Dock = DockStyle.Bottom, Height = 280 };
             
             Label lblTotal = new Label
             {
-                Text = $"Tổng tiền tạm tính: {_totalAmount.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))} đ",
-                Font = new Font("Segoe UI", 14F, FontStyle.Bold),
+                Text = $"Tổng tiền: {_totalAmount.ToString("N0")} đ\n" +
+                       (_discountAmount > 0 ? $"BHYT: -{_discountAmount.ToString("N0")} đ\n" : "") +
+                       $"THÀNH TIỀN: {_finalAmount.ToString("N0")} đ",
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(185, 28, 28), // Deep Red
-                Size = new Size(650, 35),
-                Location = new Point(50, 10),
+                Size = new Size(650, 80),
+                Location = new Point(50, 0),
                 TextAlign = ContentAlignment.MiddleRight
             };
 
@@ -219,7 +235,7 @@ namespace HospitalManagement.Views.Forms.Doctor
                 Location = Point.Empty, // Will set later
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            lblSignDate.Location = new Point(350, 50);
+            lblSignDate.Location = new Point(350, 100);
 
             Label lblSignTitle = new Label
             {
@@ -227,7 +243,7 @@ namespace HospitalManagement.Views.Forms.Doctor
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(30, 41, 59),
                 Size = new Size(350, 25),
-                Location = new Point(350, 75),
+                Location = new Point(350, 125),
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
@@ -237,7 +253,7 @@ namespace HospitalManagement.Views.Forms.Doctor
                 Font = new Font("Segoe UI", 8F, FontStyle.Italic),
                 ForeColor = Color.Gray,
                 Size = new Size(350, 20),
-                Location = new Point(350, 100),
+                Location = new Point(350, 220),
                 TextAlign = ContentAlignment.MiddleCenter
             };
 

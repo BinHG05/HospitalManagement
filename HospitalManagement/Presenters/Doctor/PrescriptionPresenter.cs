@@ -72,8 +72,8 @@ namespace HospitalManagement.Presenters.Doctor
                             PatientId = _patientId,
                             FullName = exam.PatientName,
                             Age = age,
-                            Gender = exam.Gender == "male" ? "Nam" : 
-                                     exam.Gender == "female" ? "Nữ" : "Khác",
+                            Gender = (exam.Gender == "Nam" || exam.Gender == "male") ? "Nam" : 
+                                     (exam.Gender == "Nữ" || exam.Gender == "female") ? "Nữ" : "Khác",
                             Diagnosis = exam.PreliminaryDiagnosis,
                             Address = exam.Address,
                             Phone = exam.Phone,
@@ -224,6 +224,14 @@ namespace HospitalManagement.Presenters.Doctor
                     }
 
                     // Tự động tạo hóa đơn tiền thuốc cho bệnh nhân
+                    var patient = context.Patients.Find(_patientId);
+                    decimal discount = 0;
+                    if (patient != null && !string.IsNullOrWhiteSpace(patient.InsuranceNumber))
+                    {
+                        discount = totalAmount * 0.5m; // Giảm 50% nếu có BHYT
+                    }
+                    var finalAmount = totalAmount - discount;
+
                     var existingPayment = context.Payments
                         .FirstOrDefault(p => p.ReferenceID == _recordId && p.PaymentType == "medicine");
 
@@ -234,7 +242,7 @@ namespace HospitalManagement.Presenters.Doctor
                             PatientID = _patientId,
                             ReferenceID = _recordId,
                             PaymentType = "medicine",
-                            Amount = totalAmount,
+                            Amount = finalAmount,
                             PaymentStatus = "pending",
                             CreatedAt = DateTime.Now
                         };
@@ -247,7 +255,8 @@ namespace HospitalManagement.Presenters.Doctor
                             InvoiceNumber = "MED" + DateTime.Now.ToString("yyyyMMdd") + _recordId.ToString().PadLeft(4, '0'),
                             InvoiceDate = DateTime.Now,
                             TotalAmount = totalAmount,
-                            FinalAmount = totalAmount,
+                            DiscountAmount = discount,
+                            FinalAmount = finalAmount,
                             InvoiceStatus = "unpaid",
                             CreatedAt = DateTime.Now
                         };
@@ -255,12 +264,13 @@ namespace HospitalManagement.Presenters.Doctor
                     }
                     else
                     {
-                        existingPayment.Amount = totalAmount;
+                        existingPayment.Amount = finalAmount;
                         var invoice = context.Invoices.FirstOrDefault(i => i.PaymentID == existingPayment.PaymentID);
                         if (invoice != null)
                         {
                             invoice.TotalAmount = totalAmount;
-                            invoice.FinalAmount = totalAmount;
+                            invoice.DiscountAmount = discount;
+                            invoice.FinalAmount = finalAmount;
                         }
                     }
 
@@ -301,7 +311,7 @@ namespace HospitalManagement.Presenters.Doctor
                         {
                             FullName = ex.Patient.User.FullName,
                             Diagnosis = ex.PreliminaryDiagnosis,
-                            Gender = ex.Patient.Gender == "male" ? "Nam" : "Nữ",
+                            Gender = (ex.Patient.Gender == "Nam" || ex.Patient.Gender == "male") ? "Nam" : "Nữ",
                             Age = ex.Patient.DateOfBirth.HasValue ? DateTime.Today.Year - ex.Patient.DateOfBirth.Value.Year : (int?)null,
                             Address = ex.Patient.Address,
                             Phone = ex.Patient.User.Phone,

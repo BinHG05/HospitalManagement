@@ -61,7 +61,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                         index++,
                         exam.PatientName,
                         exam.Age,
-                        exam.Gender == "male" ? "Nam" : (exam.Gender == "female" ? "Nữ" : exam.Gender),
+                        (exam.Gender == "Nam" || exam.Gender == "male") ? "Nam" : (exam.Gender == "Nữ" || exam.Gender == "female") ? "Nữ" : exam.Gender,
                         exam.DoctorName,
                         GetStatusDisplay(exam.Status),
                         GetServiceStatusDisplay(exam.ServiceStatus),

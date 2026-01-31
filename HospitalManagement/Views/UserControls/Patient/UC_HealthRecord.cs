@@ -9,16 +9,51 @@ namespace HospitalManagement.Views.UserControls.Patient
     public partial class UC_HealthRecord : UserControl, IHealthRecordView
     {
         private HealthRecordPresenter _presenter;
+        private int _patientId;
+        private System.Windows.Forms.Button btnUpdateInfo;
 
         public UC_HealthRecord()
         {
             InitializeComponent();
             tabControl.SelectedIndexChanged += TabControl_SelectedIndexChanged;
             dgvHistory.CellClick += DgvHistory_CellClick;
+            InitializeUpdateButton();
+        }
+
+        private void InitializeUpdateButton()
+        {
+            btnUpdateInfo = new System.Windows.Forms.Button
+            {
+                Text = "⚙️ Cập nhật thông tin",
+                Size = new System.Drawing.Size(180, 40),
+                Location = new System.Drawing.Point(750, 20),
+                BackColor = System.Drawing.Color.FromArgb(241, 245, 249),
+                ForeColor = System.Drawing.Color.FromArgb(59, 130, 246),
+                FlatStyle = FlatStyle.Flat,
+                Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold)
+            };
+            btnUpdateInfo.FlatAppearance.BorderSize = 0;
+            btnUpdateInfo.Click += BtnUpdateInfo_Click;
+            
+            // Add to the profile panel header area
+            panelPersonalHeader.Controls.Add(btnUpdateInfo);
+            btnUpdateInfo.BringToFront();
+        }
+
+        private void BtnUpdateInfo_Click(object sender, EventArgs e)
+        {
+            using (var form = new HospitalManagement.Views.Forms.Form_EditPatient(_patientId))
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    _presenter.LoadProfile();
+                }
+            }
         }
 
         public void Initialize(int patientId)
         {
+            _patientId = patientId;
             _presenter = new HealthRecordPresenter(this, patientId);
             _presenter.LoadProfile();
         }

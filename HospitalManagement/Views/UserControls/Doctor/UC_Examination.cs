@@ -69,7 +69,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             lblPatientName.Text = patient.PatientName;
             lblPatientDetails.Text =
                 $"🎂 Ngày sinh: {patient.DateOfBirth:dd/MM/yyyy}\n\n" +
-                $"👤 Giới tính: {(patient.Gender == "male" ? "Nam" : patient.Gender == "female" ? "Nữ" : patient.Gender)}\n\n" +
+                $"👤 Giới tính: {((patient.Gender == "Nam" || patient.Gender == "male") ? "Nam" : (patient.Gender == "Nữ" || patient.Gender == "female") ? "Nữ" : patient.Gender)}\n\n" +
                 $"🩸 Nhóm máu: {patient.BloodType ?? "N/A"}\n\n" +
                 $"💳 Số BHYT: {patient.InsuranceNumber ?? "N/A"}\n\n" +
                 $"🏠 Địa chỉ:\n{patient.Address ?? "N/A"}\n\n" +
