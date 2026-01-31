@@ -63,6 +63,37 @@ namespace HospitalManagement.Services.Implementations
                     else if (info.PaymentType == "medicine")
                     {
                         info.Description = "Mua thuốc theo đơn";
+                        
+                        // Trace back to get Doctor, Department, Diagnosis and Prescription Items
+                        if (i.Payment?.ReferenceID != null)
+                        {
+                            int recordId = i.Payment.ReferenceID.Value;
+                            var detail = context.MedicalRecords
+                                .Include(mr => mr.Prescriptions)
+                                .ThenInclude(p => p.Medicine)
+                                .Where(mr => mr.RecordID == recordId)
+                                .Select(mr => new { 
+                                    DocName = mr.Examination.Doctor.User.FullName,
+                                    DeptName = mr.Examination.Doctor.Department.DepartmentName,
+                                    Diagnosis = mr.Diagnosis,
+                                    PrescriptionItems = mr.Prescriptions.Select(p => new PrescriptionItemDto {
+                                        MedicineName = p.Medicine.MedicineName,
+                                        Dosage = p.Dosage,
+                                        Quantity = p.Quantity,
+                                        Instructions = p.Instructions,
+                                        Price = p.Medicine.PricePerUnit ?? 0
+                                    }).ToList()
+                                })
+                                .FirstOrDefault();
+                            
+                            if (detail != null)
+                            {
+                                info.DoctorName = detail.DocName;
+                                info.DepartmentName = detail.DeptName;
+                                info.Diagnosis = detail.Diagnosis;
+                                info.Items = detail.PrescriptionItems;
+                            }
+                        }
                     }
                     else if (info.PaymentType == "service")
                     {

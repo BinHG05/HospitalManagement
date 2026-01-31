@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using HospitalManagement.Views.Forms.Patient;
 
 namespace HospitalManagement.Views.UserControls.Patient
 {
@@ -99,18 +100,37 @@ namespace HospitalManagement.Views.UserControls.Patient
                                $"(Vui lòng thanh toán trước thời gian này để tránh bị hủy lịch)";
             }
 
-            lblDetailsContent.Text =
+            string details = 
                 $"📄 Số hóa đơn: {invoice.InvoiceNumber}\n\n" +
                 $"📅 Ngày: {invoice.InvoiceDate:dd/MM/yyyy}\n\n" +
                 $"📋 Loại: {invoice.PaymentTypeDisplay}\n\n" +
-                $"🔍 Nội dung: {invoice.Description ?? "-"}\n\n" +
-                $"🏥 Khoa: {invoice.DepartmentName ?? "N/A"}\n\n" +
-                $"👨‍⚕️ Bác sĩ: {invoice.DoctorName ?? "N/A"}\n\n" +
-                $"💰 Tổng tiền: {invoice.TotalAmount:N0} đ\n" +
-                $"🏷️ Giảm giá: {invoice.DiscountAmount:N0} đ\n" +
-                $"💵 Thành tiền: {invoice.FinalAmount:N0} đ\n\n" +
-                $"📊 Trạng thái: {invoice.StatusDisplay}" +
-                deadlineInfo;
+                $"🔍 Nội dung: {invoice.Description ?? "-"}\n\n";
+
+            if (invoice.PaymentType == "medicine")
+            {
+                details += $"🩺 Chẩn đoán: {invoice.Diagnosis ?? "Chưa có"}\n\n" +
+                           $"💊 CHI TIẾT ĐƠN THUỐC:\n" +
+                           $"--------------------------------------------------------------------------\n";
+                
+                foreach (var item in invoice.Items)
+                {
+                    details += $"• {item.MedicineName}\n" +
+                               $"  Số lượng: {item.Quantity}  |  Liều dùng: {item.Dosage}\n" +
+                               $"  HD: {item.Instructions}\n\n";
+                }
+                details += $"--------------------------------------------------------------------------\n\n";
+            }
+
+            details += $"🏥 Khoa: {invoice.DepartmentName ?? "N/A"}\n\n" +
+                       $"👨‍⚕️ Bác sĩ: {invoice.DoctorName ?? "N/A"}\n\n" +
+                       $"💰 Tổng tiền: {invoice.TotalAmount:N0} đ\n" +
+                       $"🏷️ Giảm giá: {invoice.DiscountAmount:N0} đ\n" +
+                       $"💵 Thành tiền: {invoice.FinalAmount:N0} đ\n\n" +
+                       $"--------------------------------------------------------------------------\n" +
+                       $"           Ký tên: BS. {invoice.DoctorName?.Replace("BS. ", "")} (Đã ký số)       \n" +
+                       $"--------------------------------------------------------------------------";
+
+            lblDetailsContent.Text = details + deadlineInfo;
 
             btnPay.Visible = invoice.CanPay;
             cmbPaymentMethod.Visible = invoice.CanPay;
@@ -175,6 +195,22 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             if (_selectedInvoice == null) return;
 
+            var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "cash";
+
+            if (paymentMethod == "bank_transfer")
+            {
+                using (var qrForm = new Form_QRPayment(_selectedInvoice.FinalAmount.ToString("N0"), _selectedInvoice.InvoiceNumber))
+                {
+                    if (qrForm.ShowDialog() == DialogResult.OK)
+                    {
+                        _presenter.PayInvoice(_selectedInvoice.InvoiceId, "bank_transfer");
+                        ShowSuccess("Thanh toán qua chuyển khoản thành công!");
+                        _presenter.LoadInvoices(SelectedStatusFilter);
+                    }
+                }
+                return;
+            }
+
             var result = MessageBox.Show(
                 $"Xác nhận thanh toán hóa đơn {_selectedInvoice.InvoiceNumber}?\n" +
                 $"Số tiền: {_selectedInvoice.FinalAmount:N0} đ",
@@ -184,7 +220,6 @@ namespace HospitalManagement.Views.UserControls.Patient
 
             if (result == DialogResult.Yes)
             {
-                var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "cash";
                 _presenter.PayInvoice(_selectedInvoice.InvoiceId, paymentMethod);
             }
         }

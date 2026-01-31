@@ -41,6 +41,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             dtpSelectDate.Value = DateTime.Today;
         }
 
+
         public void Initialize(int patientId)
         {
             _presenter = new AppointmentBookingPresenter(this, patientId);
@@ -147,11 +148,45 @@ namespace HospitalManagement.Views.UserControls.Patient
                     $"Đặt lịch thành công!\n" +
                     $"Số tiền cần thanh toán: {amount}\n\n" +
                     $"⚠️ LƯU Ý: Vì bạn đặt lịch khám vào HÔM NAY, bạn cần thực hiện thanh toán ngay bây giờ để hoàn tất xác thực lịch hẹn.",
-                    "Yêu cầu thanh toán",
+                     "Yêu cầu thanh toán",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
 
-                _presenter.ConfirmPayment(appointmentId);
+                using (var selectForm = new Forms.Patient.Form_PaymentMethodSelection())
+                {
+                    if (selectForm.ShowDialog() == DialogResult.OK)
+                    {
+                        string method = selectForm.SelectedMethod;
+                        if (method == "Chuyển khoản")
+                        {
+                            using (var qrForm = new Forms.Patient.Form_QRPayment(amount, "APT_PAY_" + appointmentId))
+                            {
+                                if (qrForm.ShowDialog() == DialogResult.OK)
+                                {
+                                    _presenter.ConfirmPayment(appointmentId, method);
+                                }
+                                else
+                                {
+                                    // User closed QR form without "success"
+                                    ShowSuccess($"Lịch hẹn đã được ghi nhận (Chờ thanh toán).\nVui lòng thực hiện thanh toán ngay tại quầy hoặc mục Thanh toán để xác nhận lịch khám hôm nay.");
+                                    ClearSelection();
+                                    GoBackToWeeklyView();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _presenter.ConfirmPayment(appointmentId, method);
+                        }
+                    }
+                    else
+                    {
+                        // User cancelled payment method selection
+                        ShowSuccess($"Lịch hẹn đã được ghi nhận (Chờ thanh toán).\nVui lòng hoàn tất thanh toán sớm để xác nhận lịch khám.");
+                        ClearSelection();
+                        GoBackToWeeklyView();
+                    }
+                }
             }
             else
             {
@@ -168,7 +203,27 @@ namespace HospitalManagement.Views.UserControls.Patient
 
                 if (result == DialogResult.Yes)
                 {
-                    _presenter.ConfirmPayment(appointmentId);
+                    using (var selectForm = new Forms.Patient.Form_PaymentMethodSelection())
+                    {
+                        if (selectForm.ShowDialog() == DialogResult.OK)
+                        {
+                            string method = selectForm.SelectedMethod;
+                            if (method == "Chuyển khoản")
+                            {
+                                using (var qrForm = new Forms.Patient.Form_QRPayment(amount, "APT_PAY_" + appointmentId))
+                                {
+                                    if (qrForm.ShowDialog() == DialogResult.OK)
+                                    {
+                                        _presenter.ConfirmPayment(appointmentId, method);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _presenter.ConfirmPayment(appointmentId, method);
+                            }
+                        }
+                    }
                 }
                 else
                 {

@@ -121,14 +121,10 @@ namespace HospitalManagement.Presenters.Patient
                     // Show Payment Dialog instead of Success immediately
                     _view.ShowPaymentPrompt(appointmentId, "150,000 VND");
                 }
-                else
-                {
-                    _view.ShowError("Không thể đặt lịch. Số thứ tự này có thể đã được đặt.");
-                }
             }
             catch (Exception ex)
             {
-                _view.ShowError($"Lỗi đặt lịch: {ex.Message}");
+                _view.ShowError(ex.Message);
             }
             finally
             {
@@ -136,12 +132,12 @@ namespace HospitalManagement.Presenters.Patient
             }
         }
 
-        public void ConfirmPayment(int appointmentId)
+        public void ConfirmPayment(int appointmentId, string method)
         {
             try
             {
                 _view.ShowLoading(true);
-                bool success = _appointmentService.ConfirmAppointment(appointmentId);
+                bool success = _appointmentService.ConfirmAppointment(appointmentId, method);
                 
                 if (success)
                 {

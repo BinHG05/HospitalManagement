@@ -16,6 +16,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private Button _activeMenuButton;
         private Timer _statusTimer;
         private System.Collections.Generic.HashSet<int> _notifiedAppointments = new System.Collections.Generic.HashSet<int>();
+        private System.Collections.Generic.HashSet<int> _notifiedPayments = new System.Collections.Generic.HashSet<int>();
 
         public Users CurrentUser { get; set; }
 
@@ -35,6 +36,23 @@ namespace HospitalManagement.Views.Forms.Patient
             SetActiveButton(btnHome);
             LoadHomeContent();
             InitializeStatusTimer();
+            SetDashboardIcon();
+        }
+
+        private void SetDashboardIcon()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "patient_icon.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    using (Bitmap bitmap = new Bitmap(iconPath))
+                    {
+                        this.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+            }
+            catch { /* Ignore icon errors */ }
         }
 
         private void InitializeStatusTimer()
@@ -67,6 +85,20 @@ namespace HospitalManagement.Views.Forms.Patient
                         _notifiedAppointments.Add(activeAppointment.AppointmentID);
                         ShowTurnNotification(activeAppointment);
                     }
+
+                    // Check for pending medicine payments
+                    var pendingPayment = context.Payments
+                        .Where(p => p.PatientID == patientId 
+                                 && p.PaymentStatus == "pending" 
+                                 && p.PaymentType == "medicine")
+                        .OrderByDescending(p => p.CreatedAt)
+                        .FirstOrDefault();
+
+                    if (pendingPayment != null && !_notifiedPayments.Contains(pendingPayment.PaymentID))
+                    {
+                        _notifiedPayments.Add(pendingPayment.PaymentID);
+                        ShowPaymentNotification(pendingPayment);
+                    }
                 }
             }
             catch (Exception ex)
@@ -83,6 +115,16 @@ namespace HospitalManagement.Views.Forms.Patient
                             $"Số thứ tự của bạn: {appointment.AppointmentNumber}";
             
             MessageBox.Show(this, message, "Thông báo gọi khám", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ShowPaymentNotification(Payments payment)
+        {
+            string message = $"💊 THÔNG BÁO THANH TOÁN ĐƠN THUỐC\n\n" +
+                            $"Bác sĩ đã kê đơn thuốc cho bạn.\n" +
+                            $"Số tiền: {payment.Amount:N0} đ\n\n" +
+                            $"Mời bạn chuyển đến mục 'Thanh toán' để hoàn tất và nhận thuốc.";
+            
+            MessageBox.Show(this, message, "Thông báo thanh toán", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void InitializeUserInfo()

@@ -13,6 +13,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private PatientQueuePresenter _presenter;
         private int _selectedAppointmentId;
         private Action<int> _onStartExamination;
+        private Timer _refreshTimer;
 
         public int SelectedAppointmentId => _selectedAppointmentId;
 
@@ -20,6 +21,20 @@ namespace HospitalManagement.Views.UserControls.Doctor
         {
             InitializeComponent();
             lblDate.Text = $"Hôm nay: {DateTime.Today:dd/MM/yyyy}";
+            InitializeTimer();
+        }
+
+        private void InitializeTimer()
+        {
+            _refreshTimer = new Timer();
+            _refreshTimer.Interval = 5000; // 5 seconds
+            _refreshTimer.Tick += (s, e) => {
+                if (this.Visible && !panelDetails.Visible)
+                {
+                    _presenter?.LoadQueue();
+                }
+            };
+            _refreshTimer.Start();
         }
 
         public void Initialize(int doctorId, Action<int> onStartExamination = null)

@@ -25,6 +25,23 @@ namespace HospitalManagement.Views.Forms.Admin
             InitializeUserInfo();
             SetActiveButton(btnHome);
             LoadHomeContent();
+            SetDashboardIcon();
+        }
+
+        private void SetDashboardIcon()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "admin_icon.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    using (Bitmap bitmap = new Bitmap(iconPath))
+                    {
+                        this.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+            }
+            catch { /* Ignore icon errors */ }
         }
 
         private void InitializeUserInfo()

@@ -265,6 +265,12 @@
     <Compile Include="Views\Forms\Form_EditPatient.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Views\Forms\Patient\Form_QRPayment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Forms\Patient\Form_PaymentMethodSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Views\Forms\Admin\AdminDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -443,7 +449,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Icons\" />
+    <Content Include="Assets\Icons\doctor_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Icons\patient_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Icons\admin_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Icons\vcb_qr_payment.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Folder Include="Assets\Images\" />
     <Folder Include="Infrastructure\Logging\" />
     <Folder Include="Infrastructure\Security\" />

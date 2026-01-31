@@ -13,6 +13,8 @@ namespace HospitalManagement.Views.Forms.Doctor
     {
         private readonly DashboardPresenter _presenter;
         private Button _activeMenuButton;
+        private Timer _statusTimer;
+        private System.Collections.Generic.HashSet<int> _notifiedSuccessPayments = new System.Collections.Generic.HashSet<int>();
 
         public Users CurrentUser { get; set; }
 
@@ -26,6 +28,73 @@ namespace HospitalManagement.Views.Forms.Doctor
             InitializeUserInfo();
             SetActiveButton(btnHome);
             LoadHomeContent();
+            SetDashboardIcon();
+            InitializeStatusTimer();
+        }
+
+        private void InitializeStatusTimer()
+        {
+            _statusTimer = new Timer();
+            _statusTimer.Interval = 10000; // Check every 10 seconds
+            _statusTimer.Tick += StatusTimer_Tick;
+            _statusTimer.Start();
+        }
+
+        private void StatusTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                var doctorId = GetDoctorId();
+                if (doctorId <= 0) return;
+
+                using (var context = new Models.EF.HospitalDbContext())
+                {
+                    // Check for recently paid medicine prescriptions assigned by this doctor
+                    // We link MedicalRecord -> Examination -> Doctor
+                    var completedPayment = (from p in context.Payments
+                                           join r in context.MedicalRecords on p.ReferenceID equals r.RecordID
+                                           join ex in context.Examinations on r.ExaminationID equals ex.ExaminationID
+                                           where ex.DoctorID == doctorId 
+                                              && p.PaymentStatus == "completed" 
+                                              && p.PaymentType == "medicine"
+                                              && p.PaymentDate >= DateTime.Today
+                                           orderby p.PaymentDate descending
+                                           select new { p.PaymentID, PatientName = p.Patient.User.FullName, p.Amount }).FirstOrDefault();
+
+                    if (completedPayment != null && !_notifiedSuccessPayments.Contains(completedPayment.PaymentID))
+                    {
+                        _notifiedSuccessPayments.Add(completedPayment.PaymentID);
+                        ShowPaymentSuccessNotification(completedPayment.PatientName, completedPayment.Amount);
+                    }
+                }
+            }
+            catch { /* Silent */ }
+        }
+
+        private void ShowPaymentSuccessNotification(string patientName, decimal? amount)
+        {
+            string message = $"✅ THANH TOÁN THÀNH CÔNG\n\n" +
+                            $"Bệnh nhân: {patientName}\n" +
+                            $"Đã thanh toán đơn thuốc: {amount:N0} đ\n\n" +
+                            $"Hệ thống đã cập nhật trạng thái hồ sơ.";
+            
+            MessageBox.Show(this, message, "Thông báo hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void SetDashboardIcon()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "doctor_icon.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    using (Bitmap bitmap = new Bitmap(iconPath))
+                    {
+                        this.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+            }
+            catch { /* Ignore icon errors */ }
         }
 
         private void InitializeUserInfo()

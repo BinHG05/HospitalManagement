@@ -31,7 +31,7 @@ namespace HospitalManagement.Services.Interfaces
 
         // Hủy lịch hẹn
         // Xác nhận lịch hẹn (Thanh toán)
-        bool ConfirmAppointment(int appointmentId);
+        bool ConfirmAppointment(int appointmentId, string paymentMethod);
 
         bool CancelAppointment(int appointmentId);
     }

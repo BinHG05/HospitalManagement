@@ -152,14 +152,54 @@ namespace HospitalManagement.Services.Implementations
                         .FirstOrDefault(ds => ds.ScheduleID == scheduleId);
 
                     if (schedule == null) return -1;
+                    
+                    var newShift = context.Shifts.Find(schedule.ShiftID);
+                    if (newShift == null) return -1;
 
-                    // Kiểm tra STT đã được đặt chưa (Bất kỳ trạng thái nào trừ 'cancelled')
+                    // 1. Kiểm tra quy tắc cùng khoa: Chỉ được 1 lịch chưa hoàn thành/hủy
+                    var activeStatuses = new[] { "pending", "confirmed", "examining", "service_pending", "service_completed" };
+                    var hasActiveInSameDept = context.Appointments.Any(a => 
+                        a.PatientID == patientId 
+                        && a.DepartmentID == schedule.DepartmentID 
+                        && a.AppointmentDate == appointmentDate.Date
+                        && activeStatuses.Contains(a.Status));
+
+                    if (hasActiveInSameDept)
+                    {
+                         throw new InvalidOperationException("Bạn đã có một lịch hẹn đang chờ khám tại khoa này hôm nay. Vui lòng hoàn thành lượt khám hiện tại trước khi đặt lịch mới cùng khoa.");
+                    }
+
+                    // 2. Kiểm tra quy tắc trùng thời gian: Không được đặt 2 lịch có khung giờ chồng lấn nhau
+                    var sameDayAppointments = context.Appointments
+                        .Include(a => a.Shift)
+                        .Where(a => a.PatientID == patientId 
+                                 && a.AppointmentDate == appointmentDate.Date
+                                 && a.Status != "cancelled")
+                        .ToList();
+
+                    foreach (var appt in sameDayAppointments)
+                    {
+                        var existingShift = appt.Shift;
+                        if (existingShift != null)
+                        {
+                            // Kiểm tra chồng lấn: (Start1 < End2) && (Start2 < End1)
+                            if (newShift.StartTime < existingShift.EndTime && existingShift.StartTime < newShift.EndTime)
+                            {
+                                throw new InvalidOperationException($"Không thể đặt lịch vì trùng thời gian với lịch khám lúc {existingShift.StartTime:hh\\:mm} - {existingShift.EndTime:hh\\:mm} (Khoa {appt.DepartmentID}). Vui lòng chọn khung giờ khác.");
+                            }
+                        }
+                    }
+
+                    // 3. Kiểm tra số thứ tự đã có người đặt chưa
                     var isBooked = context.Appointments.Any(a => 
                         a.ScheduleID == scheduleId 
                         && a.AppointmentNumber == queueNumber
                         && a.Status != "cancelled");
 
-                    if (isBooked) return -1;
+                    if (isBooked)
+                    {
+                        throw new InvalidOperationException("Số thứ tự này vừa mới được người khác đặt. Vui lòng chọn số khác hoặc tải lại trang.");
+                    }
 
                     // Tạo appointment mới
                     var appointment = new Appointments
@@ -224,7 +264,7 @@ namespace HospitalManagement.Services.Implementations
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"BookAppointment Error: {ex.Message}");
-                return -1;
+                throw; // Re-throw to propagate the specific error message
             }
         }
 
@@ -266,7 +306,7 @@ namespace HospitalManagement.Services.Implementations
                 return false;
             }
         }
-        public bool ConfirmAppointment(int appointmentId)
+        public bool ConfirmAppointment(int appointmentId, string paymentMethod)
         {
             try
             {
@@ -277,8 +317,29 @@ namespace HospitalManagement.Services.Implementations
 
                     appointment.Status = "confirmed";
                     appointment.UpdatedAt = DateTime.Now;
-                    context.SaveChanges();
 
+                    // Update associated Payment
+                    var payment = context.Payments.FirstOrDefault(p => p.AppointmentID == appointmentId);
+                    if (payment != null)
+                    {
+                        string method = "cash";
+                        if (paymentMethod.Contains("Chuyển khoản")) method = "bank_transfer";
+                        else if (paymentMethod.Contains("Thẻ")) method = "credit_card";
+                        else if (paymentMethod.Contains("Ví")) method = "ewallet";
+
+                        payment.PaymentStatus = "completed";
+                        payment.PaymentMethod = method;
+                        payment.PaymentDate = DateTime.Now;
+
+                        // Update associated Invoice
+                        var invoice = context.Invoices.FirstOrDefault(i => i.PaymentID == payment.PaymentID);
+                        if (invoice != null)
+                        {
+                            invoice.InvoiceStatus = "paid";
+                        }
+                    }
+
+                    context.SaveChanges();
                     return true;
                 }
             }
