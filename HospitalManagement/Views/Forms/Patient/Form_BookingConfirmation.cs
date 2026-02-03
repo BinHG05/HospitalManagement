@@ -12,14 +12,16 @@ namespace HospitalManagement.Views.Forms.Patient
         private DateTime _date;
         private string _timeSlot;
         private int _queueNumber;
+        private string _roomNumber;
 
-        public Form_BookingConfirmation(PatientProfileInfo profile, string deptName, DateTime date, string timeSlot, int queueNumber)
+        public Form_BookingConfirmation(PatientProfileInfo profile, string deptName, DateTime date, string timeSlot, int queueNumber, string roomNumber)
         {
             _profile = profile;
             _deptName = deptName;
             _date = date;
             _timeSlot = timeSlot;
             _queueNumber = queueNumber;
+            _roomNumber = roomNumber;
             InitializeComponent();
         }
 
@@ -105,7 +107,7 @@ namespace HospitalManagement.Views.Forms.Patient
 
             var lblLocation = new Label
             {
-                Text = "Phòng 102 - Tầng 1 Khu A",
+                Text = string.IsNullOrEmpty(_roomNumber) ? "Đang cập nhật - Tầng 1 Khu A" : $"Phòng {_roomNumber} - Tầng 1 Khu A",
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(34, 197, 94), // Màu xanh lá
                 TextAlign = ContentAlignment.MiddleCenter,

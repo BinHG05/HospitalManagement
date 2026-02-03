@@ -13,7 +13,8 @@ namespace HospitalManagement.Services.Interfaces
         IEnumerable<QueuePatientInfo> GetTodayQueue(int doctorId);
         IEnumerable<ActiveExamInfo> GetActiveExaminations(int doctorId);
         IEnumerable<HospitalActiveExamInfo> GetAllActiveExaminations();
-        bool AssignService(int appointmentId, string serviceName, int? targetDoctorId);
+        IEnumerable<MedicalServices> GetAllServices();
+        bool AssignService(int appointmentId, int serviceId);
 
         // Get patient by appointment
         PatientExamInfo GetPatientForExam(int appointmentId);

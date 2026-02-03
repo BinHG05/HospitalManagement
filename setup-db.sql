@@ -24,7 +24,7 @@ CREATE TABLE Users (
     Email VARCHAR(100) UNIQUE NOT NULL,
     Phone VARCHAR(15) UNIQUE NOT NULL,
     FullName NVARCHAR(100) NOT NULL,
-    Role VARCHAR(20) NOT NULL CHECK (Role IN ('patient', 'doctor', 'admin')),
+    Role VARCHAR(20) NOT NULL CHECK (Role IN ('patient', 'doctor', 'admin', 'pharmacist')),
     CreatedAt DATETIME DEFAULT GETDATE(),
     Status VARCHAR(20) DEFAULT 'active'
 );
@@ -64,7 +64,8 @@ CREATE TABLE Doctors (
     IsActive BIT DEFAULT 1,
     CreatedAt DATETIME DEFAULT GETDATE(),
     MinShiftsPerMonth INT DEFAULT 15,
-    MaxShiftsPerMonth INT DEFAULT 25
+    MaxShiftsPerMonth INT DEFAULT 25,
+    DefaultRoom NVARCHAR(50)
 );
 
 ALTER TABLE Departments ADD CONSTRAINT FK_Departments_HeadDoctor 
@@ -94,6 +95,7 @@ CREATE TABLE DoctorSchedules (
     ApprovedByUserID INT FOREIGN KEY REFERENCES Users(UserID),
     ApprovedAt DATETIME,
     RejectionReason NVARCHAR(500),
+    RoomNumber NVARCHAR(50),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
@@ -108,6 +110,7 @@ CREATE TABLE Appointments (
     AppointmentNumber INT,
     Symptoms NVARCHAR(500),
     Status VARCHAR(20) DEFAULT 'pending',
+    RoomNumber NVARCHAR(50),
     CreatedAt DATETIME DEFAULT GETDATE(),
     UpdatedAt DATETIME DEFAULT GETDATE()
 );
@@ -160,6 +163,8 @@ CREATE TABLE MedicalRecords (
     RecordDate DATETIME DEFAULT GETDATE(),
     Diagnosis NVARCHAR(MAX),
     TreatmentPlan NVARCHAR(MAX),
+    Recommendations NVARCHAR(MAX),
+    CreatedBy INT,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
@@ -253,6 +258,7 @@ INSERT INTO Users (Username, Password, Email, Phone, FullName, Role, Status) VAL
 ('doctor8', '123', 'dr8@hosp.com', '0901234008', N'BS. Phạm Nhật Vượng', 'doctor', 'active'),
 ('doctor9', '123', 'dr9@hosp.com', '0901234009', N'BS. Trương Mỹ Lan', 'doctor', 'active'),
 ('doctor10', '123', 'dr10@hosp.com', '0901234010', N'BS. Đỗ Anh Dũng', 'doctor', 'active'),
+('pharmacist1', '123', 'ph1@hosp.com', '0701234001', N'Dược sĩ Lê Thị Hà', 'pharmacist', 'active'),
 ('newuser', '123', 'new@gmail.com', '0999888777', N'Nguyễn Văn Người Mới', 'patient', 'active');
 
 -- 3.2. Departments
@@ -269,17 +275,17 @@ INSERT INTO Departments (DepartmentName, Description, Location, Phone) VALUES
 (N'Khoa Xét Nghiệm', N'Thực hiện các xét nghiệm y tế', N'Tầng hầm - Khu D', '028222333');
 
 -- 3.3. Doctors
-INSERT INTO Doctors (UserID, Specialization, DepartmentID, LicenseNumber, YearsOfExperience, ConsultationFee, IsActive) VALUES
-(3, N'Nội tổng quát', 1, 'LIC001', 15, 200000, 1),
-(4, N'Ngoại lồng ngực', 2, 'LIC002', 10, 300000, 1),
-(5, N'Nhi khoa', 3, 'LIC003', 8, 150000, 1),
-(6, N'Sản phụ khoa', 4, 'LIC004', 12, 250000, 1),
-(7, N'Tim mạch', 5, 'LIC005', 20, 500000, 1),
-(16, N'Mắt kĩ thuật cao', 6, 'LIC011', 10, 200000, 1),
-(17, N'Tai Mũi Họng', 7, 'LIC012', 12, 180000, 1),
-(18, N'Răng Hàm Mặt', 8, 'LIC013', 15, 250000, 1),
-(19, N'Da Liễu chuyên sâu', 9, 'LIC014', 20, 300000, 1),
-(20, N'Xét nghiệm', 10, 'LIC015', 8, 150000, 1);
+INSERT INTO Doctors (UserID, Specialization, DepartmentID, LicenseNumber, YearsOfExperience, ConsultationFee, IsActive, DefaultRoom) VALUES
+(3, N'Nội tổng quát', 1, 'LIC001', 15, 200000, 1, N'P.101'),
+(4, N'Ngoại lồng ngực', 2, 'LIC002', 10, 300000, 1, N'P.202'),
+(5, N'Nhi khoa', 3, 'LIC003', 8, 150000, 1, N'P.105'),
+(6, N'Sản phụ khoa', 4, 'LIC004', 12, 250000, 1, N'P.301'),
+(7, N'Tim mạch', 5, 'LIC005', 20, 500000, 1, N'P.201'),
+(16, N'Mắt kĩ thuật cao', 6, 'LIC011', 10, 200000, 1, N'P.402'),
+(17, N'Tai Mũi Họng', 7, 'LIC012', 12, 180000, 1, N'P.405'),
+(18, N'Răng Hàm Mặt', 8, 'LIC013', 15, 250000, 1, N'P.502'),
+(19, N'Da Liễu chuyên sâu', 9, 'LIC014', 20, 300000, 1, N'P.301'),
+(20, N'Xét nghiệm', 10, 'LIC015', 8, 150000, 1, N'P.005');
 
 -- 3.4. Patients
 INSERT INTO Patients (UserID, DateOfBirth, Gender, Address, InsuranceNumber, BloodType) VALUES
@@ -300,18 +306,18 @@ INSERT INTO Shifts (ShiftName, StartTime, EndTime, MaxSlots) VALUES
 (N'Chiều 2', '15:30:00', '17:30:00', 20);
 
 -- 3.6. DoctorSchedules (Cho ngày hiện tại 03/02/2026)
-INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive, Status) VALUES
-(1, 1, 1, '2026-02-03', 20, 1, 'Approved'),
-(1, 1, 2, '2026-02-03', 20, 1, 'Approved'),
-(2, 2, 3, '2026-02-03', 20, 1, 'Approved'),
-(3, 3, 1, '2026-02-03', 20, 1, 'Approved'),
-(4, 4, 3, '2026-02-03', 20, 1, 'Approved'),
-(5, 5, 1, '2026-02-03', 20, 1, 'Approved'),
-(6, 6, 1, '2026-02-03', 20, 1, 'Approved'),
-(7, 7, 1, '2026-02-03', 20, 1, 'Approved'),
-(8, 8, 1, '2026-02-03', 20, 1, 'Approved'),
-(9, 9, 1, '2026-02-03', 20, 1, 'Approved'),
-(10, 10, 1, '2026-02-03', 20, 1, 'Approved');
+INSERT INTO DoctorSchedules (DoctorID, DepartmentID, ShiftID, ScheduleDate, AvailableSlots, IsActive, Status, RoomNumber) VALUES
+(1, 1, 1, '2026-02-03', 20, 1, 'Approved', N'P.101'),
+(1, 1, 2, '2026-02-03', 20, 1, 'Approved', N'P.101'),
+(2, 2, 3, '2026-02-03', 20, 1, 'Approved', N'P.202'),
+(3, 3, 1, '2026-02-03', 20, 1, 'Approved', N'P.105'),
+(4, 4, 3, '2026-02-03', 20, 1, 'Approved', N'P.301'),
+(5, 5, 1, '2026-02-03', 20, 1, 'Approved', N'P.201'),
+(6, 6, 1, '2026-02-03', 20, 1, 'Approved', N'P.402'),
+(7, 7, 1, '2026-02-03', 20, 1, 'Approved', N'P.405'),
+(8, 8, 1, '2026-02-03', 20, 1, 'Approved', N'P.502'),
+(9, 9, 1, '2026-02-03', 20, 1, 'Approved', N'P.301'),
+(10, 10, 1, '2026-02-03', 20, 1, 'Approved', N'P.005');
 
 -- 3.7. MedicalServices
 INSERT INTO MedicalServices (ServiceName, ServiceType, Description, Price, DepartmentID, EstimatedTime, IsActive) VALUES

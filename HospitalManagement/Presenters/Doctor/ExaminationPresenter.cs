@@ -105,17 +105,17 @@ namespace HospitalManagement.Presenters.Doctor
                 _view.ShowLoading(false);
             }
         }
-        public bool AssignService(string serviceName, int? targetDoctorId)
+        public bool AssignService(int serviceId, string serviceName)
         {
             try
             {
                 _view.ShowLoading(true);
 
-                var success = _doctorService.AssignService(_appointmentId, serviceName, targetDoctorId);
+                var success = _doctorService.AssignService(_appointmentId, serviceId);
 
                 if (success)
                 {
-                    _view.ShowSuccess($"Đã chỉ định dịch vụ: {serviceName}\nBệnh nhân đã được chuyển sang danh sách chờ dịch vụ.");
+                    _view.ShowSuccess($"Đã chỉ định dịch vụ: {serviceName}\nHồ sơ bệnh nhân đã được tự động chuyển đến bác sĩ chuyên khoa đang trực.");
                     _view.CloseView();
                     return true;
                 }

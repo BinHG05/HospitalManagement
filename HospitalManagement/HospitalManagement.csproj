@@ -283,6 +283,18 @@
     <Compile Include="Views\Forms\Admin\AdminDashboard.Designer.cs">
       <DependentUpon>AdminDashboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Forms\Pharmacist\PharmacistDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Forms\Pharmacist\PharmacistDashboard.Designer.cs">
+      <DependentUpon>PharmacistDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Pharmacist\UC_PharmacySales.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Pharmacist\UC_PharmacySales.Designer.cs">
+      <DependentUpon>UC_PharmacySales.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Implementations\Repository.cs" />
     <Compile Include="Session\UserSession.cs" />

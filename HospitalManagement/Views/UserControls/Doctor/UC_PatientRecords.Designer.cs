@@ -140,6 +140,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvPatients.AllowUserToDeleteRows = false;
             this.dgvPatients.BackgroundColor = System.Drawing.Color.White;
             this.dgvPatients.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPatients.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvPatients.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvPatients.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvPatients.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPatients.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -256,6 +258,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvHistory.AllowUserToDeleteRows = false;
             this.dgvHistory.BackgroundColor = System.Drawing.Color.White;
             this.dgvHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvHistory.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvHistory.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
                 this.colHistDate,
@@ -283,7 +287,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colHistDiagnosis.HeaderText = "Chẩn đoán";
             this.colHistDiagnosis.Name = "colHistDiagnosis";
             this.colHistDiagnosis.ReadOnly = true;
-            this.colHistDiagnosis.Width = 180;
+            this.colHistDiagnosis.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
 
             this.panelDetails.Controls.Add(this.dgvHistory);
             this.panelDetails.Controls.Add(this.panelHistoryHeader);

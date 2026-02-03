@@ -42,6 +42,8 @@ namespace HospitalManagement.Models.Entities
 
         [StringLength(500)]
         public string RejectionReason { get; set; }
+        [StringLength(50)]
+        public string RoomNumber { get; set; }
 
         [ForeignKey(nameof(ApprovedByUserID))]
         public virtual Users ApprovedByUser { get; set; }

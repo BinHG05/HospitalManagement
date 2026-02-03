@@ -80,6 +80,8 @@ namespace HospitalManagement.Models.EF
 
                 entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.RoomNumber).HasMaxLength(50);
+
                 entity.HasOne(d => d.Department)
                     .WithMany(p => p.Appointments)
                     .HasForeignKey(d => d.DepartmentID)

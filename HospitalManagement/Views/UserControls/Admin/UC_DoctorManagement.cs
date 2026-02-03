@@ -42,7 +42,9 @@ namespace HospitalManagement.Views.UserControls.Admin
             };
             btnClear.Click += (s, e) => ClearInputs();
             btnAddNew.Click += (s, e) => ClearInputs();
-            btnSearch.Click += (s, e) => _presenter.LoadData(); // Re-load triggers logic if I impl search filter in Presenter
+            btnAddNew.Click += (s, e) => ClearInputs();
+            btnSearch.Click += (s, e) => _presenter.LoadData();
+            cmbFilterDept.SelectedValueChanged += (s, e) => _presenter.LoadData();
             
             // For now, simpler filtering in UI or reload with logic? 
             // The interface has SearchKeyword, Presenter has logic.
@@ -127,6 +129,16 @@ namespace HospitalManagement.Views.UserControls.Admin
 
         public int? SelectedDoctorId => _selectedDoctorId;
 
+        public int SelectedFilterDepartmentId
+        {
+            get
+            {
+                if (cmbFilterDept.SelectedValue != null && int.TryParse(cmbFilterDept.SelectedValue.ToString(), out int val))
+                    return val;
+                return 0;
+            }
+        }
+
         public string SearchKeyword => txtSearch.Text.Trim();
 
         public void SetDoctorList(IEnumerable<object> doctors)
@@ -159,10 +171,27 @@ namespace HospitalManagement.Views.UserControls.Admin
 
         public void SetDepartmentList(IEnumerable<Departments> departments)
         {
-            cmbDepartment.DataSource = departments;
+            // Bind for create/edit
+            cmbDepartment.DataSource = new List<Departments>(departments); // copy
             cmbDepartment.DisplayMember = "DepartmentName";
             cmbDepartment.ValueMember = "DepartmentID";
             cmbDepartment.SelectedIndex = -1;
+        }
+
+        public void SetFilterDepartmentList(IEnumerable<Departments> departments)
+        {
+            // Only populate if empty or force reload logic needed. 
+            // To prevent resetting selection during reload, check if we already have data.
+            if (cmbFilterDept.Items.Count > 1) return;
+
+            var list = new List<Departments> { new Departments { DepartmentID = 0, DepartmentName = "-- Tất cả --" } };
+            list.AddRange(departments);
+
+            cmbFilterDept.DataSource = list;
+            cmbFilterDept.DisplayMember = "DepartmentName";
+            cmbFilterDept.ValueMember = "DepartmentID";
+            // Default to 0 only on first load
+            if (cmbFilterDept.SelectedIndex < 0) cmbFilterDept.SelectedIndex = 0;
         }
 
         public void ShowLoading(bool isLoading)

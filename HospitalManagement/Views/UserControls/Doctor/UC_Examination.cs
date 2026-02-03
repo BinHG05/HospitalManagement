@@ -143,12 +143,11 @@ namespace HospitalManagement.Views.UserControls.Doctor
             {
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    var serviceName = dialog.SelectedService;
-                    var doctorId = dialog.SelectedDoctorId;
-                    var doctorName = dialog.SelectedDoctorName;
+                    var serviceId = dialog.SelectedServiceId;
+                    var serviceName = dialog.SelectedServiceName;
 
                     // 1. Call logic to assign service in DB
-                    var startSuccess = _presenter.AssignService(serviceName, doctorId);
+                    var startSuccess = _presenter.AssignService(serviceId, serviceName);
 
                     if (startSuccess)
                     {
@@ -173,14 +172,14 @@ Ngày: {DateTime.Now:dd/MM/yyyy HH:mm}
 Bệnh nhân: {lblPatientName.Text}
 
 Dịch vụ yêu cầu: {serviceName}
-Bác sĩ thực hiện: {doctorName}
+Vị trí: Phòng kỹ thuật chuyên khoa
 
 Ghi chú chẩn đoán sơ bộ:
 {txtDiagnosis.Text}
 
 ----------------------------------------
 Bác sĩ chỉ định:
-(Đã ký)
+{HospitalManagement.Session.UserSession.CurrentUser.FullName} (Đã ký)
 ========================================
 ";
                             System.IO.File.WriteAllText(filePath, content);

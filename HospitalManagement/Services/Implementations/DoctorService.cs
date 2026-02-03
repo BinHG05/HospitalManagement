@@ -132,6 +132,17 @@ namespace HospitalManagement.Services.Implementations
             }
         }
 
+        public IEnumerable<MedicalServices> GetAllServices()
+        {
+            using (var context = new HospitalDbContext())
+            {
+                return context.MedicalServices
+                    .Where(s => s.IsActive == true)
+                    .OrderBy(s => s.ServiceName)
+                    .ToList();
+            }
+        }
+
         public PatientExamInfo GetPatientForExam(int appointmentId)
         {
             using (var context = new HospitalDbContext())
@@ -212,7 +223,7 @@ namespace HospitalManagement.Services.Implementations
             }
         }
 
-        public bool AssignService(int appointmentId, string serviceName, int? targetDoctorId)
+        public bool AssignService(int appointmentId, int serviceId)
         {
             try
             {
@@ -221,22 +232,46 @@ namespace HospitalManagement.Services.Implementations
                     var appointment = context.Appointments.Find(appointmentId);
                     if (appointment == null) return false;
 
-                    // Update status to 'service_pending'
+                    var service = context.MedicalServices.Find(serviceId);
+                    if (service == null) return false;
+
+                    // 1. Tự động tìm bác sĩ đang trực tại khoa của dịch vụ đó
+                    var today = DateTime.Today;
+                    var targetDoctor = context.DoctorSchedules
+                        .Include(ds => ds.Doctor)
+                        .Where(ds => ds.Doctor.DepartmentID == service.DepartmentID 
+                                  && ds.ScheduleDate == today 
+                                  && ds.IsActive == true)
+                        .Select(ds => ds.Doctor)
+                        .FirstOrDefault();
+
+                    // Nếu tìm thấy bác sĩ đang trực tại khoa đó, chuyển Appointment cho bác sĩ đó
+                    if (targetDoctor != null)
+                    {
+                        appointment.DoctorID = targetDoctor.DoctorID;
+                    }
+                    
                     appointment.Status = "service_pending";
                     appointment.UpdatedAt = DateTime.Now;
                     
-                    // Ideally, we should save the service request to a dedicated table (ServiceRequests).
-                    // For this MVP, we might store it in Note or a new field, 
-                    // or just rely on the status and external file export.
-                    // We'll append to Symptoms or create a note for now if no table exists.
-                    // Assuming we just track status.
+                    // 2. Tạo bản ghi yêu cầu dịch vụ
+                    var request = new ServiceRequests
+                    {
+                        ServiceID = serviceId,
+                        // ExaminationID có thể null nếu bác sĩ gán dịch vụ trước khi lưu Examination
+                        Status = "pending",
+                        RequestedAt = DateTime.Now,
+                        RequestNumber = appointment.AppointmentNumber
+                    };
                     
+                    context.ServiceRequests.Add(request);
                     context.SaveChanges();
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"AssignService Error: {ex.Message}");
                 return false;
             }
         }

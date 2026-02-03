@@ -64,6 +64,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             dgvQueue.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(241, 245, 249);
             dgvQueue.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 10F);
             dgvQueue.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgvQueue.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvQueue.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvQueue.RowTemplate.Height = 45;
         }
 
@@ -234,7 +236,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colName.HeaderText = "Bệnh nhân"; this.colName.Width = 140;
             this.colInfo.HeaderText = "Thông tin"; this.colInfo.Width = 90;
             this.colTime.HeaderText = "TG Khám"; this.colTime.Width = 70;
-            this.colDiagnosis.HeaderText = "Chẩn đoán"; this.colDiagnosis.Width = 140;
+            this.colDiagnosis.HeaderText = "Chẩn đoán";
+            this.colDiagnosis.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             this.colStatus.HeaderText = "Trạng thái đơn"; this.colStatus.Width = 100;
             this.colPayment.HeaderText = "Thanh toán"; this.colPayment.Width = 110;
             this.colAction.HeaderText = "Thao tác"; this.colAction.Text = "Kê đơn"; this.colAction.UseColumnTextForButtonValue = true; this.colAction.Width = 70;

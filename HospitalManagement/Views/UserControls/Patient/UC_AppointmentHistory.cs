@@ -104,6 +104,7 @@ namespace HospitalManagement.Views.UserControls.Patient
                 $"📅 Ngày khám: {appointment.AppointmentDate:dd/MM/yyyy}\n\n" +
                 $"⏰ Khung giờ: {appointment.TimeRange} ({appointment.ShiftName})\n\n" +
                 $"🔢 Số thứ tự: {appointment.AppointmentNumber}\n\n" +
+                $"📍 Phòng khám: {appointment.RoomNumber ?? "Đang cập nhật"}\n\n" +
                 $"🏥 Khoa: {appointment.DepartmentName}\n\n" +
                 $"👨‍⚕️ Bác sĩ: {appointment.DoctorName}\n\n" +
                 $"📝 Triệu chứng: {appointment.Symptoms ?? "Không có"}\n\n" +

@@ -122,6 +122,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.dgvAppointments.AllowUserToDeleteRows = false;
             this.dgvAppointments.BackgroundColor = System.Drawing.Color.White;
             this.dgvAppointments.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvAppointments.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvAppointments.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvAppointments.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvAppointments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvAppointments.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -170,7 +172,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.colDepartment.HeaderText = "Khoa";
             this.colDepartment.Name = "colDepartment";
             this.colDepartment.ReadOnly = true;
-            this.colDepartment.Width = 150;
+            this.colDepartment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             // 
             // colDoctor
             // 

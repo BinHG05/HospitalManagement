@@ -11,26 +11,11 @@ namespace HospitalManagement.Views.Forms.Doctor
     {
         private PrescriptionPatientDto _patient;
         private List<PrescriptionItemDto> _items;
-        private decimal _totalAmount;
-        private decimal _discountAmount;
-        private decimal _finalAmount;
 
         public Form_PrescriptionPrint(PrescriptionPatientDto patient, IEnumerable<PrescriptionItemDto> items)
         {
             _patient = patient;
             _items = items.ToList();
-            _totalAmount = _items.Sum(i => i.PricePerUnit * i.Quantity);
-            
-            // Tính giảm giá BHYT 50%
-            if (!string.IsNullOrWhiteSpace(_patient.InsuranceNumber))
-            {
-                _discountAmount = _totalAmount * 0.5m;
-            }
-            else
-            {
-                _discountAmount = 0;
-            }
-            _finalAmount = _totalAmount - _discountAmount;
 
             InitializeComponent();
         }
@@ -215,16 +200,14 @@ namespace HospitalManagement.Views.Forms.Doctor
             // FOOTER SECTION
             Panel pnlFooter = new Panel { Dock = DockStyle.Bottom, Height = 280 };
             
-            Label lblTotal = new Label
+            Label lblNote = new Label
             {
-                Text = $"Tổng tiền: {_totalAmount.ToString("N0")} đ\n" +
-                       (_discountAmount > 0 ? $"BHYT: -{_discountAmount.ToString("N0")} đ\n" : "") +
-                       $"THÀNH TIỀN: {_finalAmount.ToString("N0")} đ",
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(185, 28, 28), // Deep Red
-                Size = new Size(650, 80),
+                Text = "* Ghi chú: Bệnh nhân vui lòng mang đơn thuốc này đến quầy thanh toán\nvà quầy thuốc để thực hiện thủ tục nhận thuốc.",
+                Font = new Font("Segoe UI", 9F, FontStyle.Italic),
+                ForeColor = Color.FromArgb(71, 85, 105),
+                Size = new Size(650, 45),
                 Location = new Point(50, 0),
-                TextAlign = ContentAlignment.MiddleRight
+                TextAlign = ContentAlignment.MiddleLeft
             };
 
             Label lblSignDate = new Label
@@ -257,7 +240,7 @@ namespace HospitalManagement.Views.Forms.Doctor
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
-            pnlFooter.Controls.Add(lblTotal);
+            pnlFooter.Controls.Add(lblNote);
             pnlFooter.Controls.Add(lblSignDate);
             pnlFooter.Controls.Add(lblSignTitle);
             pnlFooter.Controls.Add(lblSubText);

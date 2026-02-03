@@ -327,6 +327,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvPrescription.AllowUserToDeleteRows = false;
             this.dgvPrescription.BackgroundColor = System.Drawing.Color.White;
             this.dgvPrescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPrescription.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvPrescription.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvPrescription.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvPrescription.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPrescription.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -368,7 +370,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colInstructions.HeaderText = "Hướng dẫn";
             this.colInstructions.Name = "colInstructions";
             this.colInstructions.ReadOnly = true;
-            this.colInstructions.Width = 100;
+            this.colInstructions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             
             this.colRemove.HeaderText = "";
             this.colRemove.Name = "colRemove";

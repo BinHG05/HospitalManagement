@@ -42,6 +42,7 @@ namespace HospitalManagement.Presenters.Patient
                         ShiftEndTime = a.Shift?.EndTime,
                         Symptoms = a.Symptoms,
                         Status = a.Status,
+                        RoomNumber = a.RoomNumber,
                         CreatedAt = a.CreatedAt
                     });
 
@@ -110,6 +111,7 @@ namespace HospitalManagement.Presenters.Patient
                     ShiftEndTime = appointment.Shift?.EndTime,
                     Symptoms = appointment.Symptoms,
                     Status = appointment.Status,
+                    RoomNumber = appointment.RoomNumber,
                     CreatedAt = appointment.CreatedAt
                 };
                 

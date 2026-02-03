@@ -26,6 +26,10 @@ namespace HospitalManagement.Views.Interfaces.Admin
         void SetDoctorList(IEnumerable<object> doctors); // Use object or a DTO to flatten data for display
         void SetUserList(IEnumerable<Users> users);
         void SetDepartmentList(IEnumerable<Departments> departments);
+        void SetFilterDepartmentList(IEnumerable<Departments> departments); // New
+
+        // Selections
+        int SelectedFilterDepartmentId { get; } // New
 
         // UI Actions
         void ShowLoading(bool isLoading);

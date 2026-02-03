@@ -2,6 +2,7 @@
 using HospitalManagement.Views.Forms.Patient;
 using HospitalManagement.Views.Forms.Doctor;
 using HospitalManagement.Views.Forms.Admin;
+using HospitalManagement.Views.Forms.Pharmacist;
 using System;
 using System.Windows.Forms;
 
@@ -43,6 +44,9 @@ namespace HospitalManagement
                             break;
                         case "admin":
                             dashboard = new AdminDashboard(user);
+                            break;
+                        case "pharmacist":
+                            dashboard = new PharmacistDashboard(user);
                             break;
                         default:
                             // Default to patient dashboard

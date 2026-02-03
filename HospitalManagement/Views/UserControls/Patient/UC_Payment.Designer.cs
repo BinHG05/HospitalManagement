@@ -151,6 +151,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.dgvInvoices.AllowUserToDeleteRows = false;
             this.dgvInvoices.BackgroundColor = System.Drawing.Color.White;
             this.dgvInvoices.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvInvoices.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvInvoices.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvInvoices.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvInvoices.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
                 this.colInvoiceNumber,
@@ -199,7 +201,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.colDescription.HeaderText = "Nội dung";
             this.colDescription.Name = "colDescription";
             this.colDescription.ReadOnly = true;
-            this.colDescription.Width = 180;
+            this.colDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             // 
             // colAmount
             // 

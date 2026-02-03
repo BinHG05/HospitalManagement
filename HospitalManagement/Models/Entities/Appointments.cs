@@ -35,6 +35,8 @@ namespace HospitalManagement.Models.Entities
         public DateTime? CreatedAt { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
+        [StringLength(50)]
+        public string RoomNumber { get; set; }
 
         [ForeignKey(nameof(DepartmentID))]
         [InverseProperty(nameof(Departments.Appointments))]

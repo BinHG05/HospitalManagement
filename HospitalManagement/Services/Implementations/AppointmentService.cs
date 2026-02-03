@@ -104,7 +104,8 @@ namespace HospitalManagement.Services.Implementations
                         StartTime = schedule.Shift?.StartTime ?? TimeSpan.Zero,
                         EndTime = schedule.Shift?.EndTime ?? TimeSpan.Zero,
                         MaxPatients = schedule.AvailableSlots ?? 20,
-                        BookedCount = bookedCount
+                        BookedCount = bookedCount,
+                        RoomNumber = schedule.RoomNumber ?? schedule.Doctor?.DefaultRoom
                     });
                 }
 
@@ -213,6 +214,7 @@ namespace HospitalManagement.Services.Implementations
                         AppointmentNumber = queueNumber,
                         Symptoms = reason,
                         Status = "pending",
+                        RoomNumber = schedule.RoomNumber ?? schedule.Doctor?.DefaultRoom,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now
                     };

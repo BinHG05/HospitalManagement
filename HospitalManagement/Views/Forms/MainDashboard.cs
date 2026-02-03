@@ -193,6 +193,9 @@ namespace HospitalManagement.Views.Forms
                 case "admin":
                     AddAdminMenuItems(menuPanel, ref yPos);
                     break;
+                case "pharmacist":
+                    AddPharmacistMenuItems(menuPanel, ref yPos);
+                    break;
                 default:
                     AddPatientMenuItems(menuPanel, ref yPos);
                     break;
@@ -273,6 +276,19 @@ namespace HospitalManagement.Views.Forms
             var btnReports = CreateMenuButton("📊  Báo cáo", yPos);
             btnReports.Click += (s, e) => { SetActiveMenu(btnReports, "Báo cáo"); LoadPlaceholder("Báo cáo"); };
             menuPanel.Controls.Add(btnReports);
+            yPos += 50;
+        }
+
+        private void AddPharmacistMenuItems(Panel menuPanel, ref int yPos)
+        {
+            var btnSales = CreateMenuButton("💊  Cấp phát thuốc", yPos);
+            btnSales.Click += (s, e) => { SetActiveMenu(btnSales, "Cấp phát thuốc"); LoadPlaceholder("Cấp phát thuốc"); };
+            menuPanel.Controls.Add(btnSales);
+            yPos += 50;
+
+            var btnStock = CreateMenuButton("📦  Kho thuốc", yPos);
+            btnStock.Click += (s, e) => { SetActiveMenu(btnStock, "Kho thuốc"); LoadPlaceholder("Kho thuốc"); };
+            menuPanel.Controls.Add(btnStock);
             yPos += 50;
         }
 
@@ -432,6 +448,7 @@ namespace HospitalManagement.Views.Forms
                 case "patient": return "Bệnh nhân";
                 case "doctor": return "Bác sĩ";
                 case "admin": return "Quản trị viên";
+                case "pharmacist": return "Dược sĩ";
                 default: return role;
             }
         }

@@ -45,7 +45,6 @@ namespace HospitalManagement.Presenters.Doctor
                 
                 if (success)
                 {
-                    _view.ShowSuccess("Đã gọi bệnh nhân!");
                     _view.RefreshQueue();
                 }
                 else
@@ -71,7 +70,6 @@ namespace HospitalManagement.Presenters.Doctor
 
                 if (success)
                 {
-                    _view.ShowSuccess("Đã chuyển bệnh nhân về hàng chờ.");
                     _view.RefreshQueue();
                 }
                 else

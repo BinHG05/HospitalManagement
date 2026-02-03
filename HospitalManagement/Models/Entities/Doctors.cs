@@ -42,6 +42,8 @@ namespace HospitalManagement.Models.Entities
         // Monthly Quota: Min/Max shifts per month
         public int MinShiftsPerMonth { get; set; } = 15;
         public int MaxShiftsPerMonth { get; set; } = 25;
+        [StringLength(50)]
+        public string DefaultRoom { get; set; }
 
         [ForeignKey(nameof(DepartmentID))]
         [InverseProperty("Doctors")]

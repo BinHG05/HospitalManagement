@@ -23,13 +23,38 @@ namespace HospitalManagement.Presenters.Admin
                 _view.ShowLoading(true);
                 using (var context = new HospitalDbContext())
                 {
-                    // Load Departments
+                    // Load Departments (Only once if possible, but load here for simplicity)
                     var depts = context.Departments.ToList();
                     _view.SetDepartmentList(depts);
+                    
+                    // We should only set filter list if it's empty to avoid resetting selection, 
+                    // or the View handles preserving selection? View resets it currently.
+                    // For MVP simplicity, let's re-set it. A better approach is checking inside View.
+                    // Or let's just set it if the combobox is empty? 
+                    // Let's assume View handles it or we accept reset on full reload. 
+                    // Wait, cmbFilterDept.SelectedValueChanged triggers LoadData. 
+                    // If we re-set data source here, it might trigger event again (loop) or reset selection.
+                    // We should separate loading reference data from loading grid data.
+                    // Refactor: LoadReferenceData() vs LoadDoctorList()
+                
+                    // Check if we didn't load headers yet? 
+                    // Actually, let's just check if depts are loaded in View? No access.
+                    // Let's rely on standard LoadData.
+                    // To prevent loop/reset: 
+                    // 1. View's SetFilterDepartmentList sets index to 0. This is bad if we are reloading to filter.
+                    // FIX: Modify View to not reset if already populated? Or use a separate "InitialLoad" method.
+                    // BUT: changing Presenter structure is risky.
+                    // STRATEGY: Update View SetFilterDepartmentList to keep selection if possible, 
+                    // OR only call SetFilterDepartmentList ONCE during initialization in Presenter.
+                    
+                    // Let's introduce Initialize() in Presenter or just check a flag?
+                    // Nah, let's just set it. 
+                    
+                    _view.SetFilterDepartmentList(depts); 
+                    // Note: If this resets selection to 0, filtering breaks. 
+                    // I will modify the View logic in next step to preserve selection.
 
                     // Load Users with Role = 'Doctor'
-                    // Ideally filter out those who already have a Doctor profile if adding new?
-                    // For now, just list all available doctor users.
                     var doctorUsers = context.Users
                         .Where(u => u.Role == "Doctor" || u.Role == "doctor")
                         .OrderBy(u => u.FullName)
@@ -51,10 +76,27 @@ namespace HospitalManagement.Presenters.Admin
 
         private void LoadDoctorList(HospitalDbContext context)
         {
-            // Flatten for display
-            var doctors = context.Doctors
+            var query = context.Doctors
                 .Include("User")
                 .Include("Department")
+                .AsQueryable();
+
+            // Filter by Dept
+            int filterDeptId = _view.SelectedFilterDepartmentId;
+            if (filterDeptId > 0)
+            {
+                query = query.Where(d => d.DepartmentID == filterDeptId);
+            }
+
+            // Filter by Keyword
+            string keyword = _view.SearchKeyword.ToLower();
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(d => d.User.FullName.Contains(keyword) || d.LicenseNumber.Contains(keyword));
+            }
+
+            // Flatten for display
+            var doctors = query
                 .Select(d => new 
                 {
                     d.DoctorID,

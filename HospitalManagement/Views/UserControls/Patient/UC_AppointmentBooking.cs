@@ -26,6 +26,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         private int _currentRangeEnd = 15;
         private string _patientName;
         private PatientProfileInfo _currentProfile;
+        private string _selectedRoomNumber;
 
         public int SelectedDepartmentId => _selectedDepartmentId;
         public DateTime SelectedDate => _selectedDate;
@@ -489,6 +490,7 @@ namespace HospitalManagement.Views.UserControls.Patient
 
             _selectedTimeSlot = btn.Text; // "07:30-08:30"
             _selectedScheduleId = slotInfo.ScheduleId;
+            _selectedRoomNumber = slotInfo.RoomNumber;
 
             // Highlight selected
             foreach (Control ctrl in flowTimeSlots.Controls)
@@ -744,7 +746,8 @@ namespace HospitalManagement.Views.UserControls.Patient
                 cmbDepartment.Text, 
                 _selectedDate, 
                 _selectedTimeSlot, 
-                _selectedQueueNumber))
+                _selectedQueueNumber,
+                _selectedRoomNumber))
             {
                 var result = formConfirm.ShowDialog();
                 if (result == DialogResult.OK)

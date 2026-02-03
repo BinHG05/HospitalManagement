@@ -126,7 +126,7 @@ namespace HospitalManagement.Presenters.Doctor
                         ds.Status == "Pending");
 
                     _view.SetMonthlyQuota(
-                        approvedCount + pendingCount, 
+                        approvedCount, // Only count Approved
                         doctor.MinShiftsPerMonth, 
                         doctor.MaxShiftsPerMonth);
                 }
@@ -174,7 +174,7 @@ namespace HospitalManagement.Presenters.Doctor
                         return;
                     }
 
-                    // Check shift slot availability
+                    // Check shift slot availability (Pending SHOULD count for slots to reserve place)
                     var shift = context.Shifts.Find(shiftId.Value);
                     var registered = context.DoctorSchedules.Count(ds =>
                         ds.ShiftID == shiftId &&
@@ -187,7 +187,7 @@ namespace HospitalManagement.Presenters.Doctor
                         return;
                     }
 
-                    // Check monthly quota
+                    // Check monthly quota (Only Approved counts towards personal quota as requested)
                     var now = DateTime.Now;
                     var startOfMonth = new DateTime(date.Year, date.Month, 1);
                     var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
@@ -197,7 +197,7 @@ namespace HospitalManagement.Presenters.Doctor
                         ds.DoctorID == _doctorId &&
                         ds.ScheduleDate >= startOfMonth &&
                         ds.ScheduleDate <= endOfMonth &&
-                        ds.Status != "Rejected");
+                        ds.Status == "Approved"); // Changed from != Rejected to == Approved
 
                     if (monthlyCount >= doctor.MaxShiftsPerMonth)
                     {

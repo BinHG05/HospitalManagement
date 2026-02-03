@@ -78,7 +78,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnRefresh.TabIndex = 1;
             this.btnRefresh.Text = "🔄 Làm mới";
             this.btnRefresh.UseVisualStyleBackColor = false;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.btnRefresh.Click += new System.EventHandler(this.BtnRefresh_Click);
             // 
             // panelList
             // 
@@ -96,6 +96,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvExaminations.AllowUserToDeleteRows = false;
             this.dgvExaminations.BackgroundColor = System.Drawing.Color.White;
             this.dgvExaminations.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvExaminations.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvExaminations.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvExaminations.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvExaminations.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
                 this.colNumber,
@@ -116,7 +118,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvExaminations.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvExaminations.Size = new System.Drawing.Size(860, 400);
             this.dgvExaminations.TabIndex = 0;
-            this.dgvExaminations.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvExaminations_CellClick);
+            this.dgvExaminations.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvExaminations_CellClick);
             // 
             // Columns
             // 
@@ -128,7 +130,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colPatientName.HeaderText = "Họ tên";
             this.colPatientName.Name = "colPatientName";
             this.colPatientName.ReadOnly = true;
-            this.colPatientName.Width = 200;
+            this.colPatientName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
 
             this.colAge.HeaderText = "Tuổi";
             this.colAge.Name = "colAge";

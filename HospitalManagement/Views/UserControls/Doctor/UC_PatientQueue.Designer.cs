@@ -114,6 +114,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvQueue.AllowUserToDeleteRows = false;
             this.dgvQueue.BackgroundColor = System.Drawing.Color.White;
             this.dgvQueue.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvQueue.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvQueue.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvQueue.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvQueue.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
                 this.colNumber,
@@ -159,7 +161,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colSymptoms.HeaderText = "Triệu chứng";
             this.colSymptoms.Name = "colSymptoms";
             this.colSymptoms.ReadOnly = true;
-            this.colSymptoms.Width = 250;
+            this.colSymptoms.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             
             this.colStatus.HeaderText = "Trạng thái";
             this.colStatus.Name = "colStatus";
@@ -189,21 +191,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.panelDetails.TabIndex = 3;
             this.panelDetails.Visible = false;
             // 
-            // btnNoShow
-            // 
-            this.btnNoShow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnNoShow.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnNoShow.FlatAppearance.BorderSize = 0;
-            this.btnNoShow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnNoShow.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnNoShow.ForeColor = System.Drawing.Color.White;
-            this.btnNoShow.Location = new System.Drawing.Point(340, 295);
-            this.btnNoShow.Name = "btnNoShow";
-            this.btnNoShow.Size = new System.Drawing.Size(100, 35);
-            this.btnNoShow.TabIndex = 5;
-            this.btnNoShow.Text = "❌ Vắng mặt";
-            this.btnNoShow.UseVisualStyleBackColor = false;
-            this.btnNoShow.Click += new System.EventHandler(this.btnNoShow_Click);
+            this.btnCallPatient.Visible = false; // Bỏ chức năng gọi
+            this.btnCallPatient.Click += new System.EventHandler(this.btnCallPatient_Click);
             // 
             // lblDetailsTitle
             // 
@@ -214,7 +203,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblDetailsTitle.Location = new System.Drawing.Point(0, 0);
             this.lblDetailsTitle.Name = "lblDetailsTitle";
             this.lblDetailsTitle.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
-            this.lblDetailsTitle.Size = new System.Drawing.Size(498, 40);
+            this.lblDetailsTitle.Size = new System.Drawing.Size(548, 40);
             this.lblDetailsTitle.TabIndex = 0;
             this.lblDetailsTitle.Text = "Thông tin bệnh nhân";
             this.lblDetailsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -224,25 +213,9 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblDetailsContent.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblDetailsContent.Location = new System.Drawing.Point(20, 50);
             this.lblDetailsContent.Name = "lblDetailsContent";
-            this.lblDetailsContent.Size = new System.Drawing.Size(458, 230);
+            this.lblDetailsContent.Size = new System.Drawing.Size(510, 230);
             this.lblDetailsContent.TabIndex = 1;
             this.lblDetailsContent.Text = "Thông tin...";
-            // 
-            // btnCallPatient
-            // 
-            this.btnCallPatient.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
-            this.btnCallPatient.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCallPatient.FlatAppearance.BorderSize = 0;
-            this.btnCallPatient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCallPatient.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnCallPatient.ForeColor = System.Drawing.Color.White;
-            this.btnCallPatient.Location = new System.Drawing.Point(20, 295);
-            this.btnCallPatient.Name = "btnCallPatient";
-            this.btnCallPatient.Size = new System.Drawing.Size(90, 35);
-            this.btnCallPatient.TabIndex = 2;
-            this.btnCallPatient.Text = "📢 Gọi";
-            this.btnCallPatient.UseVisualStyleBackColor = false;
-            this.btnCallPatient.Click += new System.EventHandler(this.btnCallPatient_Click);
             // 
             // btnStartExam
             // 
@@ -252,13 +225,29 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnStartExam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStartExam.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnStartExam.ForeColor = System.Drawing.Color.White;
-            this.btnStartExam.Location = new System.Drawing.Point(120, 295);
+            this.btnStartExam.Location = new System.Drawing.Point(20, 295);
             this.btnStartExam.Name = "btnStartExam";
-            this.btnStartExam.Size = new System.Drawing.Size(210, 35);
+            this.btnStartExam.Size = new System.Drawing.Size(260, 35);
             this.btnStartExam.TabIndex = 3;
             this.btnStartExam.Text = "🩺 Bắt đầu khám";
             this.btnStartExam.UseVisualStyleBackColor = false;
             this.btnStartExam.Click += new System.EventHandler(this.btnStartExam_Click);
+            // 
+            // btnNoShow
+            // 
+            this.btnNoShow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnNoShow.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnNoShow.FlatAppearance.BorderSize = 0;
+            this.btnNoShow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnNoShow.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnNoShow.ForeColor = System.Drawing.Color.White;
+            this.btnNoShow.Location = new System.Drawing.Point(290, 295);
+            this.btnNoShow.Name = "btnNoShow";
+            this.btnNoShow.Size = new System.Drawing.Size(120, 35);
+            this.btnNoShow.TabIndex = 5;
+            this.btnNoShow.Text = "❌ Vắng mặt";
+            this.btnNoShow.UseVisualStyleBackColor = false;
+            this.btnNoShow.Click += new System.EventHandler(this.btnNoShow_Click);
             // 
             // btnCloseDetails
             // 

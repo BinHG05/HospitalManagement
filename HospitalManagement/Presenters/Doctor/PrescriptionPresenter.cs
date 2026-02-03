@@ -223,6 +223,39 @@ namespace HospitalManagement.Presenters.Doctor
                         totalAmount += (item.PricePerUnit * item.Quantity);
                     }
 
+                    // --- CẬP NHẬT LỊCH SỬ KHÁM BỆNH ---
+                    // Prepare prescription text summary
+                    string prescriptionSummary = string.Join("\r\n", items.Select(i => $"- {i.MedicineName}: {i.Quantity} {i.Unit} ({i.Dosage}), {i.Frequency}"));
+                    string header = "💊 ĐƠN THUỐC ĐÃ KÊ:";
+                    
+                    // Update TreatmentPlan in MedicalRecords
+                    if (!string.IsNullOrEmpty(record.TreatmentPlan) && record.TreatmentPlan.Contains(header))
+                    {
+                        // Replace old prescription part if editing
+                        int idx = record.TreatmentPlan.IndexOf(header);
+                        record.TreatmentPlan = record.TreatmentPlan.Substring(0, idx).TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                    }
+                    else
+                    {
+                        record.TreatmentPlan = (record.TreatmentPlan ?? "").TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                    }
+
+                    // Update Treatment in MedicalHistory
+                    var history = context.MedicalHistory.FirstOrDefault(h => h.RecordID == _recordId);
+                    if (history != null)
+                    {
+                        if (!string.IsNullOrEmpty(history.Treatment) && history.Treatment.Contains(header))
+                        {
+                            int idx = history.Treatment.IndexOf(header);
+                            history.Treatment = history.Treatment.Substring(0, idx).TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                        }
+                        else
+                        {
+                            history.Treatment = (history.Treatment ?? "").TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                        }
+                    }
+                    // ---------------------------------
+
                     // Tự động tạo hóa đơn tiền thuốc cho bệnh nhân
                     var patient = context.Patients.Find(_patientId);
                     decimal discount = 0;
@@ -275,7 +308,7 @@ namespace HospitalManagement.Presenters.Doctor
                     }
 
                     context.SaveChanges();
-                    _view.ShowSuccess($"Đã lưu đơn thuốc và tạo hóa đơn thanh toán ({totalAmount:N0} đ)");
+                    _view.ShowSuccess($"Đã lưu đơn thuốc và cập nhật vào lịch sử khám bệnh. Đã tạo hóa đơn thanh toán ({totalAmount:N0} đ)");
                 }
             }
             catch (Exception ex)
@@ -325,7 +358,7 @@ namespace HospitalManagement.Presenters.Doctor
                         {
                             if (printForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                             {
-                                _view.ShowSuccess("Đơn thuốc đã được chuyển đến hệ thống nhà thuốc. Bệnh nhân có thể thanh toán và nhận thuốc.");
+                                _view.ShowSuccess("Đơn thuốc đã được xuất thành công. Bệnh nhân cần thanh toán hóa đơn thuốc tại quầy trước khi nhận thuốc.");
                             }
                         }
                     }

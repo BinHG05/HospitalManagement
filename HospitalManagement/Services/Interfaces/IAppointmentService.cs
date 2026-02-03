@@ -59,5 +59,6 @@ namespace HospitalManagement.Services.Interfaces
         public int AvailableCount => MaxPatients - BookedCount;
         public bool IsFull => AvailableCount <= 0;
         public string TimeRange => $"{StartTime:hh\\:mm} - {EndTime:hh\\:mm}";
+        public string RoomNumber { get; set; }
     }
 }

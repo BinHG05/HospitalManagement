@@ -41,6 +41,7 @@ namespace HospitalManagement.Views.Interfaces.Patient
         public TimeSpan? ShiftEndTime { get; set; }
         public string Symptoms { get; set; }
         public string Status { get; set; }
+        public string RoomNumber { get; set; }
         public DateTime? CreatedAt { get; set; }
 
         public string TimeRange => ShiftStartTime.HasValue && ShiftEndTime.HasValue 
