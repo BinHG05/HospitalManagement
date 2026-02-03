@@ -16,32 +16,34 @@ namespace HospitalManagement.Presenters.Admin
             _view = view;
         }
 
-        public void LoadData()
+        public void LoadInitialData()
         {
             try
             {
                 _view.ShowLoading(true);
                 using (var context = new HospitalDbContext())
                 {
-                    // Load Departments
-                    var depts = context.Departments.ToList();
-                    _view.SetDepartmentList(depts);
+                    // Load Departments for select
+                    var depts = context.Departments.OrderBy(d => d.DepartmentName).ToList();
+                    
+                    // Add "All Departments" option for Filter
+                    var filterDepts = depts.ToList();
+                    filterDepts.Insert(0, new Departments { DepartmentID = 0, DepartmentName = "-- Tất cả phòng ban --" });
+                    _view.SetDepartmentList(filterDepts);
 
                     // Load Users with Role = 'Doctor'
-                    // Ideally filter out those who already have a Doctor profile if adding new?
-                    // For now, just list all available doctor users.
                     var doctorUsers = context.Users
                         .Where(u => u.Role == "Doctor" || u.Role == "doctor")
                         .OrderBy(u => u.FullName)
                         .ToList();
                     _view.SetUserList(doctorUsers);
 
-                    LoadDoctorList(context);
+                    LoadDoctorList(context, _view.FilterDepartmentId);
                 }
             }
             catch (Exception ex)
             {
-                _view.ShowError("Lỗi tải dữ liệu: " + ex.Message);
+                _view.ShowError("Lỗi tải dữ liệu ban đầu: " + ex.Message);
             }
             finally
             {
@@ -49,12 +51,40 @@ namespace HospitalManagement.Presenters.Admin
             }
         }
 
-        private void LoadDoctorList(HospitalDbContext context)
+        public void LoadData()
+        {
+            try
+            {
+                _view.ShowLoading(true);
+                using (var context = new HospitalDbContext())
+                {
+                    LoadDoctorList(context, _view.FilterDepartmentId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError("Lỗi tải danh sách bác sĩ: " + ex.Message);
+            }
+            finally
+            {
+                _view.ShowLoading(false);
+            }
+        }
+
+        private void LoadDoctorList(HospitalDbContext context, int? departmentIdFilter = null)
         {
             // Flatten for display
-            var doctors = context.Doctors
+            var query = context.Doctors
                 .Include("User")
                 .Include("Department")
+                .AsQueryable();
+
+            if (departmentIdFilter.HasValue && departmentIdFilter.Value > 0)
+            {
+                query = query.Where(d => d.DepartmentID == departmentIdFilter.Value);
+            }
+
+            var doctors = query
                 .Select(d => new 
                 {
                     d.DoctorID,
@@ -139,7 +169,7 @@ namespace HospitalManagement.Presenters.Admin
                         _view.ShowMessage("Thêm hồ sơ bác sĩ thành công!");
                     }
 
-                    LoadDoctorList(context);
+                    LoadDoctorList(context, _view.FilterDepartmentId);
                     _view.ClearInputs();
                 }
             }
@@ -162,7 +192,7 @@ namespace HospitalManagement.Presenters.Admin
                         doctor.IsActive = false;
                         context.SaveChanges();
                         _view.ShowMessage("Đã vô hiệu hóa bác sĩ này.");
-                        LoadDoctorList(context);
+                        LoadDoctorList(context, _view.FilterDepartmentId);
                     }
                 }
             }

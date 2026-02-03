@@ -49,10 +49,14 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.label3 = new System.Windows.Forms.Label();
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.txtAdminKey = new System.Windows.Forms.TextBox();
+            this.lblAdminKey = new System.Windows.Forms.Label();
             this.panelActions = new System.Windows.Forms.Panel();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
+            this.txtAdminKey = new System.Windows.Forms.TextBox();
+            this.lblAdminKey = new System.Windows.Forms.Label();
             this.panelHeader.SuspendLayout();
             this.panelList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUsers)).BeginInit();
@@ -202,6 +206,8 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.txtUsername);
             this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.txtAdminKey);
+            this.groupBox1.Controls.Add(this.lblAdminKey);
             this.groupBox1.Controls.Add(this.panelActions);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -307,6 +313,25 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.label2.TabIndex = 1;
             this.label2.Text = "Tên tài khoản";
             // 
+            // txtAdminKey
+            // 
+            this.txtAdminKey.Location = new System.Drawing.Point(20, 360);
+            this.txtAdminKey.Name = "txtAdminKey";
+            this.txtAdminKey.Size = new System.Drawing.Size(340, 25);
+            this.txtAdminKey.TabIndex = 11;
+            this.txtAdminKey.UseSystemPasswordChar = true;
+            // 
+            // lblAdminKey
+            // 
+            this.lblAdminKey.AutoSize = true;
+            this.lblAdminKey.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblAdminKey.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.lblAdminKey.Location = new System.Drawing.Point(20, 338);
+            this.lblAdminKey.Name = "lblAdminKey";
+            this.lblAdminKey.Size = new System.Drawing.Size(210, 19);
+            this.lblAdminKey.TabIndex = 12;
+            this.lblAdminKey.Text = "Mã xác thực Admin (Bắt buộc)";
+            // 
             // panelActions
             // 
             this.panelActions.Controls.Add(this.btnClear);
@@ -399,6 +424,8 @@ namespace HospitalManagement.Views.UserControls.Admin
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtAdminKey;
+        private System.Windows.Forms.Label lblAdminKey;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnClear;

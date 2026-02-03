@@ -19,8 +19,9 @@ namespace HospitalManagement.Views.Interfaces.Admin
         int SelectedDepartmentId { get; }
         int? SelectedDoctorId { get; } // For editing existing doctor
 
-        // Search
+        // Search & Filter
         string SearchKeyword { get; }
+        int? FilterDepartmentId { get; }
 
         // Data Methods
         void SetDoctorList(IEnumerable<object> doctors); // Use object or a DTO to flatten data for display

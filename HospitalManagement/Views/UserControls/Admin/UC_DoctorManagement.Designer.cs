@@ -22,6 +22,8 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpSearch = new System.Windows.Forms.GroupBox();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
+            this.cmbFilterDepartment = new System.Windows.Forms.ComboBox();
+            this.lblFilterDept = new System.Windows.Forms.Label();
             this.dgvDoctors = new System.Windows.Forms.DataGridView();
             this.grpInfo = new System.Windows.Forms.GroupBox();
             this.lblUser = new System.Windows.Forms.Label();
@@ -77,26 +79,46 @@ namespace HospitalManagement.Views.UserControls.Admin
             // 
             this.grpSearch.Controls.Add(this.txtSearch);
             this.grpSearch.Controls.Add(this.btnSearch);
+            this.grpSearch.Controls.Add(this.cmbFilterDepartment);
+            this.grpSearch.Controls.Add(this.lblFilterDept);
             this.grpSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.grpSearch.Location = new System.Drawing.Point(25, 60);
             this.grpSearch.Name = "grpSearch";
-            this.grpSearch.Size = new System.Drawing.Size(500, 70);
-            this.grpSearch.Text = "Tìm kiếm";
+            this.grpSearch.Size = new System.Drawing.Size(550, 80);
+            this.grpSearch.Text = "Tìm kiếm & Lọc";
 
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(20, 30);
+            this.btnSearch.ForeColor = System.Drawing.Color.White;
+            // 
+            // lblFilterDept
+            // 
+            this.lblFilterDept.AutoSize = true;
+            this.lblFilterDept.Location = new System.Drawing.Point(20, 30);
+            this.lblFilterDept.Name = "lblFilterDept";
+            this.lblFilterDept.Size = new System.Drawing.Size(43, 19);
+            this.lblFilterDept.Text = "Khoa:";
+            // 
+            // cmbFilterDepartment
+            // 
+            this.cmbFilterDepartment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFilterDepartment.FormattingEnabled = true;
+            this.cmbFilterDepartment.Location = new System.Drawing.Point(65, 28);
+            this.cmbFilterDepartment.Name = "cmbFilterDepartment";
+            this.cmbFilterDepartment.Size = new System.Drawing.Size(180, 25);
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(260, 28);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(350, 25);
-            // this.txtSearch.PlaceholderText = ""; // Not supported in .NET Framework WinForms
-
+            this.txtSearch.Size = new System.Drawing.Size(180, 25);
             // 
             // btnSearch
             // 
-            this.btnSearch.Location = new System.Drawing.Point(380, 28);
+            this.btnSearch.Location = new System.Drawing.Point(450, 26);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(100, 30);
+            this.btnSearch.Size = new System.Drawing.Size(80, 30);
             this.btnSearch.Text = "Tìm";
             this.btnSearch.BackColor = System.Drawing.Color.FromArgb(0, 122, 204);
             this.btnSearch.ForeColor = System.Drawing.Color.White;
@@ -257,6 +279,8 @@ namespace HospitalManagement.Views.UserControls.Admin
         private System.Windows.Forms.GroupBox grpSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.ComboBox cmbFilterDepartment;
+        private System.Windows.Forms.Label lblFilterDept;
         private System.Windows.Forms.DataGridView dgvDoctors;
         private System.Windows.Forms.GroupBox grpInfo;
         
