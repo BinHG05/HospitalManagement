@@ -102,17 +102,6 @@ namespace HospitalManagement.Presenters.Admin
                             // Only update password if provided
                             if (!string.IsNullOrWhiteSpace(password))
                             {
-                                // Check if target user is Admin (assuming 'admin' is the role code)
-                                if (user.Role.ToLower() == "admin")
-                                {
-                                    string key = _view.GetSecretKeyInput("Bạn đang thay đổi mật khẩu của ADMIN. Vui lòng nhập khóa bảo mật (Master Key):");
-                                    // Hardcoded key for demonstration: "admin123@" or "1905"
-                                    if (key != "1905") 
-                                    {
-                                        _view.ShowError("Khóa bảo mật không chính xác! Không thể đổi mật khẩu.");
-                                        return;
-                                    }
-                                }
                                 user.Password = password; // Using plain text to match AuthService
                             }
                             

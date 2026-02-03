@@ -80,28 +80,8 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.grpSearch.Location = new System.Drawing.Point(25, 60);
             this.grpSearch.Name = "grpSearch";
-            this.grpSearch.Size = new System.Drawing.Size(500, 100);
-            this.grpSearch.Text = "Tìm kiếm & Lọc";
-
-            // lblFilterDept
-            this.lblFilterDept = new System.Windows.Forms.Label();
-            this.lblFilterDept.AutoSize = true;
-            this.lblFilterDept.Location = new System.Drawing.Point(20, 65);
-            this.lblFilterDept.Name = "lblFilterDept";
-            this.lblFilterDept.Size = new System.Drawing.Size(43, 19);
-            this.lblFilterDept.Text = "Khoa:";
-
-            // cmbFilterDept
-            this.cmbFilterDept = new System.Windows.Forms.ComboBox();
-            this.cmbFilterDept.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFilterDept.FormattingEnabled = true;
-            this.cmbFilterDept.Location = new System.Drawing.Point(80, 62);
-            this.cmbFilterDept.Name = "cmbFilterDept";
-            this.cmbFilterDept.Size = new System.Drawing.Size(290, 25);
-            this.cmbFilterDept.TabIndex = 2;
-
-            this.grpSearch.Controls.Add(this.lblFilterDept);
-            this.grpSearch.Controls.Add(this.cmbFilterDept);
+            this.grpSearch.Size = new System.Drawing.Size(500, 70);
+            this.grpSearch.Text = "Tìm kiếm";
 
             // 
             // txtSearch
@@ -277,8 +257,6 @@ namespace HospitalManagement.Views.UserControls.Admin
         private System.Windows.Forms.GroupBox grpSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.Label lblFilterDept;
-        private System.Windows.Forms.ComboBox cmbFilterDept;
         private System.Windows.Forms.DataGridView dgvDoctors;
         private System.Windows.Forms.GroupBox grpInfo;
         

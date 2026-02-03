@@ -26,6 +26,5 @@ namespace HospitalManagement.Views.Interfaces.Admin
         void ShowMessage(string message);
         void ShowError(string message);
         void SetEditMode(bool isEdit); // To toggle Add/Update button text or enable/disable fields
-        string GetSecretKeyInput(string message);
     }
 }

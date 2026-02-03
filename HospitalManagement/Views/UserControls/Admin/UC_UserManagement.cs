@@ -126,42 +126,6 @@ namespace HospitalManagement.Views.UserControls.Admin
             }
         }
 
-        public string GetSecretKeyInput(string message)
-        {
-            string input = "";
-            using (Form prompt = new Form())
-            {
-                prompt.Width = 400;
-                prompt.Height = 160;
-                prompt.FormBorderStyle = FormBorderStyle.FixedDialog;
-                prompt.Text = "Yêu cầu xác thực";
-                prompt.StartPosition = FormStartPosition.CenterScreen;
-                prompt.MaximizeBox = false;
-                prompt.MinimizeBox = false;
-
-                Label textLabel = new Label() { Left = 20, Top = 20, Text = message, AutoSize = true };
-                TextBox textBox = new TextBox() { Left = 20, Top = 50, Width = 340, UseSystemPasswordChar = true };
-                Button confirmation = new Button() { Text = "Xác nhận", Left = 240, Top = 80, Width = 120, DialogResult = DialogResult.OK };
-                
-                // Styling
-                confirmation.BackColor = Color.FromArgb(59, 130, 246);
-                confirmation.ForeColor = Color.White;
-                confirmation.FlatStyle = FlatStyle.Flat;
-                confirmation.FlatAppearance.BorderSize = 0;
-
-                prompt.Controls.Add(textLabel);
-                prompt.Controls.Add(textBox);
-                prompt.Controls.Add(confirmation);
-                prompt.AcceptButton = confirmation;
-
-                if (prompt.ShowDialog() == DialogResult.OK)
-                {
-                    input = textBox.Text;
-                }
-            }
-            return input;
-        }
-
         #endregion
 
         #region Events
