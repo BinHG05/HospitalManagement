@@ -43,12 +43,15 @@ namespace HospitalManagement.Services.Utilities
                                     var schedule = new DoctorSchedules
                                     {
                                         DoctorID = doctor.DoctorID,
-                                        DepartmentID = doctor.DepartmentID ?? 1, // Use Doctor's real Dept
+                                        DepartmentID = doctor.DepartmentID ?? 1,
                                         ShiftID = shift.ShiftID,
                                         ScheduleDate = date,
-                                        AvailableSlots = 60,
+                                        AvailableSlots = shift.MaxSlots ?? 20, // Follow Model: Use Shift's MaxSlots
                                         IsActive = true,
-                                        CreatedAt = DateTime.Now
+                                        Status = "Approved", // Auto-created schedules should be Approved
+                                        CreatedAt = DateTime.Now,
+                                        RequestedAt = DateTime.Now,
+                                        ApprovedAt = DateTime.Now
                                     };
                                     context.DoctorSchedules.Add(schedule);
                                 }
