@@ -95,18 +95,28 @@ namespace HospitalManagement.Presenters.Admin
                         var user = context.Users.Find(_view.SelectedUserId.Value);
                         if (user != null)
                         {
+                            // CHeck if target user is Admin
+                            if (user.Role == "Admin" || user.Role == "admin")
+                            {
+                                // Require Secret Key for ANY change to Admin
+                                if (_view.AdminKey != "admin123") // Replace with actual key or config
+                                {
+                                    _view.ShowError("Bạn cần Mã bảo mật Admin (Admin Key) chính xác để chỉnh sửa tài khoản Quản trị viên.");
+                                    return;
+                                }
+                            }
+
                             user.FullName = displayName;
-                            user.Role = role;
                             user.Status = isActive ? "active" : "locked";
                             
+                            // Only allow role change if Authorized (not changing OTHER admins easily)
+                            user.Role = role;
+
                             // Only update password if provided
                             if (!string.IsNullOrWhiteSpace(password))
                             {
                                 user.Password = password; // Using plain text to match AuthService
                             }
-                            
-                            // Property UpdatedAt does not exist in this entity
-                            // user.UpdatedAt = DateTime.Now;
                             
                             context.SaveChanges();
                             _view.ShowMessage("Cập nhật thành công!");
@@ -114,6 +124,16 @@ namespace HospitalManagement.Presenters.Admin
                     }
                     else
                     {
+                        // Restriction: Add New Admin also requires Key
+                        if (role == "Admin" || role == "admin")
+                        {
+                            if (_view.AdminKey != "admin123")
+                            {
+                                _view.ShowError("Bạn cần Mã bảo mật Admin để tạo tài khoản Quản trị viên mới.");
+                                return;
+                            }
+                        }
+
                         // Add New
                         if (string.IsNullOrWhiteSpace(password))
                         {
@@ -164,6 +184,16 @@ namespace HospitalManagement.Presenters.Admin
                     var user = context.Users.Find(userId);
                     if (user != null)
                     {
+                        // Restriction: Cannot delete/lock Admin without Key
+                        if (user.Role == "Admin" || user.Role == "admin")
+                        {
+                            if (_view.AdminKey != "admin123")
+                            {
+                                _view.ShowError("Bạn cần Mã bảo mật Admin để Khóa tài khoản Quản trị viên.");
+                                return;
+                            }
+                        }
+
                         // Soft delete usually better, but let's do hard delete or deactivate?
                         // "Delete/Lock" was the requirement. Let's just Deactivate if it has related data.
                         // For now, let's try strict delete, catch constraint error, fallback to deactivate.

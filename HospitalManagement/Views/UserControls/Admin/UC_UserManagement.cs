@@ -63,6 +63,7 @@ namespace HospitalManagement.Views.UserControls.Admin
         public string SearchKeyword => txtSearch.Text.Trim();
 
         public int? SelectedUserId => _selectedUserId;
+        public string AdminKey => txtAdminKey.Text.Trim();
 
         public void SetUserList(IEnumerable<Users> users)
         {
@@ -85,6 +86,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             txtUsername.Text = "";
             txtPassword.Text = "";
             txtDisplayName.Text = "";
+            txtAdminKey.Text = "";
             cmbRole.SelectedIndex = -1;
             chkIsActive.Checked = true;
             
