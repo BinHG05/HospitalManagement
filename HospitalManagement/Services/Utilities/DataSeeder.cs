@@ -13,6 +13,10 @@ namespace HospitalManagement.Services.Utilities
             {
                 using (var context = new HospitalDbContext())
                 {
+                    // [FEATURE-FLAG] Disable auto-seeding to enforce manual Doctor Registration Workflow (3-month rolling window)
+                    // Remove 'return;' if you want to re-enable auto-seeding for testing purposes.
+                    return; 
+
                     // Check if we have schedules for the next 7 days
                     var today = DateTime.Today;
                     

@@ -42,6 +42,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             InitializeComponent();
             dtpSelectDate.MinDate = DateTime.Today;
+            dtpSelectDate.MaxDate = DateTime.Today.AddMonths(3); // [NEW] Enforce 3-month rolling window
             dtpSelectDate.Value = DateTime.Today;
         }
 

@@ -128,6 +128,12 @@ namespace HospitalManagement.Presenters.Patient
                     return;
                 }
 
+                if (date > DateTime.Today.AddMonths(3))
+                {
+                     _view.ShowError("Chỉ có thể đặt lịch trong vòng 3 tháng tới.");
+                     return;
+                }
+
                 var appointmentId = _appointmentService.BookAppointment(
                     _patientId, scheduleId, date, queueNumber, reason);
 
@@ -196,7 +202,16 @@ namespace HospitalManagement.Presenters.Patient
 
         public void NavigateToNextWeek()
         {
-            _currentWeekStart = _currentWeekStart.AddDays(7);
+            var nextWeek = _currentWeekStart.AddDays(7);
+            var maxDate = DateTime.Today.AddMonths(3);
+
+            if (nextWeek > maxDate)
+            {
+                _view.ShowError("Lịch khám cho thời gian này chưa được mở. Vui lòng quay lại sau.");
+                return;
+            }
+
+            _currentWeekStart = nextWeek;
         }
 
         public void NavigateToWeekOf(DateTime date)

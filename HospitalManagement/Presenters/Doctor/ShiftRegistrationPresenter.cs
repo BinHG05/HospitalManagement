@@ -159,6 +159,14 @@ namespace HospitalManagement.Presenters.Doctor
                     return;
                 }
 
+                // [NEW] 3-Month Rolling Window Constraint
+                var maxDate = DateTime.Today.AddMonths(3);
+                if (date > maxDate)
+                {
+                    _view.ShowError($"Chỉ được phép đăng ký lịch làm việc trong vòng 3 tháng tới (đến {maxDate:dd/MM/yyyy}).");
+                    return;
+                }
+
                 using (var context = new HospitalDbContext())
                 {
                     // Check if already registered
