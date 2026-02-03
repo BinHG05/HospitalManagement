@@ -14,7 +14,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void InitializeComponent(string amount, string invoiceNumber)
         {
             this.Text = "Thanh toán chuyển khoản qua QR";
-            this.Size = new Size(400, 600);
+            this.Size = new Size(400, 600); // Tăng nhẹ chiều cao để tạo khoảng trống dưới đáy
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -40,8 +40,8 @@ namespace HospitalManagement.Views.Forms.Patient
 
             PictureBox picQR = new PictureBox
             {
-                Location = new Point(25, 80),
-                Size = new Size(350, 420),
+                Location = new Point(25, 75),
+                Size = new Size(350, 330),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BorderStyle = BorderStyle.None
             };
@@ -68,34 +68,50 @@ namespace HospitalManagement.Views.Forms.Patient
                 Text = $"Hóa đơn: {invoiceNumber}\nSố tiền cần trả: {amount} đ",
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(44, 62, 80),
-                Location = new Point(25, 510),
+                Location = new Point(25, 410),
                 Size = new Size(350, 40),
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
-            Label lblStatus = new Label
+            Button btnConfirm = new Button
             {
-                Text = "⏳ Đang chờ hệ thống xác nhận...",
-                Font = new Font("Segoe UI", 9F, FontStyle.Italic),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                Location = new Point(25, 550),
-                Size = new Size(350, 20),
-                TextAlign = ContentAlignment.MiddleCenter
+                Text = "TÔI ĐÃ CHUYỂN KHOẢN XONG",
+                Size = new Size(350, 45),
+                Location = new Point(25, 455),
+                BackColor = Color.FromArgb(16, 185, 129), 
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                Cursor = Cursors.Hand
             };
-
-            this.Controls.Add(lblStatus);
-            this.Controls.Add(lblInfo);
-            this.Controls.Add(picQR);
-            this.Controls.Add(pnlHeader);
-
-            // Close automatically after 4 seconds to simulate success
-            Timer timer = new Timer { Interval = 4000 };
-            timer.Tick += (s, e) => {
-                timer.Stop();
+            btnConfirm.FlatAppearance.BorderSize = 0;
+            btnConfirm.Click += (s, e) => {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             };
-            timer.Start();
+
+            Button btnCancel = new Button
+            {
+                Text = "QUAY LẠI",
+                Size = new Size(350, 35),
+                Location = new Point(25, 510), // Giữ nguyên vị trí nút
+                BackColor = Color.FromArgb(241, 245, 249),
+                ForeColor = Color.FromArgb(100, 116, 139),
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10F),
+                Cursor = Cursors.Hand
+            };
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Click += (s, e) => {
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
+            };
+
+            this.Controls.Add(btnConfirm);
+            this.Controls.Add(btnCancel);
+            this.Controls.Add(lblInfo);
+            this.Controls.Add(picQR);
+            this.Controls.Add(pnlHeader);
         }
     }
 }

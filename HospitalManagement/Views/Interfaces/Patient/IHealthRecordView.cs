@@ -30,6 +30,7 @@ namespace HospitalManagement.Views.Interfaces.Patient
         public string EmergencyContact { get; set; }
         public string EmergencyPhone { get; set; }
         public int PatientId { get; set; }
+        public int UserId { get; set; }
         public DateTime? CreatedAt { get; set; }
 
         public string GenderDisplay

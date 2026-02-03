@@ -43,7 +43,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         private void InitializePaymentMethods()
         {
             cmbPaymentMethod.Items.Clear();
-            cmbPaymentMethod.Items.Add(new FilterItem { Text = "Tiền mặt", Value = "cash" });
+            // cmbPaymentMethod.Items.Add(new FilterItem { Text = "Tiền mặt", Value = "cash" });
             cmbPaymentMethod.Items.Add(new FilterItem { Text = "Chuyển khoản", Value = "bank_transfer" });
             cmbPaymentMethod.Items.Add(new FilterItem { Text = "Thẻ tín dụng", Value = "credit_card" });
             cmbPaymentMethod.Items.Add(new FilterItem { Text = "Ví điện tử", Value = "ewallet" });
@@ -195,7 +195,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             if (_selectedInvoice == null) return;
 
-            var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "cash";
+            var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "bank_transfer";
 
             if (paymentMethod == "bank_transfer")
             {
@@ -204,8 +204,6 @@ namespace HospitalManagement.Views.UserControls.Patient
                     if (qrForm.ShowDialog() == DialogResult.OK)
                     {
                         _presenter.PayInvoice(_selectedInvoice.InvoiceId, "bank_transfer");
-                        ShowSuccess("Thanh toán qua chuyển khoản thành công!");
-                        _presenter.LoadInvoices(SelectedStatusFilter);
                     }
                 }
                 return;

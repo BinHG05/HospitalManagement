@@ -23,6 +23,21 @@ namespace HospitalManagement.Presenters.Patient
         public void Initialize()
         {
             LoadDepartments();
+            LoadPatientInfo();
+        }
+
+        private void LoadPatientInfo()
+        {
+            try
+            {
+                var patientService = new PatientService();
+                var profile = patientService.GetPatientProfile(_patientId);
+                if (profile != null)
+                {
+                    _view.UpdatePatientProfile(profile);
+                }
+            }
+            catch { /* Ignore, not critical for core flow but nice for confirmation */ }
         }
 
         public void LoadDepartments()
@@ -118,8 +133,17 @@ namespace HospitalManagement.Presenters.Patient
 
                 if (appointmentId > 0)
                 {
-                    // Show Payment Dialog instead of Success immediately
-                    _view.ShowPaymentPrompt(appointmentId, "150,000 VND");
+                    // Tính tiền thực tế để hiển thị ở bước thanh toán sau
+                    var patientService = new PatientService();
+                    var profile = patientService.GetPatientProfile(_patientId);
+                    
+                    decimal fee = 150000;
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.InsuranceNumber))
+                    {
+                        fee = fee * 0.5m;
+                    }
+
+                    _view.ShowPaymentPrompt(appointmentId, $"{fee:N0} VND");
                 }
             }
             catch (Exception ex)

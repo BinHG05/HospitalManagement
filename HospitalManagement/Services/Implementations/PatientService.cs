@@ -34,6 +34,7 @@ namespace HospitalManagement.Services.Implementations
                 return new PatientProfileInfo
                 {
                     PatientId = patient.PatientID,
+                    UserId = patient.UserID ?? 0,
                     FullName = patient.User?.FullName,
                     Email = patient.User?.Email,
                     Phone = patient.User?.Phone,

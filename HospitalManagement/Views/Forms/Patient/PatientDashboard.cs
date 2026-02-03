@@ -208,12 +208,65 @@ namespace HospitalManagement.Views.Forms.Patient
         {
             // Get patient ID from current user
             var patientId = GetPatientId();
+
+            if (patientId == 0)
+            {
+                var result = MessageBox.Show(
+                    "Bạn cần cập nhật thông tin cá nhân (hồ sơ bệnh nhân) trước khi đặt lịch khám.\nBạn có muốn cập nhật ngay không?",
+                    "Yêu cầu thông tin",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information);
+
+                if (result == DialogResult.Yes)
+                {
+                    using (var form = new Form_CompleteProfile(CurrentUser.UserID))
+                    {
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            patientId = GetPatientId(); // Refresh patientId after creation
+                        }
+                        else
+                        {
+                            // If they cancelled, don't load booking
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
             
             var appointmentBooking = new UserControls.Patient.UC_AppointmentBooking();
             appointmentBooking.Dock = DockStyle.Fill;
             appointmentBooking.Initialize(patientId);
             
             contentPanel.Controls.Add(appointmentBooking);
+        }
+
+        public void SwitchToSection(string contentName)
+        {
+            switch (contentName)
+            {
+                case "Đặt lịch khám":
+                    SetActiveButton(btnAppointment);
+                    break;
+                case "Lịch sử đặt khám":
+                    SetActiveButton(btnHistory);
+                    break;
+                case "Hồ sơ sức khỏe":
+                    SetActiveButton(btnHealth);
+                    break;
+                case "Thanh toán":
+                    SetActiveButton(btnPayment);
+                    break;
+                case "Trang chủ":
+                    SetActiveButton(btnHome);
+                    break;
+            }
+            LoadContent(contentName);
+            UpdateHeaderTitle(contentName);
         }
 
         private int GetPatientId()

@@ -2,6 +2,7 @@ using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters.Patient;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces.Patient;
+using HospitalManagement.Views.Forms.Patient;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,6 +24,8 @@ namespace HospitalManagement.Views.UserControls.Patient
         private List<TimeSlotInfo> _loadedSlots = new List<TimeSlotInfo>();
         private int _currentRangeStart = 1;
         private int _currentRangeEnd = 15;
+        private string _patientName;
+        private PatientProfileInfo _currentProfile;
 
         public int SelectedDepartmentId => _selectedDepartmentId;
         public DateTime SelectedDate => _selectedDate;
@@ -140,98 +143,27 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         public void ShowPaymentPrompt(int appointmentId, string amount)
         {
-            var isToday = _selectedDate.Date == DateTime.Today;
+            MessageBox.Show(
+                $"Đặt lịch khám thành công!\n" +
+                $"Hệ thống sẽ chuyển bạn đến mục Thanh toán để hoàn tất việc giữ chỗ.",
+                "Thành công",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
 
-            if (isToday)
+            ClearSelection();
+
+            // Find dashboard and switch
+            Form parent = this.FindForm();
+            if (parent is PatientDashboard dashboard)
             {
-                MessageBox.Show(
-                    $"Đặt lịch thành công!\n" +
-                    $"Số tiền cần thanh toán: {amount}\n\n" +
-                    $"⚠️ LƯU Ý: Vì bạn đặt lịch khám vào HÔM NAY, bạn cần thực hiện thanh toán ngay bây giờ để hoàn tất xác thực lịch hẹn.",
-                     "Yêu cầu thanh toán",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                using (var selectForm = new Forms.Patient.Form_PaymentMethodSelection())
-                {
-                    if (selectForm.ShowDialog() == DialogResult.OK)
-                    {
-                        string method = selectForm.SelectedMethod;
-                        if (method == "Chuyển khoản")
-                        {
-                            using (var qrForm = new Forms.Patient.Form_QRPayment(amount, "APT_PAY_" + appointmentId))
-                            {
-                                if (qrForm.ShowDialog() == DialogResult.OK)
-                                {
-                                    _presenter.ConfirmPayment(appointmentId, method);
-                                }
-                                else
-                                {
-                                    // User closed QR form without "success"
-                                    ShowSuccess($"Lịch hẹn đã được ghi nhận (Chờ thanh toán).\nVui lòng thực hiện thanh toán ngay tại quầy hoặc mục Thanh toán để xác nhận lịch khám hôm nay.");
-                                    ClearSelection();
-                                    GoBackToWeeklyView();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _presenter.ConfirmPayment(appointmentId, method);
-                        }
-                    }
-                    else
-                    {
-                        // User cancelled payment method selection
-                        ShowSuccess($"Lịch hẹn đã được ghi nhận (Chờ thanh toán).\nVui lòng hoàn tất thanh toán sớm để xác nhận lịch khám.");
-                        ClearSelection();
-                        GoBackToWeeklyView();
-                    }
-                }
+                dashboard.SwitchToSection("Thanh toán");
             }
-            else
-            {
-                var deadline = DateTime.Today.AddHours(19).AddMinutes(30);
-                var result = MessageBox.Show(
-                    $"Đặt lịch thành công!\n" +
-                    $"Số tiền cần thanh toán: {amount}\n\n" +
-                    $"Hạt chót thanh toán: {deadline:HH:mm} tối hôm nay.\n" +
-                    $"Nếu sau thời gian này bạn chưa thanh toán, lịch hẹn sẽ tự động bị hủy.\n\n" +
-                    $"Bạn có muốn thực hiện thanh toán ngay bây giờ không?",
-                    "Xác nhận thanh toán",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Information);
+        }
 
-                if (result == DialogResult.Yes)
-                {
-                    using (var selectForm = new Forms.Patient.Form_PaymentMethodSelection())
-                    {
-                        if (selectForm.ShowDialog() == DialogResult.OK)
-                        {
-                            string method = selectForm.SelectedMethod;
-                            if (method == "Chuyển khoản")
-                            {
-                                using (var qrForm = new Forms.Patient.Form_QRPayment(amount, "APT_PAY_" + appointmentId))
-                                {
-                                    if (qrForm.ShowDialog() == DialogResult.OK)
-                                    {
-                                        _presenter.ConfirmPayment(appointmentId, method);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                _presenter.ConfirmPayment(appointmentId, method);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    ShowSuccess($"Đặt lịch thành công (Chờ thanh toán).\nVui lòng thanh toán trước {deadline:HH:mm} để hoàn tất.");
-                    ClearSelection();
-                    GoBackToWeeklyView();
-                }
-            }
+        public void UpdatePatientProfile(PatientProfileInfo profile)
+        {
+            _currentProfile = profile;
+            _patientName = profile?.FullName;
         }
 
         public void ShowError(string message)
@@ -489,41 +421,22 @@ namespace HospitalManagement.Views.UserControls.Patient
             panelTimeSlots.Visible = true;
             panelQueueSelection.Visible = false;
 
-            // Find the database schedule for this shift
-            // We assume _loadedSlots contains 1 entry for the whole shift (Morning or Afternoon)
-            var shiftSchedule = _loadedSlots.FirstOrDefault(s => 
-                (shift == "morning" && s.StartTime.Hours < 12) ||
-                (shift == "afternoon" && s.StartTime.Hours >= 12)
-            );
-
-            if (shiftSchedule == null)
-            {
-                var lblMs = new Label 
-                { 
-                    Text = "Không có lịch khám nào trong ca này.", 
-                    AutoSize = true, 
-                    ForeColor = Color.Red,
-                    Font = new Font("Segoe UI", 10, FontStyle.Italic),
-                    Padding = new Padding(10)
-                };
-                flowTimeSlots.Controls.Add(lblMs);
-                return;
-            }
-
-            // Use hardcoded slots for display
             string[] displaySlots = shift == "morning" ? MorningSlots : AfternoonSlots;
+            bool hasAnyAvailable = false;
 
             for (int i = 0; i < displaySlots.Length; i++)
             {
                 string slotText = displaySlots[i];
-                
-                // Calculate range for this slot (e.g., 4 slots, 60 total -> 15 per slot)
-                int startNum = (i * 15) + 1;
-                int endNum = (i + 1) * 15;
-                
-                // Check availability in this specific range
-                // We need to fetch ALL booked numbers for the shift first (should be cached or fetched)
-                // For now, valid visually. Real check happens in LoadQueueNumbers.
+                TimeSpan slotStartTime = TimeSpan.Parse(slotText.Split('-')[0]);
+
+                // Tìm lịch khám từ DB bao phủ khung giờ này
+                var shiftSchedule = _loadedSlots.FirstOrDefault(s => 
+                    s.StartTime <= slotStartTime && s.EndTime > slotStartTime
+                );
+
+                if (shiftSchedule == null) continue;
+
+                hasAnyAvailable = true;
                 
                 var btn = new Button
                 {
@@ -543,6 +456,19 @@ namespace HospitalManagement.Views.UserControls.Patient
                 btn.Click += TimeSlotButton_Click;
                 
                 flowTimeSlots.Controls.Add(btn);
+            }
+
+            if (!hasAnyAvailable)
+            {
+                var lblMs = new Label 
+                { 
+                    Text = "Không có lịch khám nào trong ca này.", 
+                    AutoSize = true, 
+                    ForeColor = Color.Red,
+                    Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                    Padding = new Padding(10)
+                };
+                flowTimeSlots.Controls.Add(lblMs);
             }
             
             // Auto scroll to time slots
@@ -812,28 +738,25 @@ namespace HospitalManagement.Views.UserControls.Patient
                 return;
             }
 
-            // Show confirmation with payment warning
-            var isToday = _selectedDate.Date == DateTime.Today;
-            var deadline = DateTime.Now.Date.AddHours(19).AddMinutes(30);
-            
-            string paymentRequirement = isToday 
-                ? "- BẮT BUỘC: Bạn cần thanh toán NGAY LẬP TỨC sau bước này.\n- Nếu không thanh toán, lịch hẹn sẽ không được ghi nhận.\n"
-                : $"- HẠN CHÓT: Trước {deadline:HH:mm} tối hôm nay.\n- Sau {deadline:HH:mm}, nếu chưa thanh toán, lịch sẽ bị HỦY TỰ ĐỘNG.\n";
-
-            var message = $"XÁC NHẬN ĐẶT LỊCH KHÁM\n\n" +
-                         $"🏥 Khoa: {cmbDepartment.Text}\n" +
-                         $"📅 Ngày: {_selectedDate:dd/MM/yyyy}\n" +
-                         $"⏰ Giờ: {_selectedTimeSlot}\n" +
-                         $"🔢 Số thứ tự: {_selectedQueueNumber}\n\n" +
-                         $"QUY ĐỊNH THANH TOÁN:\n" +
-                         paymentRequirement + "\n" +
-                         $"Bạn có xác nhận đặt lịch này không?";
-
-            var result = MessageBox.Show(message, "Xác nhận đặt lịch", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            
-            if (result == DialogResult.Yes)
+            // MÀN HÌNH XÁC NHẬN MỚI
+            using (var formConfirm = new Form_BookingConfirmation(
+                _currentProfile, 
+                cmbDepartment.Text, 
+                _selectedDate, 
+                _selectedTimeSlot, 
+                _selectedQueueNumber))
             {
-                _presenter.BookAppointment();
+                var result = formConfirm.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    _presenter.BookAppointment();
+                }
+                else if (result == DialogResult.Retry)
+                {
+                    // Người dùng vừa cập nhật hồ sơ, tải lại thông tin và mở lại form xác nhận
+                    _presenter.Initialize(); // Để nạp lại profile mới
+                    btnConfirmBooking_Click(sender, e);
+                }
             }
         }
 

@@ -47,7 +47,7 @@ namespace HospitalManagement.Views.Forms.Patient
                 AutoScroll = false
             };
 
-            AddPaymentButton(flowMethods, "💰 Tiền mặt", "Tiền mặt");
+            // AddPaymentButton(flowMethods, "💰 Tiền mặt", "Tiền mặt");
             AddPaymentButton(flowMethods, "🏦 Chuyển khoản", "Chuyển khoản");
             AddPaymentButton(flowMethods, "💳 Thẻ tín dụng", "Thẻ tín dụng");
             AddPaymentButton(flowMethods, "📱 Ví điện tử", "Ví điện tử");
