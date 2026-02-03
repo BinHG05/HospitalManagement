@@ -25,7 +25,7 @@ namespace HospitalManagement.Views.UserControls.Admin
         {
             _presenter = new DoctorManagementPresenter(this);
             // Load data when control loads
-            this.Load += (s, e) => _presenter.LoadData();
+            this.Load += (s, e) => _presenter.LoadInitialData();
         }
 
         private void SetupEvents()
@@ -43,6 +43,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             btnClear.Click += (s, e) => ClearInputs();
             btnAddNew.Click += (s, e) => ClearInputs();
             btnSearch.Click += (s, e) => _presenter.LoadData(); // Re-load triggers logic if I impl search filter in Presenter
+            cmbFilterDepartment.SelectedIndexChanged += (s, e) => _presenter.LoadData();
             
             // For now, simpler filtering in UI or reload with logic? 
             // The interface has SearchKeyword, Presenter has logic.
@@ -128,6 +129,15 @@ namespace HospitalManagement.Views.UserControls.Admin
         public int? SelectedDoctorId => _selectedDoctorId;
 
         public string SearchKeyword => txtSearch.Text.Trim();
+        public int? FilterDepartmentId 
+        {
+            get
+            {
+                if (cmbFilterDepartment.SelectedValue is int val && val > 0)
+                    return val;
+                return null;
+            }
+        }
 
         public void SetDoctorList(IEnumerable<object> doctors)
         {
@@ -159,10 +169,17 @@ namespace HospitalManagement.Views.UserControls.Admin
 
         public void SetDepartmentList(IEnumerable<Departments> departments)
         {
-            cmbDepartment.DataSource = departments;
+            // For Edit Form
+            cmbDepartment.DataSource = departments.Where(d => d.DepartmentID > 0).ToList();
             cmbDepartment.DisplayMember = "DepartmentName";
             cmbDepartment.ValueMember = "DepartmentID";
             cmbDepartment.SelectedIndex = -1;
+
+            // For Filter
+            cmbFilterDepartment.DataSource = departments.ToList();
+            cmbFilterDepartment.DisplayMember = "DepartmentName";
+            cmbFilterDepartment.ValueMember = "DepartmentID";
+            // Do not change selection if already filtering
         }
 
         public void ShowLoading(bool isLoading)

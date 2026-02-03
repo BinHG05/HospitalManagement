@@ -16,6 +16,7 @@ namespace HospitalManagement.Views.Interfaces.Admin
         string SelectedRole { get; }
         bool IsActive { get; }
         string SearchKeyword { get; }
+        string AdminKey { get; }
 
         // Selection
         int? SelectedUserId { get; }
