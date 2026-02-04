@@ -1,7 +1,7 @@
 using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters;
 using HospitalManagement.Views.Interfaces;
-using HospitalManagement.Views.UserControls.Patient;
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -25,6 +25,23 @@ namespace HospitalManagement.Views.Forms.Admin
             InitializeUserInfo();
             SetActiveButton(btnHome);
             LoadHomeContent();
+            SetDashboardIcon();
+        }
+
+        private void SetDashboardIcon()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "admin_icon.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    using (Bitmap bitmap = new Bitmap(iconPath))
+                    {
+                        this.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+            }
+            catch { /* Ignore icon errors */ }
         }
 
         private void InitializeUserInfo()
@@ -98,6 +115,22 @@ namespace HospitalManagement.Views.Forms.Admin
                 return;
             }
 
+            if (contentName == "Báo cáo")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_Report();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            if (contentName == "Cài đặt")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_Settings(CurrentUser.UserID);
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
             // Placeholder for others
             var placeholder = new Label
             {
@@ -107,7 +140,7 @@ namespace HospitalManagement.Views.Forms.Admin
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Fill
             };
-
+            
             contentPanel.Controls.Add(placeholder);
         }
 

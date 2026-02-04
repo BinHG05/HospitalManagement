@@ -61,7 +61,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                         index++,
                         exam.PatientName,
                         exam.Age,
-                        exam.Gender == "male" ? "Nam" : (exam.Gender == "female" ? "Nữ" : exam.Gender),
+                        (exam.Gender == "Nam" || exam.Gender == "male") ? "Nam" : (exam.Gender == "Nữ" || exam.Gender == "female") ? "Nữ" : exam.Gender,
                         exam.DoctorName,
                         GetStatusDisplay(exam.Status),
                         GetServiceStatusDisplay(exam.ServiceStatus),
@@ -104,12 +104,12 @@ namespace HospitalManagement.Views.UserControls.Doctor
              return status;
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private void BtnRefresh_Click(object sender, EventArgs e)
         {
             LoadData();
         }
 
-        private void dgvExaminations_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void DgvExaminations_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex == colAction.Index)
             {

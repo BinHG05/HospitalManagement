@@ -12,6 +12,8 @@ namespace HospitalManagement.Views.Interfaces.Patient
         
         // Filter
         string SelectedStatusFilter { get; }
+        DateTime SelectedDateFilter { get; }
+        bool IsDateFilterEnabled { get; }
         
         // Selected appointment
         int SelectedAppointmentId { get; }
@@ -41,6 +43,7 @@ namespace HospitalManagement.Views.Interfaces.Patient
         public TimeSpan? ShiftEndTime { get; set; }
         public string Symptoms { get; set; }
         public string Status { get; set; }
+        public string RoomNumber { get; set; }
         public DateTime? CreatedAt { get; set; }
 
         public string TimeRange => ShiftStartTime.HasValue && ShiftEndTime.HasValue 

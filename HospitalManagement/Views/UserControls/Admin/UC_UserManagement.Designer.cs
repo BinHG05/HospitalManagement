@@ -237,7 +237,8 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.cmbRole.Items.AddRange(new object[] {
             "Admin",
             "Doctor",
-            "Patient"});
+            "Patient",
+            "Pharmacist"});
             this.cmbRole.Location = new System.Drawing.Point(20, 260);
             this.cmbRole.Name = "cmbRole";
             this.cmbRole.Size = new System.Drawing.Size(340, 25);

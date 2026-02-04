@@ -74,6 +74,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             // Format
             if (dgvDepartments.Columns["DepartmentID"] != null) dgvDepartments.Columns["DepartmentID"].Visible = false;
             // Hide navigation properties
+            if (dgvDepartments.Columns["HeadDoctorID"] != null) dgvDepartments.Columns["HeadDoctorID"].Visible = false;
             if (dgvDepartments.Columns["HeadDoctor"] != null) dgvDepartments.Columns["HeadDoctor"].Visible = false;
             if (dgvDepartments.Columns["Appointments"] != null) dgvDepartments.Columns["Appointments"].Visible = false;
             if (dgvDepartments.Columns["DoctorSchedules"] != null) dgvDepartments.Columns["DoctorSchedules"].Visible = false;
@@ -83,11 +84,23 @@ namespace HospitalManagement.Views.UserControls.Admin
             if (dgvDepartments.Columns["DepartmentName"] != null) 
             {
                 dgvDepartments.Columns["DepartmentName"].HeaderText = "Tên Phòng ban";
-                dgvDepartments.Columns["DepartmentName"].Width = 200;
+                dgvDepartments.Columns["DepartmentName"].FillWeight = 30;
             }
-            if (dgvDepartments.Columns["Description"] != null) dgvDepartments.Columns["Description"].HeaderText = "Mô tả";
-            if (dgvDepartments.Columns["Location"] != null) dgvDepartments.Columns["Location"].HeaderText = "Vị trí";
-            if (dgvDepartments.Columns["Phone"] != null) dgvDepartments.Columns["Phone"].HeaderText = "Điện thoại";
+            if (dgvDepartments.Columns["Description"] != null) 
+            {
+                dgvDepartments.Columns["Description"].HeaderText = "Mô tả";
+                dgvDepartments.Columns["Description"].FillWeight = 40;
+            }
+            if (dgvDepartments.Columns["Location"] != null) 
+            {
+                dgvDepartments.Columns["Location"].HeaderText = "Vị trí";
+                dgvDepartments.Columns["Location"].FillWeight = 15;
+            }
+            if (dgvDepartments.Columns["Phone"] != null) 
+            {
+                dgvDepartments.Columns["Phone"].HeaderText = "Điện thoại";
+                dgvDepartments.Columns["Phone"].FillWeight = 15;
+            }
             if (dgvDepartments.Columns["CreatedAt"] != null) dgvDepartments.Columns["CreatedAt"].Visible = false;
         }
 

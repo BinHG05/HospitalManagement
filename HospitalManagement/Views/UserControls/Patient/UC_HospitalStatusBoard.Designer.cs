@@ -75,6 +75,9 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.dgvStatus.Name = "dgvStatus";
             this.dgvStatus.ReadOnly = true;
             this.dgvStatus.Size = new System.Drawing.Size(800, 340);
+            this.dgvStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvStatus.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvStatus.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
 
             // 
             // colSTT

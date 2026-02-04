@@ -9,8 +9,8 @@ namespace HospitalManagement.Views.Interfaces.Patient
         // Load invoices
         void LoadInvoices(IEnumerable<InvoiceDisplayInfo> invoices);
         
-        // Filter
         string SelectedStatusFilter { get; }
+        string SelectedTypeFilter { get; }
         
         // UI State
         void ShowLoading(bool isLoading);
@@ -35,6 +35,9 @@ namespace HospitalManagement.Views.Interfaces.Patient
         public DateTime? AppointmentDate { get; set; }
         public string DepartmentName { get; set; }
         public string DoctorName { get; set; }
+        public string Description { get; set; }
+        public string Diagnosis { get; set; }
+        public List<PrescriptionItemDto> Items { get; set; } = new List<PrescriptionItemDto>();
 
         public string StatusDisplay
         {
@@ -79,5 +82,15 @@ namespace HospitalManagement.Views.Interfaces.Patient
                 return null;
             }
         }
+    }
+
+    public class PrescriptionItemDto
+    {
+        public string MedicineName { get; set; }
+        public string Dosage { get; set; }
+        public int Quantity { get; set; }
+        public string Instructions { get; set; }
+        public decimal Price { get; set; }
+        public decimal Total => Price * Quantity;
     }
 }

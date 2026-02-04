@@ -47,6 +47,9 @@ namespace HospitalManagement.Presenters.Doctor
                             PatientName = e.Patient.User.FullName,
                             e.Patient.DateOfBirth,
                             e.Patient.Gender,
+                            e.Patient.Address,
+                            e.Patient.InsuranceNumber,
+                            e.Patient.User.Phone,
                             e.PreliminaryDiagnosis
                         })
                         .FirstOrDefault();
@@ -69,9 +72,12 @@ namespace HospitalManagement.Presenters.Doctor
                             PatientId = _patientId,
                             FullName = exam.PatientName,
                             Age = age,
-                            Gender = exam.Gender == "male" ? "Nam" : 
-                                     exam.Gender == "female" ? "Nữ" : "Khác",
-                            Diagnosis = exam.PreliminaryDiagnosis
+                            Gender = (exam.Gender == "Nam" || exam.Gender == "male") ? "Nam" : 
+                                     (exam.Gender == "Nữ" || exam.Gender == "female") ? "Nữ" : "Khác",
+                            Diagnosis = exam.PreliminaryDiagnosis,
+                            Address = exam.Address,
+                            Phone = exam.Phone,
+                            InsuranceNumber = exam.InsuranceNumber
                         });
                     }
                 }
@@ -177,9 +183,7 @@ namespace HospitalManagement.Presenters.Doctor
 
                     if (record == null)
                     {
-                        // Get diagnosis from examination
                         var exam = context.Examinations.Find(_examinationId);
-                        
                         record = new Models.Entities.MedicalRecords
                         {
                             PatientID = _patientId,
@@ -200,6 +204,7 @@ namespace HospitalManagement.Presenters.Doctor
                         .ToList();
                     context.Prescriptions.RemoveRange(oldPrescriptions);
 
+                    decimal totalAmount = 0;
                     // Add new prescriptions
                     foreach (var item in items)
                     {
@@ -215,10 +220,95 @@ namespace HospitalManagement.Presenters.Doctor
                             CreatedAt = DateTime.Now
                         };
                         context.Prescriptions.Add(prescription);
+                        totalAmount += (item.PricePerUnit * item.Quantity);
+                    }
+
+                    // --- CẬP NHẬT LỊCH SỬ KHÁM BỆNH ---
+                    // Prepare prescription text summary
+                    string prescriptionSummary = string.Join("\r\n", items.Select(i => $"- {i.MedicineName}: {i.Quantity} {i.Unit} ({i.Dosage}), {i.Frequency}"));
+                    string header = "💊 ĐƠN THUỐC ĐÃ KÊ:";
+                    
+                    // Update TreatmentPlan in MedicalRecords
+                    if (!string.IsNullOrEmpty(record.TreatmentPlan) && record.TreatmentPlan.Contains(header))
+                    {
+                        // Replace old prescription part if editing
+                        int idx = record.TreatmentPlan.IndexOf(header);
+                        record.TreatmentPlan = record.TreatmentPlan.Substring(0, idx).TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                    }
+                    else
+                    {
+                        record.TreatmentPlan = (record.TreatmentPlan ?? "").TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                    }
+
+                    // Update Treatment in MedicalHistory
+                    var history = context.MedicalHistory.FirstOrDefault(h => h.RecordID == _recordId);
+                    if (history != null)
+                    {
+                        if (!string.IsNullOrEmpty(history.Treatment) && history.Treatment.Contains(header))
+                        {
+                            int idx = history.Treatment.IndexOf(header);
+                            history.Treatment = history.Treatment.Substring(0, idx).TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                        }
+                        else
+                        {
+                            history.Treatment = (history.Treatment ?? "").TrimEnd() + "\r\n\r\n" + header + "\r\n" + prescriptionSummary;
+                        }
+                    }
+                    // ---------------------------------
+
+                    // Tự động tạo hóa đơn tiền thuốc cho bệnh nhân
+                    var patient = context.Patients.Find(_patientId);
+                    decimal discount = 0;
+                    if (patient != null && !string.IsNullOrWhiteSpace(patient.InsuranceNumber))
+                    {
+                        discount = totalAmount * 0.5m; // Giảm 50% nếu có BHYT
+                    }
+                    var finalAmount = totalAmount - discount;
+
+                    var existingPayment = context.Payments
+                        .FirstOrDefault(p => p.ReferenceID == _recordId && p.PaymentType == "medicine");
+
+                    if (existingPayment == null)
+                    {
+                        var payment = new Models.Entities.Payments
+                        {
+                            PatientID = _patientId,
+                            ReferenceID = _recordId,
+                            PaymentType = "medicine",
+                            Amount = finalAmount,
+                            PaymentStatus = "pending",
+                            CreatedAt = DateTime.Now
+                        };
+                        context.Payments.Add(payment);
+                        context.SaveChanges();
+
+                        var invoice = new Models.Entities.Invoices
+                        {
+                            PaymentID = payment.PaymentID,
+                            InvoiceNumber = "MED" + DateTime.Now.ToString("yyyyMMdd") + _recordId.ToString().PadLeft(4, '0'),
+                            InvoiceDate = DateTime.Now,
+                            TotalAmount = totalAmount,
+                            DiscountAmount = discount,
+                            FinalAmount = finalAmount,
+                            InvoiceStatus = "unpaid",
+                            CreatedAt = DateTime.Now
+                        };
+                        context.Invoices.Add(invoice);
+                    }
+                    else
+                    {
+                        existingPayment.Amount = finalAmount;
+                        var invoice = context.Invoices.FirstOrDefault(i => i.PaymentID == existingPayment.PaymentID);
+                        if (invoice != null)
+                        {
+                            invoice.TotalAmount = totalAmount;
+                            invoice.DiscountAmount = discount;
+                            invoice.FinalAmount = finalAmount;
+                        }
                     }
 
                     context.SaveChanges();
-                    _view.ShowSuccess($"Đã lưu đơn thuốc ({items.Count} loại thuốc)");
+                    _view.ShowSuccess($"Đã lưu đơn thuốc và cập nhật vào lịch sử khám bệnh. Đã tạo hóa đơn thanh toán ({totalAmount:N0} đ)");
                 }
             }
             catch (Exception ex)
@@ -233,8 +323,51 @@ namespace HospitalManagement.Presenters.Doctor
 
         private void OnPrintRequested(object sender, EventArgs e)
         {
-            // TODO: Implement print functionality
-            _view.ShowSuccess("Chức năng in đơn thuốc đang được phát triển...");
+            try
+            {
+                var items = _view.GetPrescriptionItems().ToList();
+                if (!items.Any())
+                {
+                    _view.ShowError("Vui lòng thêm thuốc trước khi in.");
+                    return;
+                }
+
+                // First save to ensure data is consistent
+                OnSaveRequested(sender, e);
+
+                // Fetch patient info again to ensure it's fresh
+                using (var context = new HospitalDbContext())
+                {
+                    var exam = context.Examinations
+                        .Where(ex => ex.ExaminationID == _examinationId)
+                        .Select(ex => new PrescriptionPatientDto
+                        {
+                            FullName = ex.Patient.User.FullName,
+                            Diagnosis = ex.PreliminaryDiagnosis,
+                            Gender = (ex.Patient.Gender == "Nam" || ex.Patient.Gender == "male") ? "Nam" : "Nữ",
+                            Age = ex.Patient.DateOfBirth.HasValue ? DateTime.Today.Year - ex.Patient.DateOfBirth.Value.Year : (int?)null,
+                            Address = ex.Patient.Address,
+                            Phone = ex.Patient.User.Phone,
+                            InsuranceNumber = ex.Patient.InsuranceNumber
+                        })
+                        .FirstOrDefault();
+
+                    if (exam != null)
+                    {
+                        using (var printForm = new HospitalManagement.Views.Forms.Doctor.Form_PrescriptionPrint(exam, items))
+                        {
+                            if (printForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                            {
+                                _view.ShowSuccess("Đơn thuốc đã được xuất thành công. Bệnh nhân cần thanh toán hóa đơn thuốc tại quầy trước khi nhận thuốc.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _view.ShowError($"Lỗi in đơn thuốc: {ex.Message}");
+            }
         }
 
         private void OnCancelRequested(object sender, EventArgs e)

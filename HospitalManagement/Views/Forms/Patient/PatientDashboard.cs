@@ -16,6 +16,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private Button _activeMenuButton;
         private Timer _statusTimer;
         private System.Collections.Generic.HashSet<int> _notifiedAppointments = new System.Collections.Generic.HashSet<int>();
+        private System.Collections.Generic.HashSet<int> _notifiedPayments = new System.Collections.Generic.HashSet<int>();
 
         public Users CurrentUser { get; set; }
 
@@ -35,6 +36,23 @@ namespace HospitalManagement.Views.Forms.Patient
             SetActiveButton(btnHome);
             LoadHomeContent();
             InitializeStatusTimer();
+            SetDashboardIcon();
+        }
+
+        private void SetDashboardIcon()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "patient_icon.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    using (Bitmap bitmap = new Bitmap(iconPath))
+                    {
+                        this.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+            }
+            catch { /* Ignore icon errors */ }
         }
 
         private void InitializeStatusTimer()
@@ -43,6 +61,17 @@ namespace HospitalManagement.Views.Forms.Patient
             _statusTimer.Interval = 5000; // Check every 5 seconds
             _statusTimer.Tick += StatusTimer_Tick;
             _statusTimer.Start();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            if (_statusTimer != null)
+            {
+                _statusTimer.Stop();
+                _statusTimer.Dispose();
+                _statusTimer = null;
+            }
         }
 
         private void StatusTimer_Tick(object sender, EventArgs e)
@@ -67,6 +96,36 @@ namespace HospitalManagement.Views.Forms.Patient
                         _notifiedAppointments.Add(activeAppointment.AppointmentID);
                         ShowTurnNotification(activeAppointment);
                     }
+
+                    // Check for pending medicine payments
+                    var pendingPayment = context.Payments
+                        .Where(p => p.PatientID == patientId 
+                                 && p.PaymentStatus == "pending" 
+                                 && p.PaymentType == "medicine")
+                        .OrderByDescending(p => p.CreatedAt)
+                        .FirstOrDefault();
+
+                    if (pendingPayment != null && !_notifiedPayments.Contains(pendingPayment.PaymentID))
+                    {
+                        _notifiedPayments.Add(pendingPayment.PaymentID);
+                        ShowPaymentNotification(pendingPayment);
+                    }
+
+
+                    // [NEW] Check for recently COMPLETED payments (to notify patient)
+                    var completedPayment = context.Payments
+                        .Where(p => p.PatientID == patientId 
+                                 && p.PaymentStatus == "completed" 
+                                 && p.PaymentDate >= DateTime.Today
+                                 && p.PaymentType == "medicine") // Focus on medicine for now
+                        .OrderByDescending(p => p.PaymentDate)
+                        .FirstOrDefault();
+
+                    if (completedPayment != null && !_notifiedPayments.Contains(completedPayment.PaymentID))
+                    {
+                        _notifiedPayments.Add(completedPayment.PaymentID);
+                        ShowPaymentSuccessNotification(completedPayment);
+                    }
                 }
             }
             catch (Exception ex)
@@ -83,6 +142,26 @@ namespace HospitalManagement.Views.Forms.Patient
                             $"Số thứ tự của bạn: {appointment.AppointmentNumber}";
             
             MessageBox.Show(this, message, "Thông báo gọi khám", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ShowPaymentNotification(Payments payment)
+        {
+            string message = $"💊 THÔNG BÁO THANH TOÁN ĐƠN THUỐC\n\n" +
+                            $"Bác sĩ đã kê đơn thuốc cho bạn.\n" +
+                            $"Số tiền: {payment.Amount:N0} đ\n\n" +
+                            $"Mời bạn chuyển đến mục 'Thanh toán' để hoàn tất và nhận thuốc.";
+            
+            MessageBox.Show(this, message, "Thông báo thanh toán", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void ShowPaymentSuccessNotification(Payments payment)
+        {
+            string message = $"✅ THANH TOÁN THÀNH CÔNG\n\n" +
+                            $"Hóa đơn thuốc của bạn đã được thanh toán thành công.\n" +
+                            $"Số tiền: {payment.Amount:N0} đ\n\n" +
+                            $"Bạn có thể đến quầy dược để nhận thuốc.";
+            
+            MessageBox.Show(this, message, "Xác nhận thanh toán", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void InitializeUserInfo()
@@ -103,13 +182,6 @@ namespace HospitalManagement.Views.Forms.Patient
 
             // Quick action cards
             CreateQuickActionCards();
-
-            // Status Board (Real-time monitoring for patients)
-            var statusBoard = new UserControls.Patient.UC_HospitalStatusBoard();
-            statusBoard.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-            statusBoard.Location = new Point(0, 330); // Below quick actions (130 + 160 + gap)
-            statusBoard.Size = new Size(contentPanel.Width - 10, contentPanel.Height - 340);
-            contentPanel.Controls.Add(statusBoard);
         }
 
         public void LoadContent(string contentName)
@@ -121,7 +193,7 @@ namespace HospitalManagement.Views.Forms.Patient
                 case "Đặt lịch khám":
                     LoadAppointmentBooking();
                     break;
-                case "Lịch sử khám":
+                case "Lịch sử đặt khám":
                     LoadAppointmentHistory();
                     break;
                 case "Hồ sơ sức khỏe":
@@ -173,12 +245,65 @@ namespace HospitalManagement.Views.Forms.Patient
         {
             // Get patient ID from current user
             var patientId = GetPatientId();
+
+            if (patientId == 0)
+            {
+                var result = MessageBox.Show(
+                    "Bạn cần cập nhật thông tin cá nhân (hồ sơ bệnh nhân) trước khi đặt lịch khám.\nBạn có muốn cập nhật ngay không?",
+                    "Yêu cầu thông tin",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information);
+
+                if (result == DialogResult.Yes)
+                {
+                    using (var form = new Form_CompleteProfile(CurrentUser.UserID))
+                    {
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            patientId = GetPatientId(); // Refresh patientId after creation
+                        }
+                        else
+                        {
+                            // If they cancelled, don't load booking
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
             
             var appointmentBooking = new UserControls.Patient.UC_AppointmentBooking();
             appointmentBooking.Dock = DockStyle.Fill;
             appointmentBooking.Initialize(patientId);
             
             contentPanel.Controls.Add(appointmentBooking);
+        }
+
+        public void SwitchToSection(string contentName)
+        {
+            switch (contentName)
+            {
+                case "Đặt lịch khám":
+                    SetActiveButton(btnAppointment);
+                    break;
+                case "Lịch sử đặt khám":
+                    SetActiveButton(btnHistory);
+                    break;
+                case "Hồ sơ sức khỏe":
+                    SetActiveButton(btnHealth);
+                    break;
+                case "Thanh toán":
+                    SetActiveButton(btnPayment);
+                    break;
+                case "Trang chủ":
+                    SetActiveButton(btnHome);
+                    break;
+            }
+            LoadContent(contentName);
+            UpdateHeaderTitle(contentName);
         }
 
         private int GetPatientId()
@@ -273,7 +398,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void CreateQuickActionCards()
         {
             string[] icons = { "📅", "📋", "💳", "📋" };
-            string[] titles = { "Đặt lịch khám", "Lịch sử khám", "Thanh toán", "Hồ sơ sức khỏe" };
+            string[] titles = { "Đặt lịch khám", "Lịch sử đặt khám", "Thanh toán", "Hồ sơ sức khỏe" };
             string[] descriptions = { "Đặt lịch hẹn mới", "Xem các cuộc hẹn", "Thanh toán hóa đơn", "Xem hồ sơ y tế" };
             Color[] colors = { 
                 Color.FromArgb(59, 130, 246),   // Blue
@@ -396,7 +521,7 @@ namespace HospitalManagement.Views.Forms.Patient
         private void btnHistory_Click(object sender, EventArgs e)
         {
             SetActiveButton(btnHistory);
-            _presenter.NavigateTo("Lịch sử khám");
+            _presenter.NavigateTo("Lịch sử đặt khám");
         }
 
         private void btnHealth_Click(object sender, EventArgs e)

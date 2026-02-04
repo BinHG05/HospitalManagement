@@ -19,30 +19,34 @@ namespace HospitalManagement.Presenters.Patient
             _appointmentService = new AppointmentService();
         }
 
-        public void LoadAppointments(string statusFilter = "all")
+        public void LoadAppointments(string statusFilter = "all", DateTime? dateFilter = null)
         {
             try
             {
                 _view.ShowLoading(true);
 
-                var appointments = _appointmentService.GetPatientAppointments(_patientId);
+                var appointments = _appointmentService.GetPatientAppointments(_patientId, dateFilter);
                 
-                var displayList = appointments.Select(a => new AppointmentDisplayInfo
-                {
-                    AppointmentId = a.AppointmentID,
-                    AppointmentDate = a.AppointmentDate,
-                    AppointmentNumber = a.AppointmentNumber,
-                    DepartmentName = a.Department?.DepartmentName ?? "N/A",
-                    DoctorName = a.Doctor?.User?.FullName ?? "N/A",
-                    ShiftName = a.Shift?.ShiftName ?? "N/A",
-                    ShiftStartTime = a.Shift?.StartTime,
-                    ShiftEndTime = a.Shift?.EndTime,
-                    Symptoms = a.Symptoms,
-                    Status = a.Status,
-                    CreatedAt = a.CreatedAt
-                });
+                var displayList = appointments
+                    .GroupBy(a => a.AppointmentID)
+                    .Select(g => g.First())
+                    .Select(a => new AppointmentDisplayInfo
+                    {
+                        AppointmentId = a.AppointmentID,
+                        AppointmentDate = a.AppointmentDate,
+                        AppointmentNumber = a.AppointmentNumber,
+                        DepartmentName = a.Department?.DepartmentName ?? "N/A",
+                        DoctorName = a.Doctor?.User?.FullName ?? "N/A",
+                        ShiftName = a.Shift?.ShiftName ?? "N/A",
+                        ShiftStartTime = a.Shift?.StartTime,
+                        ShiftEndTime = a.Shift?.EndTime,
+                        Symptoms = a.Symptoms,
+                        Status = a.Status,
+                        RoomNumber = a.RoomNumber,
+                        CreatedAt = a.CreatedAt
+                    });
 
-                // Apply filter
+                // Apply status filter
                 if (statusFilter != "all")
                 {
                     displayList = displayList.Where(a => a.Status == statusFilter);
@@ -107,6 +111,7 @@ namespace HospitalManagement.Presenters.Patient
                     ShiftEndTime = appointment.Shift?.EndTime,
                     Symptoms = appointment.Symptoms,
                     Status = appointment.Status,
+                    RoomNumber = appointment.RoomNumber,
                     CreatedAt = appointment.CreatedAt
                 };
                 

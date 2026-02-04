@@ -99,23 +99,25 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnBack.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnBack.FlatAppearance.BorderSize = 0;
             this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBack.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.btnBack.ForeColor = System.Drawing.Color.White;
-            this.btnBack.Location = new System.Drawing.Point(10, 12);
+            this.btnBack.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.btnBack.ForeColor = System.Drawing.Color.Black;
+            this.btnBack.Location = new System.Drawing.Point(10, 10);
             this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(40, 32);
+            this.btnBack.Size = new System.Drawing.Size(40, 35);
             this.btnBack.TabIndex = 1;
             this.btnBack.Text = "←";
+            this.btnBack.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(55, 13);
+            this.lblTitle.Location = new System.Drawing.Point(60, 13);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(180, 28);
+            this.lblTitle.Size = new System.Drawing.Size(200, 28);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "💊 Kê đơn thuốc";
+            this.lblTitle.Text = "Kê đơn thuốc";
+            this.lblTitle.UseCompatibleTextRendering = true;
             
             // =============================================
             // splitContainer
@@ -140,9 +142,10 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.panelPatientInfo.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelPatientInfo.Location = new System.Drawing.Point(15, 15);
             this.panelPatientInfo.Name = "panelPatientInfo";
-            this.panelPatientInfo.Padding = new System.Windows.Forms.Padding(15);
-            this.panelPatientInfo.Size = new System.Drawing.Size(370, 120);
+            this.panelPatientInfo.Padding = new System.Windows.Forms.Padding(20);
+            this.panelPatientInfo.Size = new System.Drawing.Size(370, 130);
             this.panelPatientInfo.TabIndex = 0;
+            this.panelPatientInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             
             this.lblPatientName.AutoSize = true;
             this.lblPatientName.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
@@ -198,9 +201,9 @@ namespace HospitalManagement.Views.UserControls.Doctor
             
             this.cmbMedicine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbMedicine.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbMedicine.Location = new System.Drawing.Point(inputX, yPos);
-            this.cmbMedicine.Size = new System.Drawing.Size(230, 28);
-            yPos += rowHeight;
+            this.cmbMedicine.Location = new System.Drawing.Point(15, yPos + 25);
+            this.cmbMedicine.Size = new System.Drawing.Size(340, 28);
+            yPos += rowHeight + 15;
             
             // Dosage
             var lblDosageLabel = new System.Windows.Forms.Label();
@@ -272,14 +275,14 @@ namespace HospitalManagement.Views.UserControls.Doctor
             yPos += rowHeight + 10;
             
             // Add button
-            this.btnAddMedicine.BackColor = System.Drawing.Color.FromArgb(16, 185, 129);
+            this.btnAddMedicine.BackColor = System.Drawing.Color.FromArgb(59, 130, 246);
             this.btnAddMedicine.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddMedicine.FlatAppearance.BorderSize = 0;
             this.btnAddMedicine.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddMedicine.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold);
             this.btnAddMedicine.ForeColor = System.Drawing.Color.White;
-            this.btnAddMedicine.Location = new System.Drawing.Point(inputX, yPos);
-            this.btnAddMedicine.Size = new System.Drawing.Size(230, 40);
+            this.btnAddMedicine.Location = new System.Drawing.Point(15, yPos);
+            this.btnAddMedicine.Size = new System.Drawing.Size(340, 45);
             this.btnAddMedicine.Text = "➕ Thêm vào đơn";
             this.btnAddMedicine.Click += new System.EventHandler(this.btnAddMedicine_Click);
             
@@ -324,6 +327,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.dgvPrescription.AllowUserToDeleteRows = false;
             this.dgvPrescription.BackgroundColor = System.Drawing.Color.White;
             this.dgvPrescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPrescription.ColumnHeadersDefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dgvPrescription.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dgvPrescription.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvPrescription.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPrescription.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -365,7 +370,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.colInstructions.HeaderText = "Hướng dẫn";
             this.colInstructions.Name = "colInstructions";
             this.colInstructions.ReadOnly = true;
-            this.colInstructions.Width = 100;
+            this.colInstructions.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             
             this.colRemove.HeaderText = "";
             this.colRemove.Name = "colRemove";

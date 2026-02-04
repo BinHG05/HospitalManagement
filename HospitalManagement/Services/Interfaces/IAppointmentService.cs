@@ -27,11 +27,11 @@ namespace HospitalManagement.Services.Interfaces
                             int queueNumber, string reason);
 
         // Lấy lịch hẹn của bệnh nhân
-        IEnumerable<Appointments> GetPatientAppointments(int patientId);
+        IEnumerable<Appointments> GetPatientAppointments(int patientId, DateTime? date = null);
 
         // Hủy lịch hẹn
         // Xác nhận lịch hẹn (Thanh toán)
-        bool ConfirmAppointment(int appointmentId);
+        bool ConfirmAppointment(int appointmentId, string paymentMethod);
 
         bool CancelAppointment(int appointmentId);
     }
@@ -59,5 +59,6 @@ namespace HospitalManagement.Services.Interfaces
         public int AvailableCount => MaxPatients - BookedCount;
         public bool IsFull => AvailableCount <= 0;
         public string TimeRange => $"{StartTime:hh\\:mm} - {EndTime:hh\\:mm}";
+        public string RoomNumber { get; set; }
     }
 }

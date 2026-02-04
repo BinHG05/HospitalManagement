@@ -92,16 +92,20 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.btnSearch.ForeColor = System.Drawing.Color.White;
 
             // 
+            // 
             // dgvServices
             // 
             this.dgvServices.ColumnHeadersHeight = 30;
             this.dgvServices.Location = new System.Drawing.Point(25, 150);
             this.dgvServices.Name = "dgvServices";
-            this.dgvServices.Size = new System.Drawing.Size(550, 500);
+            this.dgvServices.Size = new System.Drawing.Size(600, 500); // 550 -> 600
             this.dgvServices.ReadOnly = true;
             this.dgvServices.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvServices.MultiSelect = false;
             this.dgvServices.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvServices.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 
             // 
             // grpInfo
@@ -116,10 +120,11 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpInfo.Controls.Add(this.btnDelete);
             this.grpInfo.Controls.Add(this.btnClear);
             this.grpInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.grpInfo.Location = new System.Drawing.Point(600, 60);
+            this.grpInfo.Location = new System.Drawing.Point(640, 60); // 600 -> 640
             this.grpInfo.Name = "grpInfo";
-            this.grpInfo.Size = new System.Drawing.Size(400, 350);
+            this.grpInfo.Size = new System.Drawing.Size(380, 350); // 400 -> 380
             this.grpInfo.Text = "Thông tin dịch vụ";
+            this.grpInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 
             // 
             // lblName

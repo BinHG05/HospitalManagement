@@ -13,6 +13,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private PatientQueuePresenter _presenter;
         private int _selectedAppointmentId;
         private Action<int> _onStartExamination;
+        private Timer _refreshTimer;
 
         public int SelectedAppointmentId => _selectedAppointmentId;
 
@@ -20,6 +21,20 @@ namespace HospitalManagement.Views.UserControls.Doctor
         {
             InitializeComponent();
             lblDate.Text = $"Hôm nay: {DateTime.Today:dd/MM/yyyy}";
+            InitializeTimer();
+        }
+
+        private void InitializeTimer()
+        {
+            _refreshTimer = new Timer();
+            _refreshTimer.Interval = 5000; // 5 seconds
+            _refreshTimer.Tick += (s, e) => {
+                if (this.Visible && !panelDetails.Visible)
+                {
+                    _presenter?.LoadQueue();
+                }
+            };
+            _refreshTimer.Start();
         }
 
         public void Initialize(int doctorId, Action<int> onStartExamination = null)
@@ -43,8 +58,8 @@ namespace HospitalManagement.Views.UserControls.Doctor
                 row.Cells["colNumber"].Value = patient.QueueNumber;
                 row.Cells["colPatientName"].Value = patient.PatientName;
                 row.Cells["colAge"].Value = patient.Age?.ToString() ?? "-";
-                row.Cells["colGender"].Value = patient.Gender == "male" ? "Nam" : 
-                    patient.Gender == "female" ? "Nữ" : patient.Gender;
+                row.Cells["colGender"].Value = (patient.Gender == "Nam" || patient.Gender == "male") ? "Nam" : 
+                    (patient.Gender == "Nữ" || patient.Gender == "female") ? "Nữ" : patient.Gender;
                 row.Cells["colSymptoms"].Value = patient.Symptoms ?? "-";
                 row.Cells["colStatus"].Value = patient.StatusDisplay;
                 row.Tag = patient.AppointmentId;
@@ -70,7 +85,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             lblDetailsContent.Text =
                 $"👤 Họ tên: {patient.PatientName}\n\n" +
                 $"🎂 Ngày sinh: {patient.DateOfBirth:dd/MM/yyyy}\n\n" +
-                $"👤 Giới tính: {(patient.Gender == "male" ? "Nam" : patient.Gender == "female" ? "Nữ" : patient.Gender)}\n\n" +
+                $"👤 Giới tính: {((patient.Gender == "Nam" || patient.Gender == "male") ? "Nam" : (patient.Gender == "Nữ" || patient.Gender == "female") ? "Nữ" : patient.Gender)}\n\n" +
                 $"🩸 Nhóm máu: {patient.BloodType ?? "N/A"}\n\n" +
                 $"🏠 Địa chỉ: {patient.Address ?? "N/A"}\n\n" +
                 $"💳 Số BHYT: {patient.InsuranceNumber ?? "N/A"}\n\n" +

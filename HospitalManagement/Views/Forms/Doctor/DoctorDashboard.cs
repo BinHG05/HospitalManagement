@@ -13,6 +13,8 @@ namespace HospitalManagement.Views.Forms.Doctor
     {
         private readonly DashboardPresenter _presenter;
         private Button _activeMenuButton;
+        private Timer _statusTimer;
+        private System.Collections.Generic.HashSet<int> _notifiedSuccessPayments = new System.Collections.Generic.HashSet<int>();
 
         public Users CurrentUser { get; set; }
 
@@ -26,12 +28,92 @@ namespace HospitalManagement.Views.Forms.Doctor
             InitializeUserInfo();
             SetActiveButton(btnHome);
             LoadHomeContent();
+            SetDashboardIcon();
+            InitializeStatusTimer();
+        }
+
+        private void InitializeStatusTimer()
+        {
+            _statusTimer = new Timer();
+            _statusTimer.Interval = 10000; // Check every 10 seconds
+            _statusTimer.Tick += StatusTimer_Tick;
+            _statusTimer.Start();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            if (_statusTimer != null)
+            {
+                _statusTimer.Stop();
+                _statusTimer.Dispose();
+                _statusTimer = null;
+            }
+        }
+
+        private void StatusTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                var doctorId = GetDoctorId();
+                if (doctorId <= 0) return;
+
+                using (var context = new Models.EF.HospitalDbContext())
+                {
+                    // Check for recently paid medicine prescriptions assigned by this doctor
+                    // We link MedicalRecord -> Examination -> Doctor
+                    var completedPayment = (from p in context.Payments
+                                           join r in context.MedicalRecords on p.ReferenceID equals r.RecordID
+                                           join ex in context.Examinations on r.ExaminationID equals ex.ExaminationID
+                                           where ex.DoctorID == doctorId 
+                                              && p.PaymentStatus == "completed" 
+                                              && p.PaymentType == "medicine"
+                                              && p.PaymentDate >= DateTime.Today
+                                           orderby p.PaymentDate descending
+                                           select new { p.PaymentID, PatientName = p.Patient.User.FullName, p.Amount }).FirstOrDefault();
+
+                    if (completedPayment != null && !_notifiedSuccessPayments.Contains(completedPayment.PaymentID))
+                    {
+                        // _notifiedSuccessPayments.Add(completedPayment.PaymentID);
+                        // ShowPaymentSuccessNotification(completedPayment.PatientName, completedPayment.Amount);
+                        // [MODIFIED] User requested to disable Doctor notification for payments.
+                        // Notification should be sent to Patient instead.
+                    }
+                }
+            }
+            catch { /* Silent */ }
+        }
+
+        private void ShowPaymentSuccessNotification(string patientName, decimal? amount)
+        {
+            string message = $"✅ THANH TOÁN THÀNH CÔNG\n\n" +
+                            $"Bệnh nhân: {patientName}\n" +
+                            $"Đã thanh toán đơn thuốc: {amount:N0} đ\n\n" +
+                            $"Hệ thống đã cập nhật trạng thái hồ sơ.";
+            
+            MessageBox.Show(this, message, "Thông báo hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void SetDashboardIcon()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "doctor_icon.png");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    using (Bitmap bitmap = new Bitmap(iconPath))
+                    {
+                        this.Icon = Icon.FromHandle(bitmap.GetHicon());
+                    }
+                }
+            }
+            catch { /* Ignore icon errors */ }
         }
 
         private void InitializeUserInfo()
         {
             lblUserName.Text = CurrentUser.FullName ?? "User";
-            lblHeaderDate.Text = DateTime.Now.ToString("dddd, dd MMMM yyyy");
+            lblHeaderDate.Text = DateTime.Now.ToString("dddd, dd/MM/yyyy", new System.Globalization.CultureInfo("en-US"));
         }
 
         #region IDashboardView Implementation
@@ -61,7 +143,7 @@ namespace HospitalManagement.Views.Forms.Doctor
                     LoadActiveExaminations();
                     break;
                 case "Kê đơn thuốc":
-                    LoadPrescriptionGuide();
+                    LoadPrescriptionQueue();
                     break;
                 case "Hồ sơ bệnh nhân":
                     LoadPatientRecords();
@@ -71,6 +153,9 @@ namespace HospitalManagement.Views.Forms.Doctor
                     break;
                 case "Đăng ký ca trực":
                     LoadShiftRegistration();
+                    break;
+                case "Hàng đợi dịch vụ":
+                    LoadServiceQueue();
                     break;
                 default:
                     ShowPlaceholder(contentName);
@@ -159,7 +244,31 @@ namespace HospitalManagement.Views.Forms.Doctor
             var doctorId = GetDoctorId();
             var registration = new UserControls.Doctor.UC_ShiftRegistration(doctorId, CurrentUser.UserID);
             registration.Dock = DockStyle.Fill;
+            registration.Dock = DockStyle.Fill;
             contentPanel.Controls.Add(registration);
+        }
+
+        private void LoadServiceQueue()
+        {
+            var doctorId = GetDoctorId();
+            var serviceQueue = new UserControls.Doctor.UC_ServiceQueue(doctorId);
+            serviceQueue.Dock = DockStyle.Fill;
+            serviceQueue.OnExecuteRequest += (s, requestId) => LoadServiceExecution(requestId);
+            contentPanel.Controls.Add(serviceQueue);
+        }
+
+        private void LoadServiceExecution(int requestId)
+        {
+            contentPanel.Controls.Clear();
+            UpdateHeaderTitle("Thực hiện dịch vụ");
+            
+            var execution = new UserControls.Doctor.UC_ServiceExecution(GetDoctorId());
+            execution.Dock = DockStyle.Fill;
+            execution.SetRequest(requestId);
+            execution.OnComplete += (s, e) => LoadServiceQueue();
+            execution.OnCancel += (s, e) => LoadServiceQueue();
+            
+            contentPanel.Controls.Add(execution);
         }
 
         public void LoadPrescription(int examinationId)
@@ -169,83 +278,23 @@ namespace HospitalManagement.Views.Forms.Doctor
             
             var prescription = new UserControls.Doctor.UC_Prescription();
             prescription.Dock = DockStyle.Fill;
-            prescription.Initialize(examinationId, () => LoadPatientQueue());
+            prescription.Initialize(examinationId, () => LoadPrescriptionQueue());
             
             contentPanel.Controls.Add(prescription);
         }
 
-        private void LoadPrescriptionGuide()
+        private void LoadPrescriptionQueue()
         {
-            // Create a nice guide panel
-            var guidePanel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(241, 245, 249),
-                Padding = new Padding(50)
-            };
-
-            var cardPanel = new Panel
-            {
-                Size = new Size(500, 300),
-                BackColor = Color.White,
-                Location = new Point((contentPanel.Width - 500) / 2, 100)
-            };
-
-            var iconLabel = new Label
-            {
-                Text = "💊",
-                Font = new Font("Segoe UI", 48F),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 80
-            };
-
-            var titleLabel = new Label
-            {
-                Text = "Kê đơn thuốc",
-                Font = new Font("Segoe UI", 18F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(15, 23, 42),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 40
-            };
-
-            var descLabel = new Label
-            {
-                Text = "Để kê đơn thuốc, vui lòng:\n\n1. Vào \"Hàng đợi khám\" để chọn bệnh nhân\n2. Gọi bệnh nhân để khám\n3. Hoàn tất khám bệnh\n4. Kê đơn thuốc cho bệnh nhân",
-                Font = new Font("Segoe UI", 11F),
-                ForeColor = Color.FromArgb(100, 116, 139),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill,
-                Padding = new Padding(20)
-            };
-
-            var btnGoToQueue = new Button
-            {
-                Text = "Đi tới Hàng đợi khám",
-                Font = new Font("Segoe UI Semibold", 11F),
-                BackColor = Color.FromArgb(59, 130, 246),
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(200, 45),
-                Cursor = Cursors.Hand,
-                Location = new Point(150, 240)
-            };
-            btnGoToQueue.FlatAppearance.BorderSize = 0;
-            btnGoToQueue.Click += (s, e) =>
-            {
-                SetActiveButton(btnQueue);
-                _presenter.NavigateTo("Hàng đợi khám");
-            };
-
-            cardPanel.Controls.Add(descLabel);
-            cardPanel.Controls.Add(titleLabel);
-            cardPanel.Controls.Add(iconLabel);
-            cardPanel.Controls.Add(btnGoToQueue);
-
-            guidePanel.Controls.Add(cardPanel);
-            contentPanel.Controls.Add(guidePanel);
+            contentPanel.Controls.Clear();
+            var doctorId = GetDoctorId();
+            var queue = new UserControls.Doctor.UC_PrescriptionQueue();
+            queue.Dock = DockStyle.Fill;
+            queue.Initialize(doctorId, (examId) => LoadPrescription(examId));
+            
+            contentPanel.Controls.Add(queue);
         }
+
+
 
         public void UpdateHeaderTitle(string title)
         {
@@ -427,6 +476,12 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             SetActiveButton(btnShiftRegistration);
             _presenter.NavigateTo("Đăng ký ca trực");
+        }
+
+        private void btnServiceQueue_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnServiceQueue);
+            _presenter.NavigateTo("Hàng đợi dịch vụ");
         }
 
         #endregion

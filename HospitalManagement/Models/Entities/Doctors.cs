@@ -18,6 +18,9 @@ namespace HospitalManagement.Models.Entities
             DoctorSchedules = new HashSet<DoctorSchedules>();
             Examinations = new HashSet<Examinations>();
             MedicalHistory = new HashSet<MedicalHistory>();
+            RequestedServices = new HashSet<ServiceRequests>();
+            PerformedServiceResults = new HashSet<ServiceResults>();
+            VerifiedServiceResults = new HashSet<ServiceResults>();
         }
 
         [Key]
@@ -42,6 +45,8 @@ namespace HospitalManagement.Models.Entities
         // Monthly Quota: Min/Max shifts per month
         public int MinShiftsPerMonth { get; set; } = 15;
         public int MaxShiftsPerMonth { get; set; } = 25;
+        [StringLength(50)]
+        public string DefaultRoom { get; set; }
 
         [ForeignKey(nameof(DepartmentID))]
         [InverseProperty("Doctors")]
@@ -59,5 +64,14 @@ namespace HospitalManagement.Models.Entities
         public virtual ICollection<Examinations> Examinations { get; set; }
         [InverseProperty("Doctor")]
         public virtual ICollection<MedicalHistory> MedicalHistory { get; set; }
+
+        [InverseProperty(nameof(ServiceRequests.RequestingDoctor))]
+        public virtual ICollection<ServiceRequests> RequestedServices { get; set; }
+
+        [InverseProperty(nameof(ServiceResults.PerformedByDoctor))]
+        public virtual ICollection<ServiceResults> PerformedServiceResults { get; set; }
+
+        [InverseProperty(nameof(ServiceResults.VerifiedByDoctor))]
+        public virtual ICollection<ServiceResults> VerifiedServiceResults { get; set; }
     }
 }

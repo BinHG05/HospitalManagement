@@ -159,6 +159,14 @@ namespace HospitalManagement.Presenters.Doctor
                     return;
                 }
 
+                // [NEW] 3-Month Rolling Window Constraint
+                var maxDate = DateTime.Today.AddMonths(3);
+                if (date > maxDate)
+                {
+                    _view.ShowError($"Chỉ được phép đăng ký lịch làm việc trong vòng 3 tháng tới (đến {maxDate:dd/MM/yyyy}).");
+                    return;
+                }
+
                 using (var context = new HospitalDbContext())
                 {
                     // Check if already registered
@@ -174,7 +182,7 @@ namespace HospitalManagement.Presenters.Doctor
                         return;
                     }
 
-                    // Check shift slot availability
+                    // Check shift slot availability (Pending SHOULD count for slots to reserve place)
                     var shift = context.Shifts.Find(shiftId.Value);
                     var registered = context.DoctorSchedules.Count(ds =>
                         ds.ShiftID == shiftId &&

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using HospitalManagement.Views.Forms.Patient;
 
 namespace HospitalManagement.Views.UserControls.Patient
 {
@@ -15,6 +16,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         private InvoiceDisplayInfo _selectedInvoice;
 
         public string SelectedStatusFilter => (cmbStatusFilter.SelectedItem as FilterItem)?.Value ?? "all";
+        public string SelectedTypeFilter => (cmbTypeFilter.SelectedItem as FilterItem)?.Value ?? "all";
 
         public UC_Payment()
         {
@@ -32,17 +34,24 @@ namespace HospitalManagement.Views.UserControls.Patient
         private void InitializeFilters()
         {
             cmbStatusFilter.Items.Clear();
-            cmbStatusFilter.Items.Add(new FilterItem { Text = "Tất cả", Value = "all" });
+            cmbStatusFilter.Items.Add(new FilterItem { Text = "Tất cả trạng thái", Value = "all" });
             cmbStatusFilter.Items.Add(new FilterItem { Text = "Chưa thanh toán", Value = "unpaid" });
             cmbStatusFilter.Items.Add(new FilterItem { Text = "Đã thanh toán", Value = "paid" });
             cmbStatusFilter.Items.Add(new FilterItem { Text = "Đã hủy", Value = "cancelled" });
             cmbStatusFilter.SelectedIndex = 0;
+
+            cmbTypeFilter.Items.Clear();
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Tất cả loại", Value = "all" });
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Tiền khám", Value = "appointment" });
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Tiền thuốc", Value = "medicine" });
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Dịch vụ", Value = "service" });
+            cmbTypeFilter.SelectedIndex = 0;
         }
 
         private void InitializePaymentMethods()
         {
             cmbPaymentMethod.Items.Clear();
-            cmbPaymentMethod.Items.Add(new FilterItem { Text = "Tiền mặt", Value = "cash" });
+            // cmbPaymentMethod.Items.Add(new FilterItem { Text = "Tiền mặt", Value = "cash" });
             cmbPaymentMethod.Items.Add(new FilterItem { Text = "Chuyển khoản", Value = "bank_transfer" });
             cmbPaymentMethod.Items.Add(new FilterItem { Text = "Thẻ tín dụng", Value = "credit_card" });
             cmbPaymentMethod.Items.Add(new FilterItem { Text = "Ví điện tử", Value = "ewallet" });
@@ -64,6 +73,7 @@ namespace HospitalManagement.Views.UserControls.Patient
                 row.Cells["colInvoiceNumber"].Value = invoice.InvoiceNumber;
                 row.Cells["colDate"].Value = invoice.InvoiceDate?.ToString("dd/MM/yyyy") ?? "-";
                 row.Cells["colType"].Value = invoice.PaymentTypeDisplay;
+                row.Cells["colDescription"].Value = invoice.Description ?? "-";
                 row.Cells["colAmount"].Value = invoice.FinalAmount.ToString("N0") + " đ";
                 row.Cells["colStatus"].Value = invoice.StatusDisplay;
                 row.Tag = invoice;
@@ -98,17 +108,37 @@ namespace HospitalManagement.Views.UserControls.Patient
                                $"(Vui lòng thanh toán trước thời gian này để tránh bị hủy lịch)";
             }
 
-            lblDetailsContent.Text =
+            string details = 
                 $"📄 Số hóa đơn: {invoice.InvoiceNumber}\n\n" +
                 $"📅 Ngày: {invoice.InvoiceDate:dd/MM/yyyy}\n\n" +
                 $"📋 Loại: {invoice.PaymentTypeDisplay}\n\n" +
-                $"🏥 Khoa: {invoice.DepartmentName ?? "N/A"}\n\n" +
-                $"👨‍⚕️ Bác sĩ: {invoice.DoctorName ?? "N/A"}\n\n" +
-                $"💰 Tổng tiền: {invoice.TotalAmount:N0} đ\n" +
-                $"🏷️ Giảm giá: {invoice.DiscountAmount:N0} đ\n" +
-                $"💵 Thành tiền: {invoice.FinalAmount:N0} đ\n\n" +
-                $"📊 Trạng thái: {invoice.StatusDisplay}" +
-                deadlineInfo;
+                $"🔍 Nội dung: {invoice.Description ?? "-"}\n\n";
+
+            if (invoice.PaymentType == "medicine")
+            {
+                details += $"🩺 Chẩn đoán: {invoice.Diagnosis ?? "Chưa có"}\n\n" +
+                           $"💊 CHI TIẾT ĐƠN THUỐC:\n" +
+                           $"--------------------------------------------------------------------------\n";
+                
+                foreach (var item in invoice.Items)
+                {
+                    details += $"• {item.MedicineName}\n" +
+                               $"  Số lượng: {item.Quantity}  |  Liều dùng: {item.Dosage}\n" +
+                               $"  HD: {item.Instructions}\n\n";
+                }
+                details += $"--------------------------------------------------------------------------\n\n";
+            }
+
+            details += $"🏥 Khoa: {invoice.DepartmentName ?? "N/A"}\n\n" +
+                       $"👨‍⚕️ Bác sĩ: {invoice.DoctorName ?? "N/A"}\n\n" +
+                       $"💰 Tổng tiền: {invoice.TotalAmount:N0} đ\n" +
+                       $"🏷️ Giảm giá: {invoice.DiscountAmount:N0} đ\n" +
+                       $"💵 Thành tiền: {invoice.FinalAmount:N0} đ\n\n" +
+                       $"--------------------------------------------------------------------------\n" +
+                       $"           Ký tên: BS. {invoice.DoctorName?.Replace("BS. ", "")} (Đã ký số)       \n" +
+                       $"--------------------------------------------------------------------------";
+
+            lblDetailsContent.Text = details + deadlineInfo;
 
             btnPay.Visible = invoice.CanPay;
             cmbPaymentMethod.Visible = invoice.CanPay;
@@ -147,13 +177,13 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             if (_presenter != null)
             {
-                _presenter.LoadInvoices(SelectedStatusFilter);
+                _presenter.LoadInvoices(SelectedStatusFilter, SelectedTypeFilter);
             }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            _presenter?.LoadInvoices(SelectedStatusFilter);
+            _presenter?.LoadInvoices(SelectedStatusFilter, SelectedTypeFilter);
         }
 
         private void dgvInvoices_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -173,6 +203,20 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             if (_selectedInvoice == null) return;
 
+            var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "bank_transfer";
+
+            if (paymentMethod == "bank_transfer" || paymentMethod == "ewallet")
+            {
+                using (var qrForm = new Form_QRPayment(_selectedInvoice.FinalAmount.ToString("N0"), _selectedInvoice.InvoiceNumber, paymentMethod))
+                {
+                    if (qrForm.ShowDialog() == DialogResult.OK)
+                    {
+                        _presenter.PayInvoice(_selectedInvoice.InvoiceId, paymentMethod);
+                    }
+                }
+                return;
+            }
+
             var result = MessageBox.Show(
                 $"Xác nhận thanh toán hóa đơn {_selectedInvoice.InvoiceNumber}?\n" +
                 $"Số tiền: {_selectedInvoice.FinalAmount:N0} đ",
@@ -182,7 +226,6 @@ namespace HospitalManagement.Views.UserControls.Patient
 
             if (result == DialogResult.Yes)
             {
-                var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "cash";
                 _presenter.PayInvoice(_selectedInvoice.InvoiceId, paymentMethod);
             }
         }

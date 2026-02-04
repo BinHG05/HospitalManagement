@@ -23,6 +23,21 @@ namespace HospitalManagement.Presenters.Patient
         public void Initialize()
         {
             LoadDepartments();
+            LoadPatientInfo();
+        }
+
+        private void LoadPatientInfo()
+        {
+            try
+            {
+                var patientService = new PatientService();
+                var profile = patientService.GetPatientProfile(_patientId);
+                if (profile != null)
+                {
+                    _view.UpdatePatientProfile(profile);
+                }
+            }
+            catch { /* Ignore, not critical for core flow but nice for confirmation */ }
         }
 
         public void LoadDepartments()
@@ -113,22 +128,33 @@ namespace HospitalManagement.Presenters.Patient
                     return;
                 }
 
+                if (date > DateTime.Today.AddMonths(3))
+                {
+                     _view.ShowError("Chỉ có thể đặt lịch trong vòng 3 tháng tới.");
+                     return;
+                }
+
                 var appointmentId = _appointmentService.BookAppointment(
                     _patientId, scheduleId, date, queueNumber, reason);
 
                 if (appointmentId > 0)
                 {
-                    // Show Payment Dialog instead of Success immediately
-                    _view.ShowPaymentPrompt(appointmentId, "150,000 VND");
-                }
-                else
-                {
-                    _view.ShowError("Không thể đặt lịch. Số thứ tự này có thể đã được đặt.");
+                    // Tính tiền thực tế để hiển thị ở bước thanh toán sau
+                    var patientService = new PatientService();
+                    var profile = patientService.GetPatientProfile(_patientId);
+                    
+                    decimal fee = 150000;
+                    if (profile != null && !string.IsNullOrWhiteSpace(profile.InsuranceNumber))
+                    {
+                        fee = fee * 0.5m;
+                    }
+
+                    _view.ShowPaymentPrompt(appointmentId, $"{fee:N0} VND");
                 }
             }
             catch (Exception ex)
             {
-                _view.ShowError($"Lỗi đặt lịch: {ex.Message}");
+                _view.ShowError(ex.Message);
             }
             finally
             {
@@ -136,12 +162,12 @@ namespace HospitalManagement.Presenters.Patient
             }
         }
 
-        public void ConfirmPayment(int appointmentId)
+        public void ConfirmPayment(int appointmentId, string method)
         {
             try
             {
                 _view.ShowLoading(true);
-                bool success = _appointmentService.ConfirmAppointment(appointmentId);
+                bool success = _appointmentService.ConfirmAppointment(appointmentId, method);
                 
                 if (success)
                 {
@@ -176,7 +202,16 @@ namespace HospitalManagement.Presenters.Patient
 
         public void NavigateToNextWeek()
         {
-            _currentWeekStart = _currentWeekStart.AddDays(7);
+            var nextWeek = _currentWeekStart.AddDays(7);
+            var maxDate = DateTime.Today.AddMonths(3);
+
+            if (nextWeek > maxDate)
+            {
+                _view.ShowError("Lịch khám cho thời gian này chưa được mở. Vui lòng quay lại sau.");
+                return;
+            }
+
+            _currentWeekStart = nextWeek;
         }
 
         public void NavigateToWeekOf(DateTime date)

@@ -33,6 +33,8 @@ namespace HospitalManagement.Services.Implementations
 
                 return new PatientProfileInfo
                 {
+                    PatientId = patient.PatientID,
+                    UserId = patient.UserID ?? 0,
                     FullName = patient.User?.FullName,
                     Email = patient.User?.Email,
                     Phone = patient.User?.Phone,
@@ -42,7 +44,8 @@ namespace HospitalManagement.Services.Implementations
                     BloodType = patient.BloodType,
                     InsuranceNumber = patient.InsuranceNumber,
                     EmergencyContact = patient.EmergencyContact,
-                    EmergencyPhone = patient.EmergencyPhone
+                    EmergencyPhone = patient.EmergencyPhone,
+                    CreatedAt = patient.CreatedAt
                 };
             }
         }

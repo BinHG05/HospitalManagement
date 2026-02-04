@@ -23,6 +23,10 @@ namespace HospitalManagement.Views.UserControls.Doctor
 
         private void SetupEvents()
         {
+            // [NEW] Enforce 3-Month Rolling Window in UI
+            dtpDate.MinDate = DateTime.Today;
+            dtpDate.MaxDate = DateTime.Today.AddMonths(3);
+
             this.Load += (s, e) =>
             {
                 _presenter.LoadAvailableShifts();

@@ -9,11 +9,47 @@ namespace HospitalManagement.Views.UserControls.Doctor
     public partial class UC_PatientRecords : UserControl
     {
         private int _doctorId;
+        private int? _selectedPatientId;
+        private Button btnEdit;
 
         public UC_PatientRecords()
         {
             InitializeComponent();
             SetupDataGridViews();
+            InitializeEditButton();
+        }
+
+        private void InitializeEditButton()
+        {
+            btnEdit = new Button
+            {
+                Text = "📝 Chỉnh sửa",
+                Size = new Size(100, 30),
+                Location = new Point(280, 15),
+                BackColor = Color.FromArgb(241, 245, 249),
+                ForeColor = Color.FromArgb(59, 130, 246),
+                FlatStyle = FlatStyle.Flat,
+                Visible = false
+            };
+            btnEdit.FlatAppearance.BorderSize = 0;
+            btnEdit.Click += BtnEdit_Click;
+            panelPatientCard.Controls.Add(btnEdit);
+            btnEdit.BringToFront();
+        }
+
+        private void BtnEdit_Click(object sender, EventArgs e)
+        {
+            if (_selectedPatientId.HasValue)
+            {
+                using (var form = new HospitalManagement.Views.Forms.Form_EditPatient(_selectedPatientId.Value))
+                {
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadAllPatients();
+                        ShowPatientDetails(_selectedPatientId.Value);
+                    }
+                }
+            }
         }
 
         public void Initialize(int doctorId)
@@ -70,7 +106,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                     dgvPatients.Rows.Clear();
                     foreach (var p in patients)
                     {
-                        var gender = p.Gender == "male" ? "Nam" : p.Gender == "female" ? "Nu" : "Khac";
+                        var gender = (p.Gender == "Nam" || p.Gender == "male") ? "Nam" : (p.Gender == "Nữ" || p.Gender == "female") ? "Nữ" : "Khác";
                         var dob = p.DateOfBirth.HasValue ? p.DateOfBirth.Value.ToString("dd/MM/yyyy") : "N/A";
                         
                         dgvPatients.Rows.Add(
@@ -86,7 +122,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi tai danh sach benh nhan: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tải danh sách bệnh nhân: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -123,7 +159,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                     dgvPatients.Rows.Clear();
                     foreach (var p in patients)
                     {
-                        var gender = p.Gender == "male" ? "Nam" : p.Gender == "female" ? "Nu" : "Khac";
+                        var gender = (p.Gender == "Nam" || p.Gender == "male") ? "Nam" : (p.Gender == "Nữ" || p.Gender == "female") ? "Nữ" : "Khác";
                         var dob = p.DateOfBirth.HasValue ? p.DateOfBirth.Value.ToString("dd/MM/yyyy") : "N/A";
 
                         dgvPatients.Rows.Add(
@@ -139,7 +175,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi tim kiem: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -166,7 +202,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
 
                     if (patient == null) return;
 
-                    var gender = patient.Gender == "male" ? "Nam" : patient.Gender == "female" ? "Nu" : "Khac";
+                    var gender = (patient.Gender == "Nam" || patient.Gender == "male") ? "Nam" : (patient.Gender == "Nữ" || patient.Gender == "female") ? "Nữ" : "Khác";
                     int? age = null;
                     if (patient.DateOfBirth.HasValue)
                     {
@@ -175,11 +211,13 @@ namespace HospitalManagement.Views.UserControls.Doctor
                             age--;
                     }
 
+                    _selectedPatientId = patientId;
+                    btnEdit.Visible = true;
                     lblPatientName.Text = patient.FullName;
-                    lblPatientInfo.Text = $"{gender}, {(age.HasValue ? age + " tuoi" : "N/A")}\n" +
-                                          $"SDT: {patient.Phone}\n" +
-                                          $"Dia chi: {patient.Address ?? "Chua co"}\n" +
-                                          $"BHYT: {patient.InsuranceNumber ?? "Khong co"}";
+                    lblPatientInfo.Text = $"{gender}, {(age.HasValue ? age + " tuổi" : "N/A")}\n" +
+                                          $"SĐT: {patient.Phone}\n" +
+                                          $"Địa chỉ: {patient.Address ?? "Chưa có"}\n" +
+                                          $"BHYT: {patient.InsuranceNumber ?? "Không có"}";
 
                     // Load medical history
                     var history = context.MedicalRecords
@@ -189,7 +227,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
                         .Select(r => new
                         {
                             Date = r.RecordDate,
-                            Doctor = r.Examination.Doctor.User.FullName,
+                            Doctor = r.Examination != null ? r.Examination.Doctor.User.FullName : "N/A",
                             r.Diagnosis
                         })
                         .ToList();
@@ -207,7 +245,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Loi tai chi tiet: {ex.Message}", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi tải chi tiết: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -232,8 +270,12 @@ namespace HospitalManagement.Views.UserControls.Doctor
         {
             if (e.RowIndex < 0) return;
 
-            var patientId = (int)dgvPatients.Rows[e.RowIndex].Cells["colPatientId"].Value;
-            ShowPatientDetails(patientId);
+            if (dgvPatients.Rows[e.RowIndex].Cells["colPatientId"].Value == null) return;
+            
+            if (int.TryParse(dgvPatients.Rows[e.RowIndex].Cells["colPatientId"].Value.ToString(), out int patientId))
+            {
+                ShowPatientDetails(patientId);
+            }
         }
 
         #endregion

@@ -2,6 +2,7 @@
 using HospitalManagement.Views.Forms.Patient;
 using HospitalManagement.Views.Forms.Doctor;
 using HospitalManagement.Views.Forms.Admin;
+using HospitalManagement.Views.Forms.Pharmacist;
 using System;
 using System.Windows.Forms;
 
@@ -19,7 +20,8 @@ namespace HospitalManagement
             Application.SetCompatibleTextRenderingDefault(false);
 
             // Initialize fresh database in Docker
-            HospitalManagement.Infrastructure.DatabaseInitializer.Initialize();
+            // NOTE: Set to true once to recreate database with new schema (PerformedAt, VerifiedBy, etc.)
+            HospitalManagement.Infrastructure.DatabaseInitializer.Initialize(true);
 
             // Login loop
             while (true)
@@ -43,6 +45,9 @@ namespace HospitalManagement
                             break;
                         case "admin":
                             dashboard = new AdminDashboard(user);
+                            break;
+                        case "pharmacist":
+                            dashboard = new PharmacistDashboard(user);
                             break;
                         default:
                             // Default to patient dashboard

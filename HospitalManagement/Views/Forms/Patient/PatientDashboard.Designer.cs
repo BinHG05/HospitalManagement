@@ -133,7 +133,7 @@ namespace HospitalManagement.Views.Forms.Patient
             this.btnHistory.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnHistory.Size = new System.Drawing.Size(230, 56);
             this.btnHistory.TabIndex = 2;
-            this.btnHistory.Text = "   📅   Lịch sử khám";
+            this.btnHistory.Text = "   📅   Lịch sử đặt khám";
             this.btnHistory.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnHistory.UseVisualStyleBackColor = false;
             this.btnHistory.Click += new System.EventHandler(this.btnHistory_Click);

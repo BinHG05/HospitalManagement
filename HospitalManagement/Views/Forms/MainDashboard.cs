@@ -193,6 +193,9 @@ namespace HospitalManagement.Views.Forms
                 case "admin":
                     AddAdminMenuItems(menuPanel, ref yPos);
                     break;
+                case "pharmacist":
+                    AddPharmacistMenuItems(menuPanel, ref yPos);
+                    break;
                 default:
                     AddPatientMenuItems(menuPanel, ref yPos);
                     break;
@@ -209,8 +212,8 @@ namespace HospitalManagement.Views.Forms
             menuPanel.Controls.Add(btnAppointment);
             yPos += 50;
 
-            var btnHistory = CreateMenuButton("📋  Lịch sử khám", yPos);
-            btnHistory.Click += (s, e) => { SetActiveMenu(btnHistory, "Lịch sử khám"); LoadPlaceholder("Lịch sử khám"); };
+            var btnHistory = CreateMenuButton("📋  Lịch sử đặt khám", yPos);
+            btnHistory.Click += (s, e) => { SetActiveMenu(btnHistory, "Lịch sử đặt khám"); LoadPlaceholder("Lịch sử đặt khám"); };
             menuPanel.Controls.Add(btnHistory);
             yPos += 50;
 
@@ -273,6 +276,19 @@ namespace HospitalManagement.Views.Forms
             var btnReports = CreateMenuButton("📊  Báo cáo", yPos);
             btnReports.Click += (s, e) => { SetActiveMenu(btnReports, "Báo cáo"); LoadPlaceholder("Báo cáo"); };
             menuPanel.Controls.Add(btnReports);
+            yPos += 50;
+        }
+
+        private void AddPharmacistMenuItems(Panel menuPanel, ref int yPos)
+        {
+            var btnSales = CreateMenuButton("💊  Cấp phát thuốc", yPos);
+            btnSales.Click += (s, e) => { SetActiveMenu(btnSales, "Cấp phát thuốc"); LoadPlaceholder("Cấp phát thuốc"); };
+            menuPanel.Controls.Add(btnSales);
+            yPos += 50;
+
+            var btnStock = CreateMenuButton("📦  Kho thuốc", yPos);
+            btnStock.Click += (s, e) => { SetActiveMenu(btnStock, "Kho thuốc"); LoadPlaceholder("Kho thuốc"); };
+            menuPanel.Controls.Add(btnStock);
             yPos += 50;
         }
 
@@ -357,7 +373,7 @@ namespace HospitalManagement.Views.Forms
             int cardHeight = 150;
 
             string[] icons = { "📅", "📋", "💳", "❤️" };
-            string[] titles = { "Đặt lịch khám", "Lịch sử khám", "Thanh toán", "Hồ sơ sức khỏe" };
+            string[] titles = { "Đặt lịch khám", "Lịch sử đặt khám", "Thanh toán", "Hồ sơ sức khỏe" };
             Color[] colors = { AppColors.Primary, AppColors.Secondary, AppColors.Warning, AppColors.Accent };
 
             for (int i = 0; i < 4; i++)
@@ -432,6 +448,7 @@ namespace HospitalManagement.Views.Forms
                 case "patient": return "Bệnh nhân";
                 case "doctor": return "Bác sĩ";
                 case "admin": return "Quản trị viên";
+                case "pharmacist": return "Dược sĩ";
                 default: return role;
             }
         }

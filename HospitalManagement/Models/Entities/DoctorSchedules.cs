@@ -14,6 +14,7 @@ namespace HospitalManagement.Models.Entities
         public DoctorSchedules()
         {
             Appointments = new HashSet<Appointments>();
+            AssignedServiceRequests = new HashSet<ServiceRequests>();
         }
 
         [Key]
@@ -42,6 +43,8 @@ namespace HospitalManagement.Models.Entities
 
         [StringLength(500)]
         public string RejectionReason { get; set; }
+        [StringLength(50)]
+        public string RoomNumber { get; set; }
 
         [ForeignKey(nameof(ApprovedByUserID))]
         public virtual Users ApprovedByUser { get; set; }
@@ -57,5 +60,8 @@ namespace HospitalManagement.Models.Entities
         public virtual Shifts Shift { get; set; }
         [InverseProperty("Schedule")]
         public virtual ICollection<Appointments> Appointments { get; set; }
+
+        [InverseProperty(nameof(ServiceRequests.AssignedSchedule))]
+        public virtual ICollection<ServiceRequests> AssignedServiceRequests { get; set; }
     }
 }

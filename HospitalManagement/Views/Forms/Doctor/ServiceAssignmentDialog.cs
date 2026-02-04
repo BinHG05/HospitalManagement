@@ -3,75 +3,76 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using HospitalManagement.Services.Implementations;
+using HospitalManagement.Services.Interfaces;
 
 namespace HospitalManagement.Views.Forms.Doctor
 {
     public partial class ServiceAssignmentDialog : Form
     {
+        private readonly IDoctorService _doctorService;
+        
         public class ServiceItem
-        {
-            public string Id { get; set; }
-            public string Name { get; set; } // e.g., "X-Ray", "Blood Test"
-            public override string ToString() => Name;
-        }
-
-        public class DoctorItem
         {
             public int Id { get; set; }
             public string Name { get; set; }
+            public decimal Price { get; set; } // [NEW]
             public override string ToString() => Name;
         }
 
-        public string SelectedService { get; private set; }
-        public int? SelectedDoctorId { get; private set; }
-        public string SelectedDoctorName { get; private set; }
+        public List<ServiceItem> SelectedServices { get; private set; } = new List<ServiceItem>();
 
         public ServiceAssignmentDialog()
         {
             InitializeComponent();
+            _doctorService = new DoctorService();
             LoadData();
         }
 
         private void LoadData()
         {
-            // Mock Services (In real app, load from DB)
-            cboServices.Items.Add(new ServiceItem { Id = "XRAY", Name = "🔍 Chụp X-Quang" });
-            cboServices.Items.Add(new ServiceItem { Id = "BLOOD", Name = "🩸 Xét nghiệm máu" });
-            cboServices.Items.Add(new ServiceItem { Id = "URINE", Name = "🧪 Xét nghiệm nước tiểu" });
-            cboServices.Items.Add(new ServiceItem { Id = "US", Name = "🖥️ Siêu âm" });
-            cboServices.Items.Add(new ServiceItem { Id = "MRI", Name = "🧲 Chụp MRI" });
-            cboServices.SelectedIndex = 0;
+            try
+            {
+                var services = _doctorService.GetAllServices();
+                clbServices.Items.Clear();
+                foreach (var s in services)
+                {
+                    clbServices.Items.Add(new ServiceItem 
+                    { 
+                        Id = s.ServiceID, 
+                        Name = s.ServiceName,
+                        Price = s.Price 
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể tải danh sách dịch vụ: " + ex.Message);
+            }
 
-            // Mock Doctors (or load active via DoctorService)
-            // Ideally we should filter doctors who can perform the selected service
-            cboDoctors.Items.Add(new DoctorItem { Id = 0, Name = "--- Bất kỳ bác sĩ nào ---" });
-            // Should load real doctors here later
-            cboDoctors.SelectedIndex = 0;
+            // Ẩn phần chọn bác sĩ vì hệ thống tự động gán
+            if (lblDoctor != null) lblDoctor.Visible = false; 
+            if (cboDoctors != null) cboDoctors.Visible = false;
         }
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            if (cboServices.SelectedItem is ServiceItem service)
+            SelectedServices.Clear();
+            foreach (var item in clbServices.CheckedItems)
             {
-                SelectedService = service.Name;
-                
-                if (cboDoctors.SelectedItem is DoctorItem doctor && doctor.Id > 0)
+                if (item is ServiceItem service)
                 {
-                    SelectedDoctorId = doctor.Id;
-                    SelectedDoctorName = doctor.Name;
+                    SelectedServices.Add(service);
                 }
-                else
-                {
-                    SelectedDoctorId = null;
-                    SelectedDoctorName = "Phòng kỹ thuật";
-                }
+            }
 
+            if (SelectedServices.Count > 0)
+            {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Vui lòng chọn dịch vụ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn ít nhất một dịch vụ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

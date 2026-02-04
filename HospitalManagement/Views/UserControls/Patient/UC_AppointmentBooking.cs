@@ -2,6 +2,7 @@ using HospitalManagement.Models.Entities;
 using HospitalManagement.Presenters.Patient;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces.Patient;
+using HospitalManagement.Views.Forms.Patient;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -21,8 +22,12 @@ namespace HospitalManagement.Views.UserControls.Patient
         private string _selectedShift; // "morning" or "afternoon"
         private string _selectedTimeSlot;
         private List<TimeSlotInfo> _loadedSlots = new List<TimeSlotInfo>();
+        private List<DepartmentScheduleInfo> _currentWeekSchedules = new List<DepartmentScheduleInfo>(); // [NEW] Store weekly schedules
         private int _currentRangeStart = 1;
         private int _currentRangeEnd = 15;
+        private string _patientName;
+        private PatientProfileInfo _currentProfile;
+        private string _selectedRoomNumber;
 
         public int SelectedDepartmentId => _selectedDepartmentId;
         public DateTime SelectedDate => _selectedDate;
@@ -38,8 +43,10 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             InitializeComponent();
             dtpSelectDate.MinDate = DateTime.Today;
+            dtpSelectDate.MaxDate = DateTime.Today.AddMonths(3); // [NEW] Enforce 3-month rolling window
             dtpSelectDate.Value = DateTime.Today;
         }
+
 
         public void Initialize(int patientId)
         {
@@ -72,7 +79,26 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         public void ShowWeeklySchedule(IEnumerable<DepartmentScheduleInfo> schedules)
         {
-            // Not used in new design - we use LoadWeeklyCalendar instead
+            _currentWeekSchedules = schedules.ToList();
+            
+            // Check if week is completely empty
+            bool hasAnySchedule = _currentWeekSchedules.Any(s => s.TotalSlots > 0);
+            if (!hasAnySchedule)
+            {
+                 // We can either show a toast or just let the calendar render "No Schedule"
+                 // User requested specific message:
+                 // "Nếu trong 3 tháng mà tuần đó trống -> Thông báo: 'Bác sĩ chưa có lịch trực tuần này.'"
+                 
+                 // Show this message only if we are in a valid future week
+                 if (_presenter.CurrentWeekStart >= DateTime.Today)
+                 {
+                     // Use a label on the panel or a MessageBox? MessageBox might be annoying if navigating quickly.
+                     // Better to just let the calendar show "Nghỉ" everywhere, maybe add a label?
+                     // For now, let's use the standard "Nghỉ" status in the cards.
+                 }
+            }
+
+            LoadWeeklyCalendar();
         }
 
         public void ShowTimeSlots(IEnumerable<TimeSlotInfo> slots)
@@ -139,44 +165,27 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         public void ShowPaymentPrompt(int appointmentId, string amount)
         {
-            var isToday = _selectedDate.Date == DateTime.Today;
+            MessageBox.Show(
+                $"Đặt lịch khám thành công!\n" +
+                $"Hệ thống sẽ chuyển bạn đến mục Thanh toán để hoàn tất việc giữ chỗ.",
+                "Thành công",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
 
-            if (isToday)
+            ClearSelection();
+
+            // Find dashboard and switch
+            Form parent = this.FindForm();
+            if (parent is PatientDashboard dashboard)
             {
-                MessageBox.Show(
-                    $"Đặt lịch thành công!\n" +
-                    $"Số tiền cần thanh toán: {amount}\n\n" +
-                    $"⚠️ LƯU Ý: Vì bạn đặt lịch khám vào HÔM NAY, bạn cần thực hiện thanh toán ngay bây giờ để hoàn tất xác thực lịch hẹn.",
-                    "Yêu cầu thanh toán",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                _presenter.ConfirmPayment(appointmentId);
+                dashboard.SwitchToSection("Thanh toán");
             }
-            else
-            {
-                var deadline = DateTime.Today.AddHours(19).AddMinutes(30);
-                var result = MessageBox.Show(
-                    $"Đặt lịch thành công!\n" +
-                    $"Số tiền cần thanh toán: {amount}\n\n" +
-                    $"Hạt chót thanh toán: {deadline:HH:mm} tối hôm nay.\n" +
-                    $"Nếu sau thời gian này bạn chưa thanh toán, lịch hẹn sẽ tự động bị hủy.\n\n" +
-                    $"Bạn có muốn thực hiện thanh toán ngay bây giờ không?",
-                    "Xác nhận thanh toán",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Information);
+        }
 
-                if (result == DialogResult.Yes)
-                {
-                    _presenter.ConfirmPayment(appointmentId);
-                }
-                else
-                {
-                    ShowSuccess($"Đặt lịch thành công (Chờ thanh toán).\nVui lòng thanh toán trước {deadline:HH:mm} để hoàn tất.");
-                    ClearSelection();
-                    GoBackToWeeklyView();
-                }
-            }
+        public void UpdatePatientProfile(PatientProfileInfo profile)
+        {
+            _currentProfile = profile;
+            _patientName = profile?.FullName;
         }
 
         public void ShowError(string message)
@@ -255,6 +264,17 @@ namespace HospitalManagement.Views.UserControls.Patient
             bool isSelected = date.Date == _selectedDate.Date;
             bool isToday = date.Date == DateTime.Today;
 
+            // [NEW] Check real schedule availability
+            var scheduleInfo = _currentWeekSchedules.FirstOrDefault(s => s.Date.Date == date.Date);
+            bool hasSchedule = scheduleInfo != null && scheduleInfo.TotalSlots > 0;
+            bool isFull = hasSchedule && (scheduleInfo.BookedSlots >= scheduleInfo.TotalSlots);
+
+            string statusText = "---";
+            if (isPast) statusText = "Đã qua";
+            else if (!hasSchedule) statusText = "Không lịch";
+            else if (isFull) statusText = "Đã đầy";
+            else statusText = "Có lịch";
+
             var panel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -289,7 +309,7 @@ namespace HospitalManagement.Views.UserControls.Patient
 
             var lblStatus = new Label
             {
-                Text = isPast ? "Đã qua" : (isToday ? "Hôm nay" : "Có lịch"),
+                Text = statusText,
                 Font = new Font("Segoe UI", 9),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Fill,
@@ -301,15 +321,20 @@ namespace HospitalManagement.Views.UserControls.Patient
             panel.Controls.Add(lblDay);
             
             // Apply initial appearance
-            ApplyDayCardAppearance(panel, isPast, isSelected, isToday);
+            // Pass hasSchedule/isFull to helper for custom styling if needed
+            ApplyDayCardAppearance(panel, isPast, isSelected, isToday, hasSchedule, isFull);
 
-            if (!isPast)
+            if (!isPast && hasSchedule && !isFull)
             {
                 EventHandler onClick = (s, e) => SelectDay(date);
                 panel.Click += onClick;
                 lblDay.Click += onClick;
                 lblDate.Click += onClick;
                 lblStatus.Click += onClick;
+            }
+            else if (hasSchedule && isFull)
+            {
+                 // Optional: Allow clicking to see it's full? Or just disable.
             }
 
             return panel;
@@ -344,34 +369,68 @@ namespace HospitalManagement.Views.UserControls.Patient
                     bool isSelected = cardDate.Date == newDate.Date;
                     bool isToday = cardDate.Date == DateTime.Today;
                     
+                    // [NEW] Check real schedule
+                    var scheduleInfo = _currentWeekSchedules.FirstOrDefault(s => s.Date.Date == cardDate.Date);
+                    bool hasSchedule = scheduleInfo != null && scheduleInfo.TotalSlots > 0;
+                    bool isFull = hasSchedule && (scheduleInfo.BookedSlots >= scheduleInfo.TotalSlots);
+
                     // Only update if this is the old or new selection
                     if (cardDate.Date == previousDate.Date || cardDate.Date == newDate.Date)
                     {
-                        ApplyDayCardAppearance(panel, isPast, isSelected, isToday);
+                        ApplyDayCardAppearance(panel, isPast, isSelected, isToday, hasSchedule, isFull);
                     }
                 }
             }
         }
 
-        private void ApplyDayCardAppearance(Panel panel, bool isPast, bool isSelected, bool isToday)
+        private void ApplyDayCardAppearance(Panel panel, bool isPast, bool isSelected, bool isToday, bool hasSchedule, bool isFull)
         {
-            // Set panel appearance
-            panel.BackColor = isPast ? Color.FromArgb(241, 245, 249) :
-                              isSelected ? Color.FromArgb(59, 130, 246) :
-                              isToday ? Color.FromArgb(16, 185, 129) : Color.White;
-            panel.Cursor = isPast ? Cursors.No : Cursors.Hand;
+            // Colors
+            Color bgNormal = Color.White;
+            Color bgNoSchedule = Color.WhiteSmoke;
+            Color bgFull = Color.FromArgb(254, 242, 242); // Light red
+            Color bgSelected = Color.FromArgb(59, 130, 246); // Blue
+            Color bgToday = Color.FromArgb(16, 185, 129); // Green
+
+            // Determine Background
+            if (isSelected) panel.BackColor = bgSelected;
+            else if (isToday) panel.BackColor = bgToday;
+            else if (isPast) panel.BackColor = bgNoSchedule;
+            else if (!hasSchedule) panel.BackColor = bgNoSchedule;
+            else if (isFull) panel.BackColor = bgFull;
+            else panel.BackColor = bgNormal;
+
+            // Determine Cursor & Enabled
+            if (isPast || (!hasSchedule && !isToday) || (isFull && !isSelected)) 
+            {
+                 panel.Cursor = Cursors.Default;
+            }
+            else
+            {
+                 panel.Cursor = Cursors.Hand;
+            }
             
-            // Set text colors
-            Color textColor = isPast ? Color.FromArgb(148, 163, 184) :
-                              (isSelected || isToday) ? Color.White : Color.FromArgb(15, 23, 42);
-            Color subTextColor = isPast ? Color.FromArgb(148, 163, 184) :
-                                 (isSelected || isToday) ? Color.White : Color.FromArgb(100, 116, 139);
-            Color statusColor = isPast ? Color.FromArgb(148, 163, 184) :
-                                (isSelected || isToday) ? Color.White : Color.FromArgb(16, 185, 129);
-            
+            // Text Colors
+            Color textNormal = Color.FromArgb(15, 23, 42);
+            Color textMuted = Color.FromArgb(148, 163, 184);
+            Color textWhite = Color.White;
+            Color textRed = Color.FromArgb(220, 38, 38);
+
+            Color mainTextColor = (isSelected || isToday) ? textWhite : textNormal;
+            Color subTextColor = (isSelected || isToday) ? textWhite : textMuted;
+            Color statusColor = (isSelected || isToday) ? textWhite : textNormal;
+
+            if (!isSelected && !isToday)
+            {
+                if (isPast) { mainTextColor = textMuted; statusColor = textMuted; }
+                else if (!hasSchedule) { statusColor = textMuted; }
+                else if (isFull) { statusColor = textRed; }
+                else { statusColor = Color.FromArgb(16, 185, 129); } // Green for Available
+            }
+
             foreach (Control ctrl in panel.Controls)
             {
-                if (ctrl.Name == "lblDay") ctrl.ForeColor = textColor;
+                if (ctrl.Name == "lblDay") ctrl.ForeColor = mainTextColor;
                 else if (ctrl.Name == "lblDate") ctrl.ForeColor = subTextColor;
                 else if (ctrl.Name == "lblStatus") ctrl.ForeColor = statusColor;
             }
@@ -390,10 +449,53 @@ namespace HospitalManagement.Views.UserControls.Patient
 
         private void ResetShiftSelection()
         {
+            // Reset styles
             btnMorningShift.BackColor = Color.FromArgb(241, 245, 249);
             btnMorningShift.ForeColor = Color.FromArgb(15, 23, 42);
             btnAfternoonShift.BackColor = Color.FromArgb(241, 245, 249);
             btnAfternoonShift.ForeColor = Color.FromArgb(15, 23, 42);
+            
+            // Re-enable by default
+            btnMorningShift.Enabled = true;
+            btnAfternoonShift.Enabled = true;
+
+            // [NEW] Disable shifts if time has passed for TODAY
+            if (_selectedDate.Date == DateTime.Today)
+            {
+                var now = DateTime.Now.TimeOfDay;
+                // Morning ends at 11:30
+                if (now > new TimeSpan(11, 30, 0))
+                {
+                    btnMorningShift.Enabled = false;
+                    btnMorningShift.BackColor = Color.WhiteSmoke;
+                    btnMorningShift.ForeColor = Color.DarkGray;
+                    btnMorningShift.Text = "Ca sáng (Đã qua)";
+                }
+                else
+                {
+                     btnMorningShift.Text = "Ca sáng (7:30-11:30)";
+                }
+
+                // Afternoon ends at 17:30
+                if (now > new TimeSpan(17, 30, 0))
+                {
+                    btnAfternoonShift.Enabled = false;
+                    btnAfternoonShift.BackColor = Color.WhiteSmoke;
+                    btnAfternoonShift.ForeColor = Color.DarkGray;
+                    btnAfternoonShift.Text = "Ca chiều (Đã qua)";
+                }
+                else
+                {
+                     btnAfternoonShift.Text = "Ca chiều (13:30-17:30)";
+                }
+            }
+            else
+            {
+                 // Reset texts for future days
+                 btnMorningShift.Text = "Ca sáng (7:30-11:30)";
+                 btnAfternoonShift.Text = "Ca chiều (13:30-17:30)";
+            }
+
             _selectedShift = null;
         }
 
@@ -434,41 +536,22 @@ namespace HospitalManagement.Views.UserControls.Patient
             panelTimeSlots.Visible = true;
             panelQueueSelection.Visible = false;
 
-            // Find the database schedule for this shift
-            // We assume _loadedSlots contains 1 entry for the whole shift (Morning or Afternoon)
-            var shiftSchedule = _loadedSlots.FirstOrDefault(s => 
-                (shift == "morning" && s.StartTime.Hours < 12) ||
-                (shift == "afternoon" && s.StartTime.Hours >= 12)
-            );
-
-            if (shiftSchedule == null)
-            {
-                var lblMs = new Label 
-                { 
-                    Text = "Không có lịch khám nào trong ca này.", 
-                    AutoSize = true, 
-                    ForeColor = Color.Red,
-                    Font = new Font("Segoe UI", 10, FontStyle.Italic),
-                    Padding = new Padding(10)
-                };
-                flowTimeSlots.Controls.Add(lblMs);
-                return;
-            }
-
-            // Use hardcoded slots for display
             string[] displaySlots = shift == "morning" ? MorningSlots : AfternoonSlots;
+            bool hasAnyAvailable = false;
 
             for (int i = 0; i < displaySlots.Length; i++)
             {
                 string slotText = displaySlots[i];
-                
-                // Calculate range for this slot (e.g., 4 slots, 60 total -> 15 per slot)
-                int startNum = (i * 15) + 1;
-                int endNum = (i + 1) * 15;
-                
-                // Check availability in this specific range
-                // We need to fetch ALL booked numbers for the shift first (should be cached or fetched)
-                // For now, valid visually. Real check happens in LoadQueueNumbers.
+                TimeSpan slotStartTime = TimeSpan.Parse(slotText.Split('-')[0]);
+
+                // Tìm lịch khám từ DB bao phủ khung giờ này
+                var shiftSchedule = _loadedSlots.FirstOrDefault(s => 
+                    s.StartTime <= slotStartTime && s.EndTime >= slotStartTime.Add(TimeSpan.FromMinutes(60)) // Strictly cover the hour
+                );
+
+                if (shiftSchedule == null) continue;
+
+                hasAnyAvailable = true;
                 
                 var btn = new Button
                 {
@@ -489,6 +572,19 @@ namespace HospitalManagement.Views.UserControls.Patient
                 
                 flowTimeSlots.Controls.Add(btn);
             }
+
+            if (!hasAnyAvailable)
+            {
+                var lblMs = new Label 
+                { 
+                    Text = "Không có lịch khám nào trong ca này.", 
+                    AutoSize = true, 
+                    ForeColor = Color.Red,
+                    Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                    Padding = new Padding(10)
+                };
+                flowTimeSlots.Controls.Add(lblMs);
+            }
             
             // Auto scroll to time slots
             panelContent.VerticalScroll.Value = Math.Min(panelContent.VerticalScroll.Maximum, 320);
@@ -508,6 +604,7 @@ namespace HospitalManagement.Views.UserControls.Patient
 
             _selectedTimeSlot = btn.Text; // "07:30-08:30"
             _selectedScheduleId = slotInfo.ScheduleId;
+            _selectedRoomNumber = slotInfo.RoomNumber;
 
             // Highlight selected
             foreach (Control ctrl in flowTimeSlots.Controls)
@@ -650,7 +747,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             if (cmbDepartment.SelectedItem is ComboBoxItem item && item.Value > 0)
             {
                 _selectedDepartmentId = item.Value;
-                LoadWeeklyCalendar();
+                // [FIX] Load schedule data
+                _presenter.LoadWeeklySchedule(_selectedDepartmentId);
                 
                 // If date already selected, show shift selection and load slots
                 if (_selectedDate >= DateTime.Today)
@@ -680,10 +778,18 @@ namespace HospitalManagement.Views.UserControls.Patient
             if (_presenter != null)
             {
                 _presenter.NavigateToWeekOf(_selectedDate);
+                // [FIX] Reload schedule data for the new week
+                if (_selectedDepartmentId > 0)
+                {
+                    _presenter.LoadWeeklySchedule(_selectedDepartmentId);
+                }
+                else 
+                {
+                    LoadWeeklyCalendar(); // Just render dates if no dept selected
+                }
             }
             
             UpdateWeekLabel();
-            LoadWeeklyCalendar();
             
             if (_selectedDepartmentId > 0)
             {
@@ -699,7 +805,11 @@ namespace HospitalManagement.Views.UserControls.Patient
             {
                 _presenter.NavigateToPreviousWeek();
                 UpdateWeekLabel();
-                LoadWeeklyCalendar();
+                // [FIX] Reload data
+                if (_selectedDepartmentId > 0) 
+                    _presenter.LoadWeeklySchedule(_selectedDepartmentId);
+                else
+                    LoadWeeklyCalendar();
             }
         }
 
@@ -707,7 +817,11 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             _presenter.NavigateToNextWeek();
             UpdateWeekLabel();
-            LoadWeeklyCalendar();
+            // [FIX] Reload data
+            if (_selectedDepartmentId > 0) 
+                _presenter.LoadWeeklySchedule(_selectedDepartmentId);
+            else
+                LoadWeeklyCalendar();
         }
 
         private void UpdateWeekLabel()
@@ -720,7 +834,7 @@ namespace HospitalManagement.Views.UserControls.Patient
                 
                 // Disable prev week button if current week contains only past dates
                 var canGoPrev = weekStart.AddDays(-1) >= DateTime.Today || weekStart > DateTime.Today;
-                btnPrevWeek.Enabled = weekStart > DateTime.Today;
+                btnPrevWeek.Enabled = weekStart > DateTime.Today; // Simplified check
                 btnPrevWeek.ForeColor = btnPrevWeek.Enabled ? Color.FromArgb(59, 130, 246) : Color.FromArgb(148, 163, 184);
             }
         }
@@ -757,28 +871,26 @@ namespace HospitalManagement.Views.UserControls.Patient
                 return;
             }
 
-            // Show confirmation with payment warning
-            var isToday = _selectedDate.Date == DateTime.Today;
-            var deadline = DateTime.Now.Date.AddHours(19).AddMinutes(30);
-            
-            string paymentRequirement = isToday 
-                ? "- BẮT BUỘC: Bạn cần thanh toán NGAY LẬP TỨC sau bước này.\n- Nếu không thanh toán, lịch hẹn sẽ không được ghi nhận.\n"
-                : $"- HẠN CHÓT: Trước {deadline:HH:mm} tối hôm nay.\n- Sau {deadline:HH:mm}, nếu chưa thanh toán, lịch sẽ bị HỦY TỰ ĐỘNG.\n";
-
-            var message = $"XÁC NHẬN ĐẶT LỊCH KHÁM\n\n" +
-                         $"🏥 Khoa: {cmbDepartment.Text}\n" +
-                         $"📅 Ngày: {_selectedDate:dd/MM/yyyy}\n" +
-                         $"⏰ Giờ: {_selectedTimeSlot}\n" +
-                         $"🔢 Số thứ tự: {_selectedQueueNumber}\n\n" +
-                         $"QUY ĐỊNH THANH TOÁN:\n" +
-                         paymentRequirement + "\n" +
-                         $"Bạn có xác nhận đặt lịch này không?";
-
-            var result = MessageBox.Show(message, "Xác nhận đặt lịch", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            
-            if (result == DialogResult.Yes)
+            // MÀN HÌNH XÁC NHẬN MỚI
+            using (var formConfirm = new Form_BookingConfirmation(
+                _currentProfile, 
+                cmbDepartment.Text, 
+                _selectedDate, 
+                _selectedTimeSlot, 
+                _selectedQueueNumber,
+                _selectedRoomNumber))
             {
-                _presenter.BookAppointment();
+                var result = formConfirm.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    _presenter.BookAppointment();
+                }
+                else if (result == DialogResult.Retry)
+                {
+                    // Người dùng vừa cập nhật hồ sơ, tải lại thông tin và mở lại form xác nhận
+                    _presenter.Initialize(); // Để nạp lại profile mới
+                    btnConfirmBooking_Click(sender, e);
+                }
             }
         }
 

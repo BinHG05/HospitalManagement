@@ -33,5 +33,13 @@ namespace HospitalManagement.Models.Entities
         [ForeignKey(nameof(ServiceID))]
         [InverseProperty(nameof(MedicalServices.ServiceResults))]
         public virtual MedicalServices Service { get; set; }
+
+        [ForeignKey(nameof(PerformedBy))]
+        [InverseProperty(nameof(Doctors.PerformedServiceResults))]
+        public virtual Doctors PerformedByDoctor { get; set; }
+
+        [ForeignKey(nameof(VerifiedBy))]
+        [InverseProperty(nameof(Doctors.VerifiedServiceResults))]
+        public virtual Doctors VerifiedByDoctor { get; set; }
     }
 }
