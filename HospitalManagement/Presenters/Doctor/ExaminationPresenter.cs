@@ -37,6 +37,14 @@ namespace HospitalManagement.Presenters.Doctor
                 {
                     _view.LoadPatientInfo(_currentPatient);
                     _view.Symptoms = _currentPatient.Symptoms ?? "";
+                    
+                    // Load draft data from existing examination (if any)
+                    if (!string.IsNullOrEmpty(_currentPatient.Diagnosis))
+                        _view.Diagnosis = _currentPatient.Diagnosis;
+                    if (!string.IsNullOrEmpty(_currentPatient.Notes))
+                        _view.Notes = _currentPatient.Notes;
+                    if (!string.IsNullOrEmpty(_currentPatient.TreatmentPlan))
+                        _view.TreatmentPlan = _currentPatient.TreatmentPlan;
                 }
                 else
                 {
@@ -160,7 +168,8 @@ namespace HospitalManagement.Presenters.Doctor
             }
             catch (Exception ex)
             {
-                _view.ShowError($"Lỗi khi chỉ định dịch vụ: {ex.Message}");
+                var innerMsg = ex.InnerException != null ? $"\n{ex.InnerException.Message}" : "";
+                _view.ShowError($"Lỗi khi chỉ định dịch vụ: {ex.Message}{innerMsg}");
                 return false;
             }
             finally

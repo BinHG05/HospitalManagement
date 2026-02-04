@@ -60,16 +60,34 @@ namespace HospitalManagement.Services.Implementations
             {
                 var today = DateTime.Today;
 
-                // Active = Confirmed (Examining), Service_Pending, Service_Completed
-                // Active = Examining, Service_Pending, Service_Completed
+                // 1. Appointments where this doctor is the primary doctor
+                var myAppointmentIds = context.Appointments
+                    .Where(a => a.DoctorID == doctorId
+                             && (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
+                    .Select(a => a.AppointmentID)
+                    .ToList();
+
+                // 2. Appointments with service requests assigned to this doctor
+                var assignedAppointmentIds = context.ServiceRequests
+                    .Include(sr => sr.AssignedSchedule)
+                    .Where(sr => sr.AssignedSchedule != null 
+                              && sr.AssignedSchedule.DoctorID == doctorId
+                              && sr.Status != "completed" && sr.Status != "cancelled")
+                    .Select(sr => sr.AppointmentID)
+                    .Where(id => id.HasValue)
+                    .Select(id => id.Value)
+                    .ToList();
+
+                // Combine and get unique IDs
+                var allAppointmentIds = myAppointmentIds.Union(assignedAppointmentIds).Distinct().ToList();
+
                 var appointments = context.Appointments
                     .Include(a => a.Patient)
                     .ThenInclude(p => p.User)
                     .Include(a => a.Doctor)
                     .ThenInclude(d => d.User)
                     .Include(a => a.Department)
-                    .Where(a => a.DoctorID == doctorId
-                             && (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
+                    .Where(a => allAppointmentIds.Contains(a.AppointmentID))
                     .OrderByDescending(a => a.UpdatedAt)
                     .ToList();
 
@@ -85,8 +103,6 @@ namespace HospitalManagement.Services.Implementations
                         ? (int?)((int)((DateTime.Today - a.Patient.DateOfBirth.Value).TotalDays / 365.25))
                         : null,
                     Status = a.Status,
-                    // ServiceStatus requires joining with Services/ServiceRequests table which we will implement later.
-                    // For now leaving blank or using placeholder.
                     ServiceStatus = a.Status == "service_pending" ? "Chờ kết quả" : 
                                     (a.Status == "service_completed" ? "Đã có kết quả" : ""),
                     StartedAt = a.UpdatedAt ?? a.CreatedAt
@@ -159,6 +175,10 @@ namespace HospitalManagement.Services.Implementations
                     .OrderByDescending(h => h.VisitDate)
                     .FirstOrDefault();
 
+                // Load draft data from existing in-progress examination
+                var existingExam = context.Examinations
+                    .FirstOrDefault(e => e.AppointmentID == appointmentId && e.Status == "in_progress");
+
                 return new PatientExamInfo
                 {
                     AppointmentId = appointmentId,
@@ -171,7 +191,12 @@ namespace HospitalManagement.Services.Implementations
                     Symptoms = appointment.Symptoms,
                     InsuranceNumber = patient.InsuranceNumber,
                     TotalVisits = totalVisits,
-                    LastDiagnosis = lastRecord?.Diagnosis
+                    LastDiagnosis = lastRecord?.Diagnosis,
+                    // Draft data from existing examination
+                    ExaminationId = existingExam?.ExaminationID,
+                    Diagnosis = existingExam?.PreliminaryDiagnosis,
+                    Notes = existingExam?.Notes,
+                    TreatmentPlan = null // Examinations entity doesn't have TreatmentPlan, only MedicalRecords does
                 };
             }
         }
@@ -248,85 +273,94 @@ namespace HospitalManagement.Services.Implementations
             {
                 using (var context = new HospitalDbContext())
                 {
-                    using (var transaction = context.Database.BeginTransaction())
+                    // Wrap transaction in execution strategy for SQL Server retry compatibility
+                    var strategy = context.Database.CreateExecutionStrategy();
+                    int resultExamId = 0;
+                    
+                    strategy.Execute(() =>
                     {
-                        try 
+                        using (var transaction = context.Database.BeginTransaction())
                         {
-                            var appointment = context.Appointments
-                                .Include(a => a.Patient)
-                                .FirstOrDefault(a => a.AppointmentID == appointmentId);
-
-                            if (appointment == null) throw new Exception("Không tìm thấy lịch hẹn");
-
-                            // 1. Create examination record
-                            var examination = new Examinations
+                            try 
                             {
-                                AppointmentID = appointmentId,
-                                DoctorID = appointment.DoctorID,
-                                PatientID = appointment.PatientID,
-                                ExaminationDate = DateTime.Now,
-                                Symptoms = data.Symptoms,
-                                PreliminaryDiagnosis = data.Diagnosis,
-                                Notes = data.Notes,
-                                Status = "completed",
-                                CreatedAt = DateTime.Now
-                            };
-                            context.Examinations.Add(examination);
+                                var appointment = context.Appointments
+                                    .Include(a => a.Patient)
+                                    .FirstOrDefault(a => a.AppointmentID == appointmentId);
 
-                            // 2. Create medical record (Linked via Navigation Property if possible, or Order)
-                            // EF Core will fix IDs if we add to context in order, but standard way with IDs needs SaveChanges
-                            // Let's use SaveChanges to be safe with IDs 
-                            context.SaveChanges(); 
+                                if (appointment == null) throw new Exception("Không tìm thấy lịch hẹn");
 
-                            var record = new MedicalRecords
-                            {
-                                PatientID = appointment.PatientID,
-                                ExaminationID = examination.ExaminationID,
-                                Diagnosis = data.Diagnosis,
-                                TreatmentPlan = data.TreatmentPlan,
-                                RecordDate = DateTime.Now,
-                                CreatedBy = appointment.DoctorID,
-                                CreatedAt = DateTime.Now
-                            };
-                            context.MedicalRecords.Add(record);
-                            context.SaveChanges();
+                                // 1. Create examination record
+                                var examination = new Examinations
+                                {
+                                    AppointmentID = appointmentId,
+                                    DoctorID = appointment.DoctorID,
+                                    PatientID = appointment.PatientID,
+                                    ExaminationDate = DateTime.Now,
+                                    Symptoms = data.Symptoms,
+                                    PreliminaryDiagnosis = data.Diagnosis,
+                                    Notes = data.Notes,
+                                    Status = "completed",
+                                    CreatedAt = DateTime.Now
+                                };
+                                context.Examinations.Add(examination);
 
-                            // 3. Create medical history
-                            // Truncate Diagnosis to match nvarchar(1000) of MedicalHistory
-                            string historyDiagnosis = data.Diagnosis;
-                            if (!string.IsNullOrEmpty(historyDiagnosis) && historyDiagnosis.Length > 1000)
-                            {
-                                historyDiagnosis = historyDiagnosis.Substring(0, 997) + "...";
+                                // 2. Create medical record (Linked via Navigation Property if possible, or Order)
+                                // EF Core will fix IDs if we add to context in order, but standard way with IDs needs SaveChanges
+                                // Let's use SaveChanges to be safe with IDs 
+                                context.SaveChanges(); 
+
+                                var record = new MedicalRecords
+                                {
+                                    PatientID = appointment.PatientID,
+                                    ExaminationID = examination.ExaminationID,
+                                    Diagnosis = data.Diagnosis,
+                                    TreatmentPlan = data.TreatmentPlan,
+                                    RecordDate = DateTime.Now,
+                                    CreatedBy = appointment.DoctorID,
+                                    CreatedAt = DateTime.Now
+                                };
+                                context.MedicalRecords.Add(record);
+                                context.SaveChanges();
+
+                                // 3. Create medical history
+                                // Truncate Diagnosis to match nvarchar(1000) of MedicalHistory
+                                string historyDiagnosis = data.Diagnosis;
+                                if (!string.IsNullOrEmpty(historyDiagnosis) && historyDiagnosis.Length > 1000)
+                                {
+                                    historyDiagnosis = historyDiagnosis.Substring(0, 997) + "...";
+                                }
+
+                                var history = new MedicalHistory
+                                {
+                                    PatientID = appointment.PatientID,
+                                    RecordID = record.RecordID,
+                                    VisitDate = DateTime.Now,
+                                    DoctorID = appointment.DoctorID,
+                                    Diagnosis = historyDiagnosis,
+                                    Treatment = data.TreatmentPlan,
+                                    NextAppointmentDate = data.NextAppointmentDate,
+                                    CreatedAt = DateTime.Now
+                                };
+                                context.MedicalHistory.Add(history);
+
+                                // 4. Update appointment status
+                                appointment.Status = "completed";
+                                appointment.UpdatedAt = DateTime.Now;
+
+                                context.SaveChanges();
+                                transaction.Commit();
+
+                                resultExamId = examination.ExaminationID;
                             }
-
-                            var history = new MedicalHistory
+                            catch (Exception)
                             {
-                                PatientID = appointment.PatientID,
-                                RecordID = record.RecordID,
-                                VisitDate = DateTime.Now,
-                                DoctorID = appointment.DoctorID,
-                                Diagnosis = historyDiagnosis,
-                                Treatment = data.TreatmentPlan,
-                                NextAppointmentDate = data.NextAppointmentDate,
-                                CreatedAt = DateTime.Now
-                            };
-                            context.MedicalHistory.Add(history);
-
-                            // 4. Update appointment status
-                            appointment.Status = "completed";
-                            appointment.UpdatedAt = DateTime.Now;
-
-                            context.SaveChanges();
-                            transaction.Commit();
-
-                            return examination.ExaminationID;
+                                transaction.Rollback();
+                                throw;
+                            }
                         }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                            throw;
-                        }
-                    }
+                    });
+                    
+                    return resultExamId;
                 }
             }
             catch (Exception ex)

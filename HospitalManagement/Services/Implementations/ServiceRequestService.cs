@@ -30,6 +30,7 @@ namespace HospitalManagement.Services.Implementations
                     .Include(ds => ds.Shift)
                     .Where(ds => 
                         ds.DepartmentID == service.DepartmentID &&
+                        ds.ScheduleDate == today &&
                         ds.Status == "Approved" &&
                         ds.IsActive == true)
                     .ToList() // Mang về client để tránh lỗi phức tạp khi đếm
@@ -65,15 +66,56 @@ namespace HospitalManagement.Services.Implementations
                 }
                 else
                 {
+                    // Khi chỉ định từ appointment trực tiếp (chưa có examination)
+                    // Cần tạo hoặc tìm examination tương ứng
                     request.AppointmentID = interactionId;
+                    
+                    var existingExam = context.Examinations
+                        .FirstOrDefault(e => e.AppointmentID == interactionId && e.Status != "completed");
+                    
+                    if (existingExam != null)
+                    {
+                        request.ExaminationID = existingExam.ExaminationID;
+                    }
+                    else if (interactionId.HasValue)
+                    {
+                        // Tạo examination mới nếu chưa có
+                        var appointment = context.Appointments
+                            .Include(a => a.Patient)
+                            .FirstOrDefault(a => a.AppointmentID == interactionId);
+                            
+                        if (appointment != null)
+                        {
+                            var newExam = new Examinations
+                            {
+                                AppointmentID = interactionId,
+                                PatientID = appointment.PatientID,
+                                DoctorID = appointment.DoctorID,
+                                ExaminationDate = DateTime.Now,
+                                Status = "in_progress",
+                                CreatedAt = DateTime.Now
+                            };
+                            context.Examinations.Add(newExam);
+                            context.SaveChanges();
+                            request.ExaminationID = newExam.ExaminationID;
+                        }
+                    }
                 }
 
-                // Tính RequestNumber (STT trong bộ hồ sơ này)
-                var lastNumber = context.ServiceRequests
-                    .Where(sr => sr.AppointmentID == request.AppointmentID)
-                    .Max(sr => (int?)sr.RequestNumber) ?? 0;
-                
-                request.RequestNumber = lastNumber + 1;
+                // Tính RequestNumber dựa trên ExaminationID (để tránh duplicate key)
+                int? examIdForCalc = request.ExaminationID;
+                if (examIdForCalc.HasValue)
+                {
+                    var lastNumber = context.ServiceRequests
+                        .Where(sr => sr.ExaminationID == examIdForCalc && sr.Status != "cancelled")
+                        .Max(sr => (int?)sr.RequestNumber) ?? 0;
+                    request.RequestNumber = lastNumber + 1;
+                }
+                else
+                {
+                    // Fallback: nếu vẫn không có examinationID (trường hợp edge)
+                    request.RequestNumber = 1;
+                }
 
                 // Tính ServiceQueueNumber (STT trong hàng đợi của bác sĩ được gán)
                 if (schedule != null)
@@ -106,20 +148,36 @@ namespace HospitalManagement.Services.Implementations
             using (var context = new HospitalDbContext())
             {
                 var today = DateTime.Today;
+                
+                // Lấy DepartmentID của bác sĩ hiện tại
+                var doctor = context.Doctors.FirstOrDefault(d => d.DoctorID == doctorId);
+                var doctorDeptId = doctor?.DepartmentID;
+
                 return context.ServiceRequests
                     .Include(sr => sr.Service)
                     .Include(sr => sr.Examination)
                         .ThenInclude(e => e.Patient)
                             .ThenInclude(p => p.User)
+                    .Include(sr => sr.Appointment)
+                        .ThenInclude(a => a.Patient)
+                            .ThenInclude(p => p.User)
                     .Include(sr => sr.AssignedSchedule)
-                    .Where(sr => sr.AssignedSchedule.DoctorID == doctorId 
-                              && sr.Status != "completed" 
-                              && sr.Status != "cancelled")
+                    .Where(sr => 
+                        // Đã được gán cho bác sĩ này
+                        (sr.AssignedSchedule != null && sr.AssignedSchedule.DoctorID == doctorId) ||
+                        // HOẶC chưa được gán nhưng thuộc khoa của bác sĩ này
+                        (sr.AssignedScheduleID == null && sr.Service.DepartmentID == doctorDeptId))
+                    .Where(sr => sr.Status != "completed" && sr.Status != "cancelled")
                     .OrderBy(sr => sr.ServiceQueueNumber)
                     .Select(sr => new ServiceRequestInfo
                     {
                         RequestId = sr.RequestID,
-                        PatientName = sr.Examination.Patient.User.FullName,
+                        // Lấy tên bệnh nhân từ Examination hoặc Appointment (fallback)
+                        PatientName = sr.Examination != null && sr.Examination.Patient != null
+                            ? sr.Examination.Patient.User.FullName 
+                            : (sr.Appointment != null && sr.Appointment.Patient != null 
+                                ? sr.Appointment.Patient.User.FullName 
+                                : "N/A"),
                         ServiceName = sr.Service.ServiceName,
                         Status = sr.Status,
                         RequestedAt = sr.RequestedAt ?? DateTime.Now,

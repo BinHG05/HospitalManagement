@@ -50,6 +50,9 @@ namespace HospitalManagement.Models.Entities
         [InverseProperty(nameof(DoctorSchedules.AssignedServiceRequests))]
         public virtual DoctorSchedules AssignedSchedule { get; set; }
 
+        [ForeignKey(nameof(AppointmentID))]
+        public virtual Appointments Appointment { get; set; }
+
         [InverseProperty("Request")]
         public virtual ICollection<ServiceResults> ServiceResults { get; set; }
     }

@@ -75,6 +75,12 @@ namespace HospitalManagement.Services.Interfaces
         public string Symptoms { get; set; }
         public string InsuranceNumber { get; set; }
 
+        // Draft data from in-progress examination
+        public int? ExaminationId { get; set; }
+        public string Diagnosis { get; set; }
+        public string Notes { get; set; }
+        public string TreatmentPlan { get; set; }
+
         // Medical history summary
         public int TotalVisits { get; set; }
         public string LastDiagnosis { get; set; }
