@@ -49,13 +49,13 @@ namespace HospitalManagement.Views.UserControls.Doctor
                 panelLoading.Visible = true;
                 panelLoading.BringToFront();
 
-                // Show all active exams in the hospital, not just for this doctor
-                var activeExams = _doctorService.GetAllActiveExaminations();
+                // Only show active exams for THIS doctor (not all doctors)
+                var activeExams = _doctorService.GetActiveExaminations(_doctorId);
 
                 dgvExaminations.Rows.Clear();
                 int index = 1;
 
-                foreach (HospitalActiveExamInfo exam in activeExams)
+                foreach (ActiveExamInfo exam in activeExams)
                 {
                     dgvExaminations.Rows.Add(
                         index++,

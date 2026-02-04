@@ -117,9 +117,11 @@ namespace HospitalManagement.Services.Implementations
         {
             using (var context = new HospitalDbContext())
             {
+                // Bao gồm tất cả các status đã đặt (không cho đặt lại cùng STT)
+                var activeStatuses = new[] { "pending", "confirmed", "examining", "service_pending", "service_completed", "completed" };
                 return context.Appointments
                     .Where(a => a.ScheduleID == scheduleId
-                             && (a.Status == "pending" || a.Status == "confirmed"))
+                             && activeStatuses.Contains(a.Status))
                     .Select(a => a.AppointmentNumber)
                     .ToList();
             }

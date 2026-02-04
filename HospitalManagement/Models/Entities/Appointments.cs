@@ -15,6 +15,7 @@ namespace HospitalManagement.Models.Entities
         {
             Examinations = new HashSet<Examinations>();
             Payments = new HashSet<Payments>();
+            ServiceRequests = new HashSet<ServiceRequests>();
         }
 
         [Key]
@@ -57,5 +58,7 @@ namespace HospitalManagement.Models.Entities
         public virtual ICollection<Examinations> Examinations { get; set; }
         [InverseProperty("Appointment")]
         public virtual ICollection<Payments> Payments { get; set; }
+        [InverseProperty("Appointment")]
+        public virtual ICollection<ServiceRequests> ServiceRequests { get; set; }
     }
 }
