@@ -115,6 +115,22 @@ namespace HospitalManagement.Views.Forms.Admin
                 return;
             }
 
+            if (contentName == "Báo cáo")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_Report();
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
+            if (contentName == "Cài đặt")
+            {
+                var uc = new HospitalManagement.Views.UserControls.Admin.UC_Settings(CurrentUser.UserID);
+                uc.Dock = DockStyle.Fill;
+                contentPanel.Controls.Add(uc);
+                return;
+            }
+
             // Placeholder for others
             var placeholder = new Label
             {
@@ -124,7 +140,7 @@ namespace HospitalManagement.Views.Forms.Admin
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Fill
             };
-
+            
             contentPanel.Controls.Add(placeholder);
         }
 

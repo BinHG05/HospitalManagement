@@ -15,11 +15,11 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             public int Id { get; set; }
             public string Name { get; set; }
+            public decimal Price { get; set; } // [NEW]
             public override string ToString() => Name;
         }
 
-        public int SelectedServiceId { get; private set; }
-        public string SelectedServiceName { get; private set; }
+        public List<ServiceItem> SelectedServices { get; private set; } = new List<ServiceItem>();
 
         public ServiceAssignmentDialog()
         {
@@ -33,12 +33,16 @@ namespace HospitalManagement.Views.Forms.Doctor
             try
             {
                 var services = _doctorService.GetAllServices();
-                cboServices.Items.Clear();
+                clbServices.Items.Clear();
                 foreach (var s in services)
                 {
-                    cboServices.Items.Add(new ServiceItem { Id = s.ServiceID, Name = s.ServiceName });
+                    clbServices.Items.Add(new ServiceItem 
+                    { 
+                        Id = s.ServiceID, 
+                        Name = s.ServiceName,
+                        Price = s.Price 
+                    });
                 }
-                if (cboServices.Items.Count > 0) cboServices.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -46,22 +50,29 @@ namespace HospitalManagement.Views.Forms.Doctor
             }
 
             // Ẩn phần chọn bác sĩ vì hệ thống tự động gán
-            if (lblDoctor != null) lblDoctor.Visible = false; // "Bác sĩ thực hiện"
+            if (lblDoctor != null) lblDoctor.Visible = false; 
             if (cboDoctors != null) cboDoctors.Visible = false;
         }
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            if (cboServices.SelectedItem is ServiceItem service)
+            SelectedServices.Clear();
+            foreach (var item in clbServices.CheckedItems)
             {
-                SelectedServiceId = service.Id;
-                SelectedServiceName = service.Name;
+                if (item is ServiceItem service)
+                {
+                    SelectedServices.Add(service);
+                }
+            }
+
+            if (SelectedServices.Count > 0)
+            {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Vui lòng chọn dịch vụ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn ít nhất một dịch vụ.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

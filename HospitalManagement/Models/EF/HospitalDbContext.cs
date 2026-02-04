@@ -47,7 +47,7 @@ namespace HospitalManagement.Models.EF
                            .ConnectionStrings["HospitalDb"]
                            .ConnectionString;
 
-                optionsBuilder.UseSqlServer(conn);
+                optionsBuilder.UseSqlServer(conn, options => options.EnableRetryOnFailure());
             }
         }
 
@@ -341,7 +341,7 @@ namespace HospitalManagement.Models.EF
 
                 entity.Property(e => e.EmergencyPhone).IsUnicode(false);
 
-                entity.Property(e => e.Gender).IsUnicode(false);
+                entity.Property(e => e.Gender).IsUnicode(true).HasMaxLength(10);
 
                 entity.Property(e => e.InsuranceNumber).IsUnicode(false);
 
@@ -429,6 +429,22 @@ namespace HospitalManagement.Models.EF
                     .WithMany(p => p.ServiceRequests)
                     .HasForeignKey(d => d.ServiceID)
                     .HasConstraintName("FK_ServiceRequests_Service");
+
+                entity.HasOne(d => d.RequestingDoctor)
+                    .WithMany(p => p.RequestedServices)
+                    .HasForeignKey(d => d.RequestingDoctorID)
+                    .HasConstraintName("FK_ServiceRequests_RequestingDoctor");
+
+                entity.HasOne(d => d.AssignedSchedule)
+                    .WithMany(p => p.AssignedServiceRequests)
+                    .HasForeignKey(d => d.AssignedScheduleID)
+                    .HasConstraintName("FK_ServiceRequests_AssignedSchedule");
+
+                entity.Property(e => e.DoctorNotes).HasMaxLength(500);
+                entity.Property(e => e.ServiceQueueNumber);
+                entity.Property(e => e.RequestingDoctorID);
+                entity.Property(e => e.AssignedScheduleID);
+                entity.Property(e => e.AppointmentID);
             });
 
             modelBuilder.Entity<ServiceResults>(entity =>
@@ -449,6 +465,16 @@ namespace HospitalManagement.Models.EF
                     .WithMany(p => p.ServiceResults)
                     .HasForeignKey(d => d.ServiceID)
                     .HasConstraintName("FK__ServiceRe__Servi__787EE5A0");
+
+                entity.HasOne(d => d.PerformedByDoctor)
+                    .WithMany(p => p.PerformedServiceResults)
+                    .HasForeignKey(d => d.PerformedBy)
+                    .HasConstraintName("FK_ServiceResults_PerformedByDoctor");
+
+                entity.HasOne(d => d.VerifiedByDoctor)
+                    .WithMany(p => p.VerifiedServiceResults)
+                    .HasForeignKey(d => d.VerifiedBy)
+                    .HasConstraintName("FK_ServiceResults_VerifiedByDoctor");
             });
 
             modelBuilder.Entity<Shifts>(entity =>

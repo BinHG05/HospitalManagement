@@ -1,5 +1,6 @@
 using HospitalManagement.Models.EF;
 using HospitalManagement.Models.Entities;
+using HospitalManagement.Models.DTOs;
 using HospitalManagement.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -33,7 +34,6 @@ namespace HospitalManagement.Services.Implementations
                     .Include(a => a.Patient)
                     .ThenInclude(p => p.User)
                     .Where(a => a.DoctorID == doctorId
-                             && a.AppointmentDate == today
                              && a.Status == "confirmed") 
                     .OrderBy(a => a.AppointmentNumber)
                     .ToList();
@@ -69,7 +69,6 @@ namespace HospitalManagement.Services.Implementations
                     .ThenInclude(d => d.User)
                     .Include(a => a.Department)
                     .Where(a => a.DoctorID == doctorId
-                             && a.AppointmentDate == today
                              && (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
                     .OrderByDescending(a => a.UpdatedAt)
                     .ToList();
@@ -108,8 +107,7 @@ namespace HospitalManagement.Services.Implementations
                     .Include(a => a.Doctor)
                     .ThenInclude(d => d.User)
                     .Include(a => a.Department)
-                    .Where(a => a.AppointmentDate == today
-                             && (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
+                    .Where(a => (a.Status == "examining" || a.Status == "service_pending" || a.Status == "service_completed"))
                     .OrderByDescending(a => a.UpdatedAt)
                     .ToList();
 
@@ -225,54 +223,22 @@ namespace HospitalManagement.Services.Implementations
 
         public bool AssignService(int appointmentId, int serviceId)
         {
-            try
+            return AssignServices(appointmentId, new List<int> { serviceId });
+        }
+
+        public bool AssignServices(int appointmentId, List<int> serviceIds)
+        {
+            var serviceRequestService = new ServiceRequestService();
+            using (var context = new HospitalDbContext())
             {
-                using (var context = new HospitalDbContext())
+                var appointment = context.Appointments.Find(appointmentId);
+                if (appointment == null) throw new Exception("Không tìm thấy thông tin cuộc hẹn.");
+
+                foreach (var serviceId in serviceIds)
                 {
-                    var appointment = context.Appointments.Find(appointmentId);
-                    if (appointment == null) return false;
-
-                    var service = context.MedicalServices.Find(serviceId);
-                    if (service == null) return false;
-
-                    // 1. Tự động tìm bác sĩ đang trực tại khoa của dịch vụ đó
-                    var today = DateTime.Today;
-                    var targetDoctor = context.DoctorSchedules
-                        .Include(ds => ds.Doctor)
-                        .Where(ds => ds.Doctor.DepartmentID == service.DepartmentID 
-                                  && ds.ScheduleDate == today 
-                                  && ds.IsActive == true)
-                        .Select(ds => ds.Doctor)
-                        .FirstOrDefault();
-
-                    // Nếu tìm thấy bác sĩ đang trực tại khoa đó, chuyển Appointment cho bác sĩ đó
-                    if (targetDoctor != null)
-                    {
-                        appointment.DoctorID = targetDoctor.DoctorID;
-                    }
-                    
-                    appointment.Status = "service_pending";
-                    appointment.UpdatedAt = DateTime.Now;
-                    
-                    // 2. Tạo bản ghi yêu cầu dịch vụ
-                    var request = new ServiceRequests
-                    {
-                        ServiceID = serviceId,
-                        // ExaminationID có thể null nếu bác sĩ gán dịch vụ trước khi lưu Examination
-                        Status = "pending",
-                        RequestedAt = DateTime.Now,
-                        RequestNumber = appointment.AppointmentNumber
-                    };
-                    
-                    context.ServiceRequests.Add(request);
-                    context.SaveChanges();
-                    return true;
+                    serviceRequestService.CreateServiceRequest(appointmentId, serviceId, appointment.DoctorID ?? 0, "", false);
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"AssignService Error: {ex.Message}");
-                return false;
+                return true;
             }
         }
 
@@ -282,68 +248,92 @@ namespace HospitalManagement.Services.Implementations
             {
                 using (var context = new HospitalDbContext())
                 {
-                    var appointment = context.Appointments
-                        .Include(a => a.Patient)
-                        .FirstOrDefault(a => a.AppointmentID == appointmentId);
-
-                    if (appointment == null) return -1;
-
-                    // Create examination record
-                    var examination = new Examinations
+                    using (var transaction = context.Database.BeginTransaction())
                     {
-                        AppointmentID = appointmentId,
-                        DoctorID = appointment.DoctorID,
-                        PatientID = appointment.PatientID,
-                        ExaminationDate = DateTime.Now,
-                        Symptoms = data.Symptoms,
-                        PreliminaryDiagnosis = data.Diagnosis,
-                        Notes = data.Notes,
-                        Status = "completed",
-                        CreatedAt = DateTime.Now
-                    };
-                    context.Examinations.Add(examination);
-                    context.SaveChanges();
+                        try 
+                        {
+                            var appointment = context.Appointments
+                                .Include(a => a.Patient)
+                                .FirstOrDefault(a => a.AppointmentID == appointmentId);
 
-                    // Create medical record
-                    var record = new MedicalRecords
-                    {
-                        PatientID = appointment.PatientID,
-                        ExaminationID = examination.ExaminationID,
-                        Diagnosis = data.Diagnosis,
-                        TreatmentPlan = data.TreatmentPlan,
-                        RecordDate = DateTime.Now,
-                        CreatedBy = appointment.DoctorID,
-                        CreatedAt = DateTime.Now
-                    };
-                    context.MedicalRecords.Add(record);
-                    context.SaveChanges(); // Ensure RecordID is generated
+                            if (appointment == null) throw new Exception("Không tìm thấy lịch hẹn");
 
-                    // Create medical history
-                    var history = new MedicalHistory
-                    {
-                        PatientID = appointment.PatientID,
-                        RecordID = record.RecordID,
-                        VisitDate = DateTime.Now,
-                        DoctorID = appointment.DoctorID,
-                        Diagnosis = data.Diagnosis,
-                        Treatment = data.TreatmentPlan,
-                        NextAppointmentDate = data.NextAppointmentDate,
-                        CreatedAt = DateTime.Now
-                    };
-                    context.MedicalHistory.Add(history);
+                            // 1. Create examination record
+                            var examination = new Examinations
+                            {
+                                AppointmentID = appointmentId,
+                                DoctorID = appointment.DoctorID,
+                                PatientID = appointment.PatientID,
+                                ExaminationDate = DateTime.Now,
+                                Symptoms = data.Symptoms,
+                                PreliminaryDiagnosis = data.Diagnosis,
+                                Notes = data.Notes,
+                                Status = "completed",
+                                CreatedAt = DateTime.Now
+                            };
+                            context.Examinations.Add(examination);
 
-                    // Update appointment status
-                    appointment.Status = "completed";
-                    appointment.UpdatedAt = DateTime.Now;
+                            // 2. Create medical record (Linked via Navigation Property if possible, or Order)
+                            // EF Core will fix IDs if we add to context in order, but standard way with IDs needs SaveChanges
+                            // Let's use SaveChanges to be safe with IDs 
+                            context.SaveChanges(); 
 
-                    context.SaveChanges();
-                    return examination.ExaminationID;
+                            var record = new MedicalRecords
+                            {
+                                PatientID = appointment.PatientID,
+                                ExaminationID = examination.ExaminationID,
+                                Diagnosis = data.Diagnosis,
+                                TreatmentPlan = data.TreatmentPlan,
+                                RecordDate = DateTime.Now,
+                                CreatedBy = appointment.DoctorID,
+                                CreatedAt = DateTime.Now
+                            };
+                            context.MedicalRecords.Add(record);
+                            context.SaveChanges();
+
+                            // 3. Create medical history
+                            // Truncate Diagnosis to match nvarchar(1000) of MedicalHistory
+                            string historyDiagnosis = data.Diagnosis;
+                            if (!string.IsNullOrEmpty(historyDiagnosis) && historyDiagnosis.Length > 1000)
+                            {
+                                historyDiagnosis = historyDiagnosis.Substring(0, 997) + "...";
+                            }
+
+                            var history = new MedicalHistory
+                            {
+                                PatientID = appointment.PatientID,
+                                RecordID = record.RecordID,
+                                VisitDate = DateTime.Now,
+                                DoctorID = appointment.DoctorID,
+                                Diagnosis = historyDiagnosis,
+                                Treatment = data.TreatmentPlan,
+                                NextAppointmentDate = data.NextAppointmentDate,
+                                CreatedAt = DateTime.Now
+                            };
+                            context.MedicalHistory.Add(history);
+
+                            // 4. Update appointment status
+                            appointment.Status = "completed";
+                            appointment.UpdatedAt = DateTime.Now;
+
+                            context.SaveChanges();
+                            transaction.Commit();
+
+                            return examination.ExaminationID;
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"CompleteExamination Error: {ex.Message}");
-                return -1;
+                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
+                System.Diagnostics.Debug.WriteLine($"CompleteExamination Error: {ex.Message} | Inner: {innerMessage}");
+                throw new Exception($"Lỗi lưu dữ liệu: {ex.Message}\n{innerMessage}");
             }
         }
 
@@ -386,6 +376,42 @@ namespace HospitalManagement.Services.Implementations
                 }
 
                 return result.OrderBy(s => s.ScheduleDate).ThenBy(s => s.StartTime).ToList();
+            }
+        }
+
+        public bool GetPatientServiceStatus(int appointmentId)
+        {
+            using (var context = new HospitalDbContext())
+            {
+                var requests = context.ServiceRequests
+                    .Where(sr => sr.AppointmentID == appointmentId)
+                    .ToList();
+
+                if (!requests.Any()) return true;
+
+                return requests.All(sr => sr.Status == "completed");
+            }
+        }
+
+        public IEnumerable<ServiceRequestInfo> GetActiveAssignedServices(int appointmentId)
+        {
+            using (var context = new HospitalDbContext())
+            {
+                var requests = context.ServiceRequests
+                    .Include(sr => sr.Service)
+                    .Include(sr => sr.ServiceResults)
+                    .Where(sr => sr.AppointmentID == appointmentId)
+                    .OrderByDescending(sr => sr.RequestedAt)
+                    .ToList();
+
+                return requests.Select(sr => new ServiceRequestInfo
+                {
+                    RequestId = sr.RequestID,
+                    ServiceName = sr.Service?.ServiceName ?? "N/A",
+                    Status = sr.Status,
+                    RequestedAt = sr.RequestedAt ?? DateTime.Now,
+                    ResultDetails = sr.ServiceResults.OrderByDescending(res => res.CreatedAt).FirstOrDefault()?.ResultDetails
+                }).ToList();
             }
         }
     }

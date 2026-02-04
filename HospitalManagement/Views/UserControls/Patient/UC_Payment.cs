@@ -16,6 +16,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         private InvoiceDisplayInfo _selectedInvoice;
 
         public string SelectedStatusFilter => (cmbStatusFilter.SelectedItem as FilterItem)?.Value ?? "all";
+        public string SelectedTypeFilter => (cmbTypeFilter.SelectedItem as FilterItem)?.Value ?? "all";
 
         public UC_Payment()
         {
@@ -33,11 +34,18 @@ namespace HospitalManagement.Views.UserControls.Patient
         private void InitializeFilters()
         {
             cmbStatusFilter.Items.Clear();
-            cmbStatusFilter.Items.Add(new FilterItem { Text = "Tất cả", Value = "all" });
+            cmbStatusFilter.Items.Add(new FilterItem { Text = "Tất cả trạng thái", Value = "all" });
             cmbStatusFilter.Items.Add(new FilterItem { Text = "Chưa thanh toán", Value = "unpaid" });
             cmbStatusFilter.Items.Add(new FilterItem { Text = "Đã thanh toán", Value = "paid" });
             cmbStatusFilter.Items.Add(new FilterItem { Text = "Đã hủy", Value = "cancelled" });
             cmbStatusFilter.SelectedIndex = 0;
+
+            cmbTypeFilter.Items.Clear();
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Tất cả loại", Value = "all" });
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Tiền khám", Value = "appointment" });
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Tiền thuốc", Value = "medicine" });
+            cmbTypeFilter.Items.Add(new FilterItem { Text = "Dịch vụ", Value = "service" });
+            cmbTypeFilter.SelectedIndex = 0;
         }
 
         private void InitializePaymentMethods()
@@ -169,13 +177,13 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             if (_presenter != null)
             {
-                _presenter.LoadInvoices(SelectedStatusFilter);
+                _presenter.LoadInvoices(SelectedStatusFilter, SelectedTypeFilter);
             }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            _presenter?.LoadInvoices(SelectedStatusFilter);
+            _presenter?.LoadInvoices(SelectedStatusFilter, SelectedTypeFilter);
         }
 
         private void dgvInvoices_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -197,13 +205,13 @@ namespace HospitalManagement.Views.UserControls.Patient
 
             var paymentMethod = (cmbPaymentMethod.SelectedItem as FilterItem)?.Value ?? "bank_transfer";
 
-            if (paymentMethod == "bank_transfer")
+            if (paymentMethod == "bank_transfer" || paymentMethod == "ewallet")
             {
-                using (var qrForm = new Form_QRPayment(_selectedInvoice.FinalAmount.ToString("N0"), _selectedInvoice.InvoiceNumber))
+                using (var qrForm = new Form_QRPayment(_selectedInvoice.FinalAmount.ToString("N0"), _selectedInvoice.InvoiceNumber, paymentMethod))
                 {
                     if (qrForm.ShowDialog() == DialogResult.OK)
                     {
-                        _presenter.PayInvoice(_selectedInvoice.InvoiceId, "bank_transfer");
+                        _presenter.PayInvoice(_selectedInvoice.InvoiceId, paymentMethod);
                     }
                 }
                 return;

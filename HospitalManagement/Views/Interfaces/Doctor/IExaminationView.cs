@@ -1,5 +1,7 @@
 using HospitalManagement.Services.Interfaces;
+using HospitalManagement.Models.DTOs;
 using System;
+using System.Collections.Generic;
 
 namespace HospitalManagement.Views.Interfaces.Doctor
 {
@@ -21,5 +23,10 @@ namespace HospitalManagement.Views.Interfaces.Doctor
         void ShowSuccess(string message);
         void CloseView();
         void NavigateToPrescription(int examinationId);
+
+        // Service Tracking UI
+        void LoadServiceRequests(IEnumerable<ServiceRequestInfo> services);
+        void SetCompleteButtonEnabled(bool enabled);
+        void ShowServiceStatus(string status);
     }
 }

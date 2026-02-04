@@ -1,7 +1,11 @@
 using HospitalManagement.Presenters.Doctor;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces.Doctor;
+using HospitalManagement.Models.DTOs;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace HospitalManagement.Views.UserControls.Doctor
@@ -64,8 +68,11 @@ namespace HospitalManagement.Views.UserControls.Doctor
 
         #region IExaminationView Implementation
 
+        private PatientExamInfo _currentPatient; // [NEW]
+
         public void LoadPatientInfo(PatientExamInfo patient)
         {
+            _currentPatient = patient; // [NEW]
             lblPatientName.Text = patient.PatientName;
             lblPatientDetails.Text =
                 $"🎂 Ngày sinh: {patient.DateOfBirth:dd/MM/yyyy}\n\n" +
@@ -104,9 +111,44 @@ namespace HospitalManagement.Views.UserControls.Doctor
             _onPrescribe?.Invoke(examinationId);
         }
 
+        public void LoadServiceRequests(IEnumerable<ServiceRequestInfo> services)
+        {
+            dgvServiceStatus.Visible = services.Any();
+            lblServiceSummary.Visible = services.Any();
+            btnRefresh.Visible = services.Any();
+
+            dgvServiceStatus.DataSource = services.Select(s => new
+            {
+                DichVu = s.ServiceName,
+                TrangThai = s.Status == "completed" ? "✅ Đã có kết quả" : "⏳ Đang chờ",
+                ThoiGian = s.RequestedAt.ToString("HH:mm dd/MM"),
+                KetQua = s.ResultDetails ?? "---"
+            }).ToList();
+        }
+
+        public void SetCompleteButtonEnabled(bool enabled)
+        {
+            btnSave.Enabled = enabled;
+            btnSave.BackColor = enabled ? Color.FromArgb(0, 168, 107) : Color.Gray;
+        }
+
+        public void ShowServiceStatus(string status)
+        {
+            lblServiceSummary.Text = status;
+            if (status.Contains("Đang chờ"))
+                lblServiceSummary.ForeColor = Color.FromArgb(255, 145, 0);
+            else if (status.Contains("Đã có"))
+                lblServiceSummary.ForeColor = Color.FromArgb(0, 168, 107);
+        }
+
         #endregion
 
         #region Event Handlers
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            _presenter.RefreshServiceStatus();
+        }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
@@ -143,57 +185,30 @@ namespace HospitalManagement.Views.UserControls.Doctor
             {
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    var serviceId = dialog.SelectedServiceId;
-                    var serviceName = dialog.SelectedServiceName;
+                    var selectedServices = dialog.SelectedServices;
+                    if (selectedServices.Count == 0) return;
 
-                    // 1. Call logic to assign service in DB
-                    var startSuccess = _presenter.AssignService(serviceId, serviceName);
+                    var serviceIds = selectedServices.Select(s => s.Id).ToList();
+                    var serviceNames = string.Join(", ", selectedServices.Select(s => s.Name));
+                    
+                    // 1. Call logic to assign services in DB
+                    var success = _presenter.AssignServices(serviceIds, serviceNames);
 
-                    if (startSuccess)
+                    if (success)
                     {
-                        // 2. Export file logic
-                        try
+                        // 2. Open Print/Export Form for EACH service
+                        foreach (var service in selectedServices)
                         {
-                            string fileName = $"PhieuChiDinh_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
-                            string folderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HospitalManagement", "ServiceRequests");
-                            
-                            if (!System.IO.Directory.Exists(folderPath))
+                            using (var printForm = new HospitalManagement.Views.Forms.Doctor.Form_ServiceRequestPrint(_currentPatient, service.Name, service.Price, txtDiagnosis.Text))
                             {
-                                System.IO.Directory.CreateDirectory(folderPath);
+                                printForm.ShowDialog();
                             }
-
-                            string filePath = System.IO.Path.Combine(folderPath, fileName);
-                            
-                            string content = $@"
-========================================
-       PHIẾU CHỈ ĐỊNH DỊCH VỤ
-========================================
-Ngày: {DateTime.Now:dd/MM/yyyy HH:mm}
-Bệnh nhân: {lblPatientName.Text}
-
-Dịch vụ yêu cầu: {serviceName}
-Vị trí: Phòng kỹ thuật chuyên khoa
-
-Ghi chú chẩn đoán sơ bộ:
-{txtDiagnosis.Text}
-
-----------------------------------------
-Bác sĩ chỉ định:
-{HospitalManagement.Session.UserSession.CurrentUser.FullName} (Đã ký)
-========================================
-";
-                            System.IO.File.WriteAllText(filePath, content);
-                            MessageBox.Show($"Đã xuất phiếu chỉ định thành công!\nĐường dẫn: {filePath}", "Xuất file", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Lỗi xuất file: {ex.Message}", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
                 }
             }
         }
-
+        
         #endregion
     }
 }

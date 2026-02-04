@@ -9,8 +9,8 @@ namespace HospitalManagement.Views.Interfaces.Patient
         // Load invoices
         void LoadInvoices(IEnumerable<InvoiceDisplayInfo> invoices);
         
-        // Filter
         string SelectedStatusFilter { get; }
+        string SelectedTypeFilter { get; }
         
         // UI State
         void ShowLoading(bool isLoading);

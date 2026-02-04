@@ -19,7 +19,7 @@ namespace HospitalManagement.Presenters.Patient
             _paymentService = new PaymentService();
         }
 
-        public void LoadInvoices(string statusFilter = "all")
+        public void LoadInvoices(string statusFilter = "all", string typeFilter = "all")
         {
             try
             {
@@ -30,6 +30,11 @@ namespace HospitalManagement.Presenters.Patient
                 if (statusFilter != "all")
                 {
                     invoices = invoices.Where(i => i.InvoiceStatus == statusFilter);
+                }
+
+                if (typeFilter != "all")
+                {
+                    invoices = invoices.Where(i => i.PaymentType == typeFilter);
                 }
 
                 _view.LoadInvoices(invoices.ToList());

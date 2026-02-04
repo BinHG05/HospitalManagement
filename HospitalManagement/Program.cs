@@ -20,7 +20,8 @@ namespace HospitalManagement
             Application.SetCompatibleTextRenderingDefault(false);
 
             // Initialize fresh database in Docker
-            HospitalManagement.Infrastructure.DatabaseInitializer.Initialize();
+            // NOTE: Set to true once to recreate database with new schema (PerformedAt, VerifiedBy, etc.)
+            HospitalManagement.Infrastructure.DatabaseInitializer.Initialize(true);
 
             // Login loop
             while (true)

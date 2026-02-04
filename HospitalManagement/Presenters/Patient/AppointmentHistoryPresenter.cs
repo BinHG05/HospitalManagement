@@ -19,13 +19,13 @@ namespace HospitalManagement.Presenters.Patient
             _appointmentService = new AppointmentService();
         }
 
-        public void LoadAppointments(string statusFilter = "all")
+        public void LoadAppointments(string statusFilter = "all", DateTime? dateFilter = null)
         {
             try
             {
                 _view.ShowLoading(true);
 
-                var appointments = _appointmentService.GetPatientAppointments(_patientId);
+                var appointments = _appointmentService.GetPatientAppointments(_patientId, dateFilter);
                 
                 var displayList = appointments
                     .GroupBy(a => a.AppointmentID)
@@ -46,7 +46,7 @@ namespace HospitalManagement.Presenters.Patient
                         CreatedAt = a.CreatedAt
                     });
 
-                // Apply filter
+                // Apply status filter
                 if (statusFilter != "all")
                 {
                     displayList = displayList.Where(a => a.Status == statusFilter);

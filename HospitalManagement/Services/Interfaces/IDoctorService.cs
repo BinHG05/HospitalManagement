@@ -1,4 +1,5 @@
 using HospitalManagement.Models.Entities;
+using HospitalManagement.Models.DTOs;
 using System;
 using System.Collections.Generic;
 
@@ -15,6 +16,7 @@ namespace HospitalManagement.Services.Interfaces
         IEnumerable<HospitalActiveExamInfo> GetAllActiveExaminations();
         IEnumerable<MedicalServices> GetAllServices();
         bool AssignService(int appointmentId, int serviceId);
+        bool AssignServices(int appointmentId, List<int> serviceIds);
 
         // Get patient by appointment
         PatientExamInfo GetPatientForExam(int appointmentId);
@@ -26,10 +28,15 @@ namespace HospitalManagement.Services.Interfaces
         // Complete examination
         int CompleteExamination(int appointmentId, ExaminationData data);
 
+        // Service tracking
+        bool GetPatientServiceStatus(int appointmentId); // Returns true if all services are completed or none assigned
+        IEnumerable<ServiceRequestInfo> GetActiveAssignedServices(int appointmentId);
+
         // Get doctor's schedule
         IEnumerable<DoctorScheduleInfo> GetDoctorSchedule(int doctorId, DateTime weekStart);
     }
 
+    // Các DTO cũ giữ lại tạm thời hoặc di chuyển sau để tránh làm hỏng code hiện tại
     public class QueuePatientInfo
     {
         public int AppointmentId { get; set; }

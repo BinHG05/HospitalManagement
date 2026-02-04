@@ -6,7 +6,9 @@ namespace HospitalManagement.Config
     public static class AppConfig
     {
         // Application Info
-        public const string AppName = "Hospital Management System";
+        public static string AppName = "Hospital Management System";
+        public static string AppAddress = "123 Đường ABC, Quận XYZ, TP.HCM";
+        public static string AppPhone = "1900 1234";
         public const string AppVersion = "1.0.0";
 
         // Pagination

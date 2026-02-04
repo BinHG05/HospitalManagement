@@ -172,6 +172,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +183,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\EF\HospitalDbContext.cs" />
+    <Compile Include="Models\DTOs\ServiceDTOs.cs" />
     <Compile Include="Models\Entities\Appointments.cs" />
     <Compile Include="Models\Entities\Departments.cs" />
     <Compile Include="Models\Entities\Doctors.cs" />
@@ -201,7 +203,11 @@
     <Compile Include="Models\Entities\Users.cs" />
     <Compile Include="Services\DatabaseTestService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\IServiceRequestService.cs" />
+    <Compile Include="Services\Interfaces\IServiceResultService.cs" />
     <Compile Include="Services\Implementations\AuthService.cs" />
+    <Compile Include="Services\Implementations\ServiceRequestService.cs" />
+    <Compile Include="Services\Implementations\ServiceResultService.cs" />
     <Compile Include="Infrastructure\Common\AppTheme.cs" />
     <Compile Include="Views\Interfaces\ILoginView.cs" />
     <Compile Include="Views\Interfaces\IRegisterView.cs" />
@@ -221,8 +227,24 @@
     <Compile Include="Presenters\Admin\ShiftAssignmentPresenter.cs" />
     <Compile Include="Presenters\Admin\ShiftApprovalPresenter.cs" />
     <Compile Include="Presenters\Doctor\ShiftRegistrationPresenter.cs" />
+    <Compile Include="Views\Interfaces\Admin\ISettingsView.cs" />
     <Compile Include="Views\Interfaces\Admin\IShiftApprovalView.cs" />
+    <Compile Include="Views\Interfaces\Admin\IReportView.cs" />
     <Compile Include="Views\Interfaces\Doctor\IShiftRegistrationView.cs" />
+    <Compile Include="Presenters\Admin\ReportPresenter.cs" />
+    <Compile Include="Presenters\Admin\SettingsPresenter.cs" />
+    <Compile Include="Views\UserControls\Admin\UC_Report.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Admin\UC_Report.Designer.cs">
+      <DependentUpon>UC_Report.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Admin\UC_Settings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Admin\UC_Settings.Designer.cs">
+      <DependentUpon>UC_Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Forms\BaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -266,6 +288,9 @@
       <DependentUpon>DoctorDashboard.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Forms\Doctor\Form_PrescriptionPrint.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Forms\Doctor\Form_ServiceRequestPrint.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Views\Forms\Form_EditPatient.cs">
@@ -441,6 +466,18 @@
     <Compile Include="Views\Forms\Doctor\ServiceAssignmentDialog.Designer.cs">
       <DependentUpon>ServiceAssignmentDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_ServiceQueue.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_ServiceQueue.Designer.cs">
+      <DependentUpon>UC_ServiceQueue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_ServiceExecution.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\UserControls\Doctor\UC_ServiceExecution.Designer.cs">
+      <DependentUpon>UC_ServiceExecution.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -477,6 +514,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Icons\vcb_qr_payment.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Icons\momo_payment.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Folder Include="Assets\Images\" />

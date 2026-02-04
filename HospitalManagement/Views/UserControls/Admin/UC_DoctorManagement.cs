@@ -149,13 +149,44 @@ namespace HospitalManagement.Views.UserControls.Admin
             if (dgvDoctors.Columns["UserID"] != null) dgvDoctors.Columns["UserID"].Visible = false;
             if (dgvDoctors.Columns["DepartmentID"] != null) dgvDoctors.Columns["DepartmentID"].Visible = false;
 
-            if (dgvDoctors.Columns["DoctorName"] != null) dgvDoctors.Columns["DoctorName"].HeaderText = "Tên Bác sĩ";
-            if (dgvDoctors.Columns["DepartmentName"] != null) dgvDoctors.Columns["DepartmentName"].HeaderText = "Khoa";
-            if (dgvDoctors.Columns["Specialization"] != null) dgvDoctors.Columns["Specialization"].HeaderText = "Chuyên khoa";
-            if (dgvDoctors.Columns["LicenseNumber"] != null) dgvDoctors.Columns["LicenseNumber"].HeaderText = "Số CCHN";
-            if (dgvDoctors.Columns["YearsOfExperience"] != null) dgvDoctors.Columns["YearsOfExperience"].HeaderText = "Kinh nghiệm";
-            if (dgvDoctors.Columns["ConsultationFee"] != null) dgvDoctors.Columns["ConsultationFee"].HeaderText = "Phí khám";
-            if (dgvDoctors.Columns["IsActive"] != null) dgvDoctors.Columns["IsActive"].HeaderText = "Hoạt động";
+            if (dgvDoctors.Columns["DoctorName"] != null) 
+            {
+                dgvDoctors.Columns["DoctorName"].HeaderText = "Tên Bác sĩ";
+                dgvDoctors.Columns["DoctorName"].FillWeight = 20;
+            }
+            if (dgvDoctors.Columns["DepartmentName"] != null) 
+            {
+                dgvDoctors.Columns["DepartmentName"].HeaderText = "Khoa";
+                dgvDoctors.Columns["DepartmentName"].FillWeight = 15;
+            }
+            if (dgvDoctors.Columns["Specialization"] != null) 
+            {
+                dgvDoctors.Columns["Specialization"].HeaderText = "Chuyên khoa";
+                dgvDoctors.Columns["Specialization"].FillWeight = 15;
+            }
+            if (dgvDoctors.Columns["LicenseNumber"] != null) 
+            {
+                dgvDoctors.Columns["LicenseNumber"].HeaderText = "Số CCHN";
+                dgvDoctors.Columns["LicenseNumber"].FillWeight = 10;
+            }
+            if (dgvDoctors.Columns["YearsOfExperience"] != null) 
+            {
+                dgvDoctors.Columns["YearsOfExperience"].HeaderText = "Kinh nghiệm";
+                dgvDoctors.Columns["YearsOfExperience"].FillWeight = 10;
+            }
+            if (dgvDoctors.Columns["ConsultationFee"] != null) 
+            {
+                dgvDoctors.Columns["ConsultationFee"].HeaderText = "Phí khám";
+                dgvDoctors.Columns["ConsultationFee"].DefaultCellStyle.Format = "N0";
+                dgvDoctors.Columns["ConsultationFee"].FillWeight = 15;
+            }
+            if (dgvDoctors.Columns["IsActive"] != null) 
+            {
+                dgvDoctors.Columns["IsActive"].HeaderText = "Hoạt động";
+                dgvDoctors.Columns["IsActive"].FillWeight = 10;
+            }
+            // Hide other columns
+            if (dgvDoctors.Columns["Qualifications"] != null) dgvDoctors.Columns["Qualifications"].Visible = false;
         }
 
         public void SetUserList(IEnumerable<Users> users)

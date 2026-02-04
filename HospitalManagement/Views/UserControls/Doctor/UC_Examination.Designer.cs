@@ -43,6 +43,11 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.btnSave = new System.Windows.Forms.Button();
             this.btnAssignService = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            
+            // Service Results
+            this.lblServiceSummary = new System.Windows.Forms.Label();
+            this.dgvServiceStatus = new System.Windows.Forms.DataGridView();
             
             this.panelLoading = new System.Windows.Forms.Panel();
             this.lblLoading = new System.Windows.Forms.Label();
@@ -137,140 +142,186 @@ namespace HospitalManagement.Views.UserControls.Doctor
             this.lblPatientDetails.TabIndex = 1;
             this.lblPatientDetails.Text = "Thông tin bệnh nhân...";
             // 
+            // 
             // panelExamForm
             // 
-            this.panelExamForm.AutoScroll = true;
             this.panelExamForm.BackColor = System.Drawing.Color.White;
             this.panelExamForm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelExamForm.Padding = new System.Windows.Forms.Padding(20);
+            this.panelExamForm.Padding = new System.Windows.Forms.Padding(10);
             this.panelExamForm.Name = "panelExamForm";
             this.panelExamForm.Size = new System.Drawing.Size(596, 450);
             this.panelExamForm.TabIndex = 0;
             this.splitContainer.Panel2.Controls.Add(this.panelExamForm);
-            // 
-            // Form fields
-            // 
-            int yPos = 20;
-            int labelWidth = 100;
-            int textWidth = 450;
-            int fieldHeight = 80;
-            
+
+            // MAIN FLOW LAYOUT
+            var flpMain = new System.Windows.Forms.FlowLayoutPanel();
+            flpMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            flpMain.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            flpMain.WrapContents = false;
+            flpMain.AutoScroll = true;
+            flpMain.Padding = new System.Windows.Forms.Padding(10);
+            this.panelExamForm.Controls.Add(flpMain);
+
+            int textWidth = 520; // Slightly wider for better fit
+
+            // 1. Symptoms
             this.lblSymptoms.AutoSize = true;
             this.lblSymptoms.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblSymptoms.Location = new System.Drawing.Point(20, yPos);
             this.lblSymptoms.Text = "Triệu chứng:";
-            
+            flpMain.Controls.Add(this.lblSymptoms);
+
             this.txtSymptoms.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtSymptoms.Location = new System.Drawing.Point(20, yPos + 25);
             this.txtSymptoms.Multiline = true;
-            this.txtSymptoms.Size = new System.Drawing.Size(textWidth, fieldHeight);
+            this.txtSymptoms.Size = new System.Drawing.Size(textWidth, 60);
             this.txtSymptoms.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            
-            yPos += fieldHeight + 35;
+            flpMain.Controls.Add(this.txtSymptoms);
+            flpMain.SetFlowBreak(this.txtSymptoms, true);
+
+            // 2. Diagnosis
             this.lblDiagnosis.AutoSize = true;
+            this.lblDiagnosis.Margin = new System.Windows.Forms.Padding(0, 15, 0, 0);
             this.lblDiagnosis.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblDiagnosis.Location = new System.Drawing.Point(20, yPos);
             this.lblDiagnosis.Text = "Chẩn đoán: *";
             this.lblDiagnosis.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            
+            flpMain.Controls.Add(this.lblDiagnosis);
+
             this.txtDiagnosis.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtDiagnosis.Location = new System.Drawing.Point(20, yPos + 25);
             this.txtDiagnosis.Multiline = true;
-            this.txtDiagnosis.Size = new System.Drawing.Size(textWidth, fieldHeight);
+            this.txtDiagnosis.Size = new System.Drawing.Size(textWidth, 60);
             this.txtDiagnosis.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            
-            yPos += fieldHeight + 35;
+            flpMain.Controls.Add(this.txtDiagnosis);
+            flpMain.SetFlowBreak(this.txtDiagnosis, true);
+
+            // 3. Treatment
             this.lblTreatment.AutoSize = true;
+            this.lblTreatment.Margin = new System.Windows.Forms.Padding(0, 15, 0, 0);
             this.lblTreatment.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblTreatment.Location = new System.Drawing.Point(20, yPos);
             this.lblTreatment.Text = "Phương pháp điều trị:";
-            
+            flpMain.Controls.Add(this.lblTreatment);
+
             this.txtTreatment.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtTreatment.Location = new System.Drawing.Point(20, yPos + 25);
             this.txtTreatment.Multiline = true;
-            this.txtTreatment.Size = new System.Drawing.Size(textWidth, fieldHeight);
+            this.txtTreatment.Size = new System.Drawing.Size(textWidth, 60);
             this.txtTreatment.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            
-            yPos += fieldHeight + 35;
+            flpMain.Controls.Add(this.txtTreatment);
+            flpMain.SetFlowBreak(this.txtTreatment, true);
+
+            // 4. Notes
             this.lblNotes.AutoSize = true;
+            this.lblNotes.Margin = new System.Windows.Forms.Padding(0, 15, 0, 0);
             this.lblNotes.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.lblNotes.Location = new System.Drawing.Point(20, yPos);
             this.lblNotes.Text = "Ghi chú:";
-            
+            flpMain.Controls.Add(this.lblNotes);
+
             this.txtNotes.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtNotes.Location = new System.Drawing.Point(20, yPos + 25);
             this.txtNotes.Multiline = true;
-            this.txtNotes.Size = new System.Drawing.Size(textWidth, 60);
+            this.txtNotes.Size = new System.Drawing.Size(textWidth, 50);
             this.txtNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            flpMain.Controls.Add(this.txtNotes);
+            flpMain.SetFlowBreak(this.txtNotes, true);
+
+            // 5. Service Request Section (Header + Grid)
+            var pnlServiceHeader = new System.Windows.Forms.FlowLayoutPanel();
+            pnlServiceHeader.AutoSize = true;
+            pnlServiceHeader.Margin = new System.Windows.Forms.Padding(0, 20, 0, 5);
+            pnlServiceHeader.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
             
-            yPos += 95;
+            this.lblServiceSummary.AutoSize = true;
+            this.lblServiceSummary.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Italic | System.Drawing.FontStyle.Bold);
+            this.lblServiceSummary.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(145)))), ((int)(((byte)(0)))));
+            this.lblServiceSummary.Text = "Đang chờ kết quả dịch vụ...";
+            this.lblServiceSummary.Visible = false;
+            
+            this.btnRefresh.BackColor = System.Drawing.Color.White;
+            this.btnRefresh.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(130)))), ((int)(((byte)(246)))));
+            this.btnRefresh.Size = new System.Drawing.Size(90, 26);
+            this.btnRefresh.Text = "🔄 Refresh";
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.btnRefresh.Visible = false;
+
+            pnlServiceHeader.Controls.Add(this.lblServiceSummary);
+            pnlServiceHeader.Controls.Add(this.btnRefresh);
+            flpMain.Controls.Add(pnlServiceHeader);
+
+            this.dgvServiceStatus.BackgroundColor = System.Drawing.Color.White;
+            this.dgvServiceStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvServiceStatus.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvServiceStatus.ReadOnly = true;
+            this.dgvServiceStatus.RowHeadersVisible = false;
+            this.dgvServiceStatus.Size = new System.Drawing.Size(textWidth, 120);
+            this.dgvServiceStatus.TabIndex = 20;
+            this.dgvServiceStatus.Visible = false;
+            this.dgvServiceStatus.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            flpMain.Controls.Add(this.dgvServiceStatus);
+            flpMain.SetFlowBreak(this.dgvServiceStatus, true);
+
+            // 6. Next Appointment
+            var pnlNextAppt = new System.Windows.Forms.FlowLayoutPanel();
+            pnlNextAppt.AutoSize = true;
+            pnlNextAppt.Margin = new System.Windows.Forms.Padding(0, 15, 0, 0);
+            pnlNextAppt.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
+
             this.chkNextAppt.AutoSize = true;
             this.chkNextAppt.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.chkNextAppt.Location = new System.Drawing.Point(20, yPos);
             this.chkNextAppt.Text = "Hẹn tái khám:";
             this.chkNextAppt.CheckedChanged += new System.EventHandler(this.chkNextAppt_CheckedChanged);
             
             this.dtpNextAppt.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpNextAppt.Location = new System.Drawing.Point(150, yPos - 3);
             this.dtpNextAppt.Size = new System.Drawing.Size(200, 25);
             this.dtpNextAppt.Enabled = false;
             this.dtpNextAppt.MinDate = System.DateTime.Today.AddDays(1);
             
-            yPos += 50;
+            pnlNextAppt.Controls.Add(this.chkNextAppt);
+            pnlNextAppt.Controls.Add(this.dtpNextAppt);
+            flpMain.Controls.Add(pnlNextAppt);
+            flpMain.SetFlowBreak(pnlNextAppt, true);
+
+            // 7. Action Buttons
+            var pnlButtons = new System.Windows.Forms.FlowLayoutPanel();
+            pnlButtons.AutoSize = true;
+            pnlButtons.Margin = new System.Windows.Forms.Padding(0, 30, 0, 20);
+            pnlButtons.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
+
             this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(168)))), ((int)(((byte)(107)))));
             this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSave.FlatAppearance.BorderSize = 0;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(200, yPos);
-            this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(150, 40);
-            this.btnSave.TabIndex = 10;
             this.btnSave.Text = "💾 Lưu kết quả";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnAssignService
-            // 
+
             this.btnAssignService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(145)))), ((int)(((byte)(0)))));
             this.btnAssignService.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAssignService.FlatAppearance.BorderSize = 0;
             this.btnAssignService.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAssignService.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnAssignService.ForeColor = System.Drawing.Color.White;
-            this.btnAssignService.Location = new System.Drawing.Point(370, yPos);
-            this.btnAssignService.Name = "btnAssignService";
             this.btnAssignService.Size = new System.Drawing.Size(160, 40);
-            this.btnAssignService.TabIndex = 11;
             this.btnAssignService.Text = "🔬 Chỉ định DV";
             this.btnAssignService.UseVisualStyleBackColor = false;
             this.btnAssignService.Click += new System.EventHandler(this.btnAssignService_Click);
-            // 
-            // btnCancel
-            // 
+
             this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
             this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnCancel.FlatAppearance.BorderSize = 0;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(550, yPos);
-            this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 40);
-            this.btnCancel.TabIndex = 12;
             this.btnCancel.Text = "Hủy";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            
-            this.panelExamForm.Controls.AddRange(new System.Windows.Forms.Control[] {
-                this.lblSymptoms, this.txtSymptoms,
-                this.lblDiagnosis, this.txtDiagnosis,
-                this.lblTreatment, this.txtTreatment,
-                this.lblNotes, this.txtNotes,
-                this.chkNextAppt, this.dtpNextAppt,
-                this.btnSave, this.btnAssignService, this.btnCancel
-            });
+
+            pnlButtons.Controls.Add(this.btnSave);
+            pnlButtons.Controls.Add(this.btnAssignService);
+            pnlButtons.Controls.Add(this.btnCancel);
+            flpMain.Controls.Add(pnlButtons);
             // 
             // panelLoading
             // 
@@ -338,6 +389,9 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnAssignService;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Label lblServiceSummary;
+        private System.Windows.Forms.DataGridView dgvServiceStatus;
         private System.Windows.Forms.Panel panelLoading;
         private System.Windows.Forms.Label lblLoading;
     }

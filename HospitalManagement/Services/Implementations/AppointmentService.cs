@@ -270,17 +270,25 @@ namespace HospitalManagement.Services.Implementations
             }
         }
 
-        public IEnumerable<Appointments> GetPatientAppointments(int patientId)
+        public IEnumerable<Appointments> GetPatientAppointments(int patientId, DateTime? date = null)
         {
             using (var context = new HospitalDbContext())
             {
-                return context.Appointments
+                var query = context.Appointments
                     .Include(a => a.Doctor)
                     .ThenInclude(d => d.User)
                     .Include(a => a.Department)
                     .Include(a => a.Schedule)
                     .Include(a => a.Shift)
-                    .Where(a => a.PatientID == patientId)
+                    .Where(a => a.PatientID == patientId);
+
+                if (date.HasValue)
+                {
+                    var filterDate = date.Value.Date;
+                    query = query.Where(a => a.AppointmentDate == filterDate);
+                }
+
+                return query
                     .OrderByDescending(a => a.AppointmentDate)
                     .ThenBy(a => a.AppointmentNumber)
                     .ToList();

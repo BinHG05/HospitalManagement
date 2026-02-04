@@ -22,6 +22,9 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelFilter = new System.Windows.Forms.Panel();
             this.cmbStatusFilter = new System.Windows.Forms.ComboBox();
             this.lblFilter = new System.Windows.Forms.Label();
+            this.chkEnableDate = new System.Windows.Forms.CheckBox();
+            this.lblDate = new System.Windows.Forms.Label();
+            this.dtpDateFilter = new System.Windows.Forms.DateTimePicker();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.dgvAppointments = new System.Windows.Forms.DataGridView();
             this.colDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -71,6 +74,9 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             this.panelFilter.BackColor = System.Drawing.Color.White;
             this.panelFilter.Controls.Add(this.btnRefresh);
+            this.panelFilter.Controls.Add(this.dtpDateFilter);
+            this.panelFilter.Controls.Add(this.lblDate);
+            this.panelFilter.Controls.Add(this.chkEnableDate);
             this.panelFilter.Controls.Add(this.cmbStatusFilter);
             this.panelFilter.Controls.Add(this.lblFilter);
             this.panelFilter.Dock = System.Windows.Forms.DockStyle.Top;
@@ -96,9 +102,40 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblFilter.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblFilter.Location = new System.Drawing.Point(20, 15);
             this.lblFilter.Name = "lblFilter";
-            this.lblFilter.Size = new System.Drawing.Size(78, 19);
+            this.lblFilter.Size = new System.Drawing.Size(74, 19);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "Trạng thái:";
+            // 
+            // chkEnableDate
+            // 
+            this.chkEnableDate.AutoSize = true;
+            this.chkEnableDate.Location = new System.Drawing.Point(320, 18);
+            this.chkEnableDate.Name = "chkEnableDate";
+            this.chkEnableDate.Size = new System.Drawing.Size(15, 14);
+            this.chkEnableDate.TabIndex = 3;
+            this.chkEnableDate.UseVisualStyleBackColor = true;
+            this.chkEnableDate.CheckedChanged += new System.EventHandler(this.chkEnableDate_CheckedChanged);
+            // 
+            // lblDate
+            // 
+            this.lblDate.AutoSize = true;
+            this.lblDate.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblDate.Location = new System.Drawing.Point(340, 15);
+            this.lblDate.Name = "lblDate";
+            this.lblDate.Size = new System.Drawing.Size(82, 19);
+            this.lblDate.TabIndex = 4;
+            this.lblDate.Text = "Ngày khám:";
+            // 
+            // dtpDateFilter
+            // 
+            this.dtpDateFilter.Enabled = false;
+            this.dtpDateFilter.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.dtpDateFilter.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpDateFilter.Location = new System.Drawing.Point(430, 12);
+            this.dtpDateFilter.Name = "dtpDateFilter";
+            this.dtpDateFilter.Size = new System.Drawing.Size(150, 25);
+            this.dtpDateFilter.TabIndex = 5;
+            this.dtpDateFilter.ValueChanged += new System.EventHandler(this.dtpDateFilter_ValueChanged);
             // 
             // btnRefresh
             // 
@@ -108,7 +145,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(320, 10);
+            this.btnRefresh.Location = new System.Drawing.Point(600, 10);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 30);
             this.btnRefresh.TabIndex = 2;
@@ -207,7 +244,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelDetails.Controls.Add(this.lblDetailsTitle);
             this.panelDetails.Location = new System.Drawing.Point(200, 150);
             this.panelDetails.Name = "panelDetails";
-            this.panelDetails.Size = new System.Drawing.Size(500, 420);
+            this.panelDetails.Size = new System.Drawing.Size(500, 460); // Increased height from 420 to 460
             this.panelDetails.TabIndex = 3;
             this.panelDetails.Visible = false;
             // 
@@ -230,7 +267,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblDetailsContent.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblDetailsContent.Location = new System.Drawing.Point(20, 50);
             this.lblDetailsContent.Name = "lblDetailsContent";
-            this.lblDetailsContent.Size = new System.Drawing.Size(458, 280);
+            this.lblDetailsContent.Size = new System.Drawing.Size(458, 320); // Increased height from 280 to 320
             this.lblDetailsContent.TabIndex = 1;
             this.lblDetailsContent.Text = "Nội dung chi tiết...";
             // 
@@ -242,7 +279,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(250, 360);
+            this.btnCancel.Location = new System.Drawing.Point(250, 400); // Moved down from 360 to 400
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(120, 35);
             this.btnCancel.TabIndex = 2;
@@ -258,7 +295,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(380, 360);
+            this.btnClose.Location = new System.Drawing.Point(380, 400); // Moved down from 360 to 400
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(100, 35);
             this.btnClose.TabIndex = 3;
@@ -317,6 +354,9 @@ namespace HospitalManagement.Views.UserControls.Patient
         private System.Windows.Forms.Panel panelFilter;
         private System.Windows.Forms.ComboBox cmbStatusFilter;
         private System.Windows.Forms.Label lblFilter;
+        private System.Windows.Forms.CheckBox chkEnableDate;
+        private System.Windows.Forms.Label lblDate;
+        private System.Windows.Forms.DateTimePicker dtpDateFilter;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.DataGridView dgvAppointments;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDate;

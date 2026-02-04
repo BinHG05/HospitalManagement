@@ -24,6 +24,8 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.panelFilter = new System.Windows.Forms.Panel();
             this.cmbStatusFilter = new System.Windows.Forms.ComboBox();
             this.lblFilter = new System.Windows.Forms.Label();
+            this.lblTypeFilter = new System.Windows.Forms.Label();
+            this.cmbTypeFilter = new System.Windows.Forms.ComboBox();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.dgvInvoices = new System.Windows.Forms.DataGridView();
             this.colInvoiceNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -99,10 +101,11 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             this.panelFilter.BackColor = System.Drawing.Color.White;
             this.panelFilter.Controls.Add(this.btnRefresh);
+            this.panelFilter.Controls.Add(this.cmbTypeFilter);
+            this.panelFilter.Controls.Add(this.lblTypeFilter);
             this.panelFilter.Controls.Add(this.cmbStatusFilter);
             this.panelFilter.Controls.Add(this.lblFilter);
             this.panelFilter.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelWarning.Location = new System.Drawing.Point(0, 50); // This will be adjusted by Dock
             this.panelFilter.Location = new System.Drawing.Point(0, 90);
             this.panelFilter.Name = "panelFilter";
             this.panelFilter.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
@@ -113,9 +116,9 @@ namespace HospitalManagement.Views.UserControls.Patient
             // 
             this.cmbStatusFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbStatusFilter.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cmbStatusFilter.Location = new System.Drawing.Point(120, 12);
+            this.cmbStatusFilter.Location = new System.Drawing.Point(100, 12);
             this.cmbStatusFilter.Name = "cmbStatusFilter";
-            this.cmbStatusFilter.Size = new System.Drawing.Size(180, 25);
+            this.cmbStatusFilter.Size = new System.Drawing.Size(150, 25);
             this.cmbStatusFilter.TabIndex = 1;
             this.cmbStatusFilter.SelectedIndexChanged += new System.EventHandler(this.cmbStatusFilter_SelectedIndexChanged);
             // 
@@ -125,9 +128,29 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.lblFilter.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblFilter.Location = new System.Drawing.Point(20, 15);
             this.lblFilter.Name = "lblFilter";
-            this.lblFilter.Size = new System.Drawing.Size(78, 19);
+            this.lblFilter.Size = new System.Drawing.Size(74, 19);
             this.lblFilter.TabIndex = 0;
             this.lblFilter.Text = "Trạng thái:";
+            // 
+            // lblTypeFilter
+            // 
+            this.lblTypeFilter.AutoSize = true;
+            this.lblTypeFilter.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblTypeFilter.Location = new System.Drawing.Point(270, 15);
+            this.lblTypeFilter.Name = "lblTypeFilter";
+            this.lblTypeFilter.Size = new System.Drawing.Size(98, 19);
+            this.lblTypeFilter.TabIndex = 10;
+            this.lblTypeFilter.Text = "Loại chi phí:";
+            // 
+            // cmbTypeFilter
+            // 
+            this.cmbTypeFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbTypeFilter.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cmbTypeFilter.Location = new System.Drawing.Point(380, 12);
+            this.cmbTypeFilter.Name = "cmbTypeFilter";
+            this.cmbTypeFilter.Size = new System.Drawing.Size(180, 25);
+            this.cmbTypeFilter.TabIndex = 11;
+            this.cmbTypeFilter.SelectedIndexChanged += new System.EventHandler(this.cmbStatusFilter_SelectedIndexChanged);
             // 
             // btnRefresh
             // 
@@ -137,7 +160,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnRefresh.ForeColor = System.Drawing.Color.White;
-            this.btnRefresh.Location = new System.Drawing.Point(320, 10);
+            this.btnRefresh.Location = new System.Drawing.Point(580, 10);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 30);
             this.btnRefresh.TabIndex = 2;
@@ -372,6 +395,8 @@ namespace HospitalManagement.Views.UserControls.Patient
         private System.Windows.Forms.Panel panelFilter;
         private System.Windows.Forms.ComboBox cmbStatusFilter;
         private System.Windows.Forms.Label lblFilter;
+        private System.Windows.Forms.ComboBox cmbTypeFilter;
+        private System.Windows.Forms.Label lblTypeFilter;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.DataGridView dgvInvoices;
         private System.Windows.Forms.DataGridViewTextBoxColumn colInvoiceNumber;

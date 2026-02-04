@@ -83,16 +83,29 @@ namespace HospitalManagement.Views.UserControls.Admin
             if (dgvServices.Columns["ServiceName"] != null) 
             {
                 dgvServices.Columns["ServiceName"].HeaderText = "Tên Dịch vụ";
-                dgvServices.Columns["ServiceName"].Width = 200;
+                dgvServices.Columns["ServiceName"].FillWeight = 30; // 30% width
             }
-            if (dgvServices.Columns["ServiceType"] != null) dgvServices.Columns["ServiceType"].HeaderText = "Loại";
-            if (dgvServices.Columns["Description"] != null) dgvServices.Columns["Description"].HeaderText = "Mô tả";
+            if (dgvServices.Columns["ServiceType"] != null) 
+            {
+                dgvServices.Columns["ServiceType"].HeaderText = "Loại";
+                dgvServices.Columns["ServiceType"].FillWeight = 15;
+            }
+            if (dgvServices.Columns["Description"] != null) 
+            {
+                dgvServices.Columns["Description"].HeaderText = "Mô tả";
+                dgvServices.Columns["Description"].FillWeight = 25;
+            }
             if (dgvServices.Columns["Price"] != null) 
             {
                 dgvServices.Columns["Price"].HeaderText = "Giá (VNĐ)";
                 dgvServices.Columns["Price"].DefaultCellStyle.Format = "N0";
+                dgvServices.Columns["Price"].FillWeight = 15;
             }
-            if (dgvServices.Columns["EstimatedTime"] != null) dgvServices.Columns["EstimatedTime"].HeaderText = "Thời gian (phút)";
+            if (dgvServices.Columns["EstimatedTime"] != null) 
+            {
+                dgvServices.Columns["EstimatedTime"].HeaderText = "Thời gian (phút)";
+                dgvServices.Columns["EstimatedTime"].FillWeight = 15;
+            }
             if (dgvServices.Columns["IsActive"] != null) dgvServices.Columns["IsActive"].Visible = false;
             if (dgvServices.Columns["CreatedAt"] != null) dgvServices.Columns["CreatedAt"].Visible = false;
             if (dgvServices.Columns["DepartmentID"] != null) dgvServices.Columns["DepartmentID"].Visible = false;

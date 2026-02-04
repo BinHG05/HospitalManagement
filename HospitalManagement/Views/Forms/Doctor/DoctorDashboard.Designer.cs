@@ -26,6 +26,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.btnExam = new System.Windows.Forms.Button();
             this.btnQueue = new System.Windows.Forms.Button();
             this.btnHome = new System.Windows.Forms.Button();
+            this.btnServiceQueue = new System.Windows.Forms.Button();
             this.userPanel = new System.Windows.Forms.Panel();
             this.btnLogout = new System.Windows.Forms.Button();
             this.lblUserRole = new System.Windows.Forms.Label();
@@ -63,6 +64,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.menuPanel.Controls.Add(this.btnPrescription);
             this.menuPanel.Controls.Add(this.btnPatients);
             this.menuPanel.Controls.Add(this.btnSchedule);
+            this.menuPanel.Controls.Add(this.btnServiceQueue);
             this.menuPanel.Controls.Add(this.btnExam);
             this.menuPanel.Controls.Add(this.btnQueue);
             this.menuPanel.Controls.Add(this.btnHome);
@@ -164,6 +166,29 @@ namespace HospitalManagement.Views.Forms.Doctor
             this.btnSchedule.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnSchedule.UseVisualStyleBackColor = false;
             this.btnSchedule.Click += new System.EventHandler(this.btnSchedule_Click);
+            // 
+            // btnServiceQueue - Hàng đợi dịch vụ
+            // 
+            this.btnServiceQueue.BackColor = System.Drawing.Color.Transparent;
+            this.btnServiceQueue.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnServiceQueue.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnServiceQueue.FlatAppearance.BorderSize = 0;
+            this.btnServiceQueue.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this.btnServiceQueue.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            this.btnServiceQueue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnServiceQueue.Font = new System.Drawing.Font("Segoe UI Semibold", 10.5F);
+            this.btnServiceQueue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.btnServiceQueue.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnServiceQueue.Location = new System.Drawing.Point(15, 198);
+            this.btnServiceQueue.Margin = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.btnServiceQueue.Name = "btnServiceQueue";
+            this.btnServiceQueue.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnServiceQueue.Size = new System.Drawing.Size(230, 56);
+            this.btnServiceQueue.TabIndex = 7;
+            this.btnServiceQueue.Text = "   🧪 Hàng đợi dịch vụ";
+            this.btnServiceQueue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnServiceQueue.UseVisualStyleBackColor = false;
+            this.btnServiceQueue.Click += new System.EventHandler(this.btnServiceQueue_Click);
             // 
             // btnExam - Khám bệnh
             // 
@@ -405,6 +430,7 @@ namespace HospitalManagement.Views.Forms.Doctor
         private System.Windows.Forms.Button btnExam;
         private System.Windows.Forms.Button btnQueue;
         private System.Windows.Forms.Button btnHome;
+        private System.Windows.Forms.Button btnServiceQueue;
         private System.Windows.Forms.Panel headerPanel;
         private System.Windows.Forms.Label lblHeaderDate;
         private System.Windows.Forms.Label lblHeaderTitle;

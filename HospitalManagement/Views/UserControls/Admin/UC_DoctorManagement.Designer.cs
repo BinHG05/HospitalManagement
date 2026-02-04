@@ -124,16 +124,20 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.btnSearch.ForeColor = System.Drawing.Color.White;
 
             // 
+            // 
             // dgvDoctors
             // 
             this.dgvDoctors.ColumnHeadersHeight = 30;
             this.dgvDoctors.Location = new System.Drawing.Point(25, 150);
             this.dgvDoctors.Name = "dgvDoctors";
-            this.dgvDoctors.Size = new System.Drawing.Size(550, 500);
+            this.dgvDoctors.Size = new System.Drawing.Size(600, 500);
             this.dgvDoctors.ReadOnly = true;
             this.dgvDoctors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvDoctors.MultiSelect = false;
             this.dgvDoctors.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvDoctors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 
             // 
             // grpInfo
@@ -157,10 +161,12 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpInfo.Controls.Add(this.btnDelete);
             this.grpInfo.Controls.Add(this.btnClear);
             this.grpInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.grpInfo.Location = new System.Drawing.Point(600, 60);
+            this.grpInfo.Location = new System.Drawing.Point(640, 60);
             this.grpInfo.Name = "grpInfo";
-            this.grpInfo.Size = new System.Drawing.Size(400, 590);
+            this.grpInfo.Size = new System.Drawing.Size(380, 590);
             this.grpInfo.Text = "Thông tin chi tiết";
+            this.grpInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 
             // Layout helper vars
             int left = 20;

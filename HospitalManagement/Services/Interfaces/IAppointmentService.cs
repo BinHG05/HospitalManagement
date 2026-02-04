@@ -27,7 +27,7 @@ namespace HospitalManagement.Services.Interfaces
                             int queueNumber, string reason);
 
         // Lấy lịch hẹn của bệnh nhân
-        IEnumerable<Appointments> GetPatientAppointments(int patientId);
+        IEnumerable<Appointments> GetPatientAppointments(int patientId, DateTime? date = null);
 
         // Hủy lịch hẹn
         // Xác nhận lịch hẹn (Thanh toán)

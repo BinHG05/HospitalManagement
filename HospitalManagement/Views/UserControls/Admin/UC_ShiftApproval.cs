@@ -354,7 +354,11 @@ namespace HospitalManagement.Views.UserControls.Admin
 
         public void SetPendingCount(int count)
         {
+            lblPendingCount.AutoSize = false;
+            lblPendingCount.Width = 600;
+            lblPendingCount.Height = 35;
             lblPendingCount.Text = $"⏳ {count} yêu cầu đang chờ duyệt";
+            lblPendingCount.BringToFront(); 
             btnApproveAll.Visible = count > 0;
         }
 

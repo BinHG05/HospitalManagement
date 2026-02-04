@@ -12,6 +12,8 @@ namespace HospitalManagement.Views.Interfaces.Patient
         
         // Filter
         string SelectedStatusFilter { get; }
+        DateTime SelectedDateFilter { get; }
+        bool IsDateFilterEnabled { get; }
         
         // Selected appointment
         int SelectedAppointmentId { get; }

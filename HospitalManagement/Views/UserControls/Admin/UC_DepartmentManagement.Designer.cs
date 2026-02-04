@@ -90,16 +90,20 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.btnSearch.ForeColor = System.Drawing.Color.White;
 
             // 
+            // 
             // dgvDepartments
             // 
             this.dgvDepartments.ColumnHeadersHeight = 30;
             this.dgvDepartments.Location = new System.Drawing.Point(25, 150);
             this.dgvDepartments.Name = "dgvDepartments";
-            this.dgvDepartments.Size = new System.Drawing.Size(550, 500);
+            this.dgvDepartments.Size = new System.Drawing.Size(600, 500); // 550 -> 600
             this.dgvDepartments.ReadOnly = true;
             this.dgvDepartments.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvDepartments.MultiSelect = false;
             this.dgvDepartments.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvDepartments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 
             // 
             // grpInfo
@@ -112,10 +116,11 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpInfo.Controls.Add(this.btnDelete);
             this.grpInfo.Controls.Add(this.btnClear);
             this.grpInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.grpInfo.Location = new System.Drawing.Point(600, 60);
+            this.grpInfo.Location = new System.Drawing.Point(640, 60); // 600 -> 640
             this.grpInfo.Name = "grpInfo";
-            this.grpInfo.Size = new System.Drawing.Size(400, 300); // Shorter than simpler forms
+            this.grpInfo.Size = new System.Drawing.Size(380, 300); // 400 -> 380
             this.grpInfo.Text = "Thông tin chi tiết";
+            this.grpInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 
             // 
             // lblName

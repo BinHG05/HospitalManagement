@@ -1,7 +1,10 @@
 using HospitalManagement.Services.Implementations;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces.Doctor;
+using HospitalManagement.Models.DTOs;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace HospitalManagement.Presenters.Doctor
@@ -10,6 +13,7 @@ namespace HospitalManagement.Presenters.Doctor
     {
         private readonly IExaminationView _view;
         private readonly IDoctorService _doctorService;
+        private readonly IServiceRequestService _serviceRequestService;
         private int _appointmentId;
         private PatientExamInfo _currentPatient;
 
@@ -18,6 +22,7 @@ namespace HospitalManagement.Presenters.Doctor
             _view = view;
             _appointmentId = appointmentId;
             _doctorService = new DoctorService();
+            _serviceRequestService = new ServiceRequestService();
         }
 
         public void LoadPatient()
@@ -37,6 +42,9 @@ namespace HospitalManagement.Presenters.Doctor
                 {
                     _view.ShowError("Không tìm thấy thông tin bệnh nhân.");
                 }
+
+                // Check and show service status
+                RefreshServiceStatus();
             }
             catch (Exception ex)
             {
@@ -45,6 +53,30 @@ namespace HospitalManagement.Presenters.Doctor
             finally
             {
                 _view.ShowLoading(false);
+            }
+        }
+
+        public void RefreshServiceStatus()
+        {
+            var services = _doctorService.GetActiveAssignedServices(_appointmentId);
+            _view.LoadServiceRequests(services);
+
+            var isCompletedOrNone = _doctorService.GetPatientServiceStatus(_appointmentId);
+            
+            if (!isCompletedOrNone)
+            {
+                _view.SetCompleteButtonEnabled(false);
+                _view.ShowServiceStatus("Đang chờ kết quả dịch vụ chuyên khoa...");
+            }
+            else if (services.Any())
+            {
+                _view.SetCompleteButtonEnabled(true);
+                _view.ShowServiceStatus("Đã có đủ kết quả cận lâm sàng.");
+            }
+            else
+            {
+                _view.SetCompleteButtonEnabled(true);
+                _view.ShowServiceStatus("");
             }
         }
 
@@ -91,43 +123,44 @@ namespace HospitalManagement.Presenters.Doctor
                         _view.CloseView();
                     }
                 }
-                else
-                {
-                    _view.ShowError("Không thể lưu kết quả. Vui lòng thử lại.");
-                }
             }
             catch (Exception ex)
             {
-                _view.ShowError($"Lỗi: {ex.Message}");
+                _view.ShowError(ex.Message);
             }
             finally
             {
                 _view.ShowLoading(false);
             }
         }
-        public bool AssignService(int serviceId, string serviceName)
+
+        public bool AssignServices(List<int> serviceIds, string serviceNames)
         {
             try
             {
                 _view.ShowLoading(true);
 
-                var success = _doctorService.AssignService(_appointmentId, serviceId);
+                // Lấy thông tin bác sĩ hiện tại đang khám (từ _currentPatient hoặc session)
+                // Giả sử appointments.DoctorID là bác sĩ chỉ định.
+                using (var context = new HospitalManagement.Models.EF.HospitalDbContext())
+                {
+                    var appointment = context.Appointments.Find(_appointmentId);
+                    int requestingDoctorId = appointment?.DoctorID ?? 0;
 
-                if (success)
-                {
-                    _view.ShowSuccess($"Đã chỉ định dịch vụ: {serviceName}\nHồ sơ bệnh nhân đã được tự động chuyển đến bác sĩ chuyên khoa đang trực.");
-                    _view.CloseView();
-                    return true;
+                    foreach (var serviceId in serviceIds)
+                    {
+                        _serviceRequestService.CreateServiceRequest(_appointmentId, serviceId, requestingDoctorId, _view.Notes, false);
+                    }
                 }
-                else
-                {
-                    _view.ShowError("Không thể chỉ định dịch vụ. Vui lòng thử lại.");
-                    return false;
-                }
+
+                _view.ShowSuccess($"Đã chỉ định các dịch vụ: {serviceNames}\nHồ sơ bệnh nhân đã được tự động chuyển đến các bác sĩ chuyên khoa.\n\nBạn sẽ có thể hoàn tất việc chẩn đoán sau khi có kết quả từ các khoa này.");
+                
+                RefreshServiceStatus();
+                return true;
             }
             catch (Exception ex)
             {
-                _view.ShowError($"Lỗi: {ex.Message}");
+                _view.ShowError($"Lỗi khi chỉ định dịch vụ: {ex.Message}");
                 return false;
             }
             finally

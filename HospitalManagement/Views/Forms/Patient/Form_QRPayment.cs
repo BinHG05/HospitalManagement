@@ -6,14 +6,29 @@ namespace HospitalManagement.Views.Forms.Patient
 {
     public partial class Form_QRPayment : Form
     {
-        public Form_QRPayment(string amount, string invoiceNumber)
+        public Form_QRPayment(string amount, string invoiceNumber, string paymentMethod = "bank_transfer")
         {
-            InitializeComponent(amount, invoiceNumber);
+            InitializeComponent(amount, invoiceNumber, paymentMethod);
         }
 
-        private void InitializeComponent(string amount, string invoiceNumber)
+        private void InitializeComponent(string amount, string invoiceNumber, string paymentMethod)
         {
-            this.Text = "Thanh toán chuyển khoản qua QR";
+            string titleText = "THANH TOÁN QUA QR";
+            string qrFileName = "vcb_qr_payment.png";
+            string codeLabel = "Nội dung chuyển khoản:";
+
+            if (paymentMethod == "ewallet" || paymentMethod == "Ví điện tử")
+            {
+                titleText = "THANH TOÁN VÍ ĐIỆN TỬ QUA QR";
+                qrFileName = "momo_payment.png";
+                codeLabel = "Mã thanh toán:";
+                this.Text = "Thanh toán Ví điện tử";
+            }
+            else
+            {
+                this.Text = "Thanh toán chuyển khoản qua QR";
+            }
+
             this.Size = new Size(400, 600); // Tăng nhẹ chiều cao để tạo khoảng trống dưới đáy
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -30,7 +45,7 @@ namespace HospitalManagement.Views.Forms.Patient
 
             Label lblTitle = new Label
             {
-                Text = "QUÉT MÃ QR ĐỂ THANH TOÁN",
+                Text = titleText,
                 Font = new Font("Segoe UI", 12F, FontStyle.Bold),
                 ForeColor = Color.White,
                 TextAlign = ContentAlignment.MiddleCenter,
@@ -46,7 +61,16 @@ namespace HospitalManagement.Views.Forms.Patient
                 BorderStyle = BorderStyle.None
             };
 
-            string qrPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Icons", "vcb_qr_payment.png");
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            // Handle both running from bin/Debug and from root during development
+            string qrPath = System.IO.Path.Combine(baseDir, "Assets", "Icons", qrFileName);
+            
+            if (!System.IO.File.Exists(qrPath))
+            {
+                // Try fallback for dev environment
+                qrPath = System.IO.Path.Combine(baseDir, "..", "..", "Assets", "Icons", qrFileName);
+            }
+
             if (System.IO.File.Exists(qrPath))
             {
                 picQR.Image = Image.FromFile(qrPath);
@@ -55,7 +79,7 @@ namespace HospitalManagement.Views.Forms.Patient
             {
                 picQR.BackColor = Color.FromArgb(241, 245, 249);
                 Label lblError = new Label {
-                    Text = "Không tìm thấy tệp QR\nAssets/Icons/vcb_qr_payment.png",
+                    Text = $"Không tìm thấy tệp QR\n{qrPath}", // Show full path in error
                     Dock = DockStyle.Fill,
                     TextAlign = ContentAlignment.MiddleCenter,
                     ForeColor = Color.Red
@@ -65,36 +89,19 @@ namespace HospitalManagement.Views.Forms.Patient
 
             Label lblInfo = new Label
             {
-                Text = $"Hóa đơn: {invoiceNumber}\nSố tiền cần trả: {amount} đ",
+                Text = $"{codeLabel} {invoiceNumber}\nSố tiền: {amount} đ",
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(44, 62, 80),
                 Location = new Point(25, 410),
-                Size = new Size(350, 40),
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-
-            Button btnConfirm = new Button
-            {
-                Text = "TÔI ĐÃ CHUYỂN KHOẢN XONG",
                 Size = new Size(350, 45),
-                Location = new Point(25, 455),
-                BackColor = Color.FromArgb(16, 185, 129), 
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnConfirm.FlatAppearance.BorderSize = 0;
-            btnConfirm.Click += (s, e) => {
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                TextAlign = ContentAlignment.MiddleCenter
             };
 
             Button btnCancel = new Button
             {
                 Text = "QUAY LẠI",
                 Size = new Size(350, 35),
-                Location = new Point(25, 510), // Giữ nguyên vị trí nút
+                Location = new Point(25, 510), 
                 BackColor = Color.FromArgb(241, 245, 249),
                 ForeColor = Color.FromArgb(100, 116, 139),
                 FlatStyle = FlatStyle.Flat,
@@ -106,6 +113,39 @@ namespace HospitalManagement.Views.Forms.Patient
                 this.DialogResult = DialogResult.Cancel;
                 this.Close();
             };
+
+            Button btnConfirm = new Button
+            {
+                Text = "XÁC NHẬN",
+                Size = new Size(350, 45),
+                Location = new Point(25, 455),
+                BackColor = Color.FromArgb(16, 185, 129), 
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnConfirm.FlatAppearance.BorderSize = 0;
+            btnConfirm.Click += async (s, e) => {
+                // [NEW] Simulate verification process
+                btnConfirm.Enabled = false;
+                btnConfirm.Text = "⏳ ĐANG XÁC THỰC GIAO DỊCH...";
+                btnConfirm.BackColor = Color.FromArgb(243, 156, 18); // Orange
+                btnCancel.Enabled = false;
+
+                // Create a timer to simulate network delay (2 seconds)
+                // Using Task.Delay if C# 5.0+ or Timer
+                var timer = new Timer();
+                timer.Interval = 2000;
+                timer.Tick += (ts, te) => {
+                    timer.Stop();
+                    // Verification success
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                };
+                timer.Start();
+            };
+
 
             this.Controls.Add(btnConfirm);
             this.Controls.Add(btnCancel);

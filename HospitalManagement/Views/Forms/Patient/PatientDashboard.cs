@@ -63,6 +63,17 @@ namespace HospitalManagement.Views.Forms.Patient
             _statusTimer.Start();
         }
 
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            if (_statusTimer != null)
+            {
+                _statusTimer.Stop();
+                _statusTimer.Dispose();
+                _statusTimer = null;
+            }
+        }
+
         private void StatusTimer_Tick(object sender, EventArgs e)
         {
             try
@@ -99,6 +110,22 @@ namespace HospitalManagement.Views.Forms.Patient
                         _notifiedPayments.Add(pendingPayment.PaymentID);
                         ShowPaymentNotification(pendingPayment);
                     }
+
+
+                    // [NEW] Check for recently COMPLETED payments (to notify patient)
+                    var completedPayment = context.Payments
+                        .Where(p => p.PatientID == patientId 
+                                 && p.PaymentStatus == "completed" 
+                                 && p.PaymentDate >= DateTime.Today
+                                 && p.PaymentType == "medicine") // Focus on medicine for now
+                        .OrderByDescending(p => p.PaymentDate)
+                        .FirstOrDefault();
+
+                    if (completedPayment != null && !_notifiedPayments.Contains(completedPayment.PaymentID))
+                    {
+                        _notifiedPayments.Add(completedPayment.PaymentID);
+                        ShowPaymentSuccessNotification(completedPayment);
+                    }
                 }
             }
             catch (Exception ex)
@@ -125,6 +152,16 @@ namespace HospitalManagement.Views.Forms.Patient
                             $"Mời bạn chuyển đến mục 'Thanh toán' để hoàn tất và nhận thuốc.";
             
             MessageBox.Show(this, message, "Thông báo thanh toán", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void ShowPaymentSuccessNotification(Payments payment)
+        {
+            string message = $"✅ THANH TOÁN THÀNH CÔNG\n\n" +
+                            $"Hóa đơn thuốc của bạn đã được thanh toán thành công.\n" +
+                            $"Số tiền: {payment.Amount:N0} đ\n\n" +
+                            $"Bạn có thể đến quầy dược để nhận thuốc.";
+            
+            MessageBox.Show(this, message, "Xác nhận thanh toán", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void InitializeUserInfo()

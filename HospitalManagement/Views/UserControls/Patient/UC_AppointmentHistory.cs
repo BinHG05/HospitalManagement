@@ -15,6 +15,8 @@ namespace HospitalManagement.Views.UserControls.Patient
         private AppointmentDisplayInfo _selectedAppointment;
 
         public string SelectedStatusFilter => (cmbStatusFilter.SelectedItem as FilterItem)?.Value ?? "all";
+        public DateTime SelectedDateFilter => dtpDateFilter.Value.Date;
+        public bool IsDateFilterEnabled => chkEnableDate.Checked;
         public int SelectedAppointmentId => _selectedAppointmentId;
 
         public UC_AppointmentHistory()
@@ -161,7 +163,7 @@ namespace HospitalManagement.Views.UserControls.Patient
         public void RefreshList()
         {
             panelDetails.Visible = false;
-            _presenter.LoadAppointments(SelectedStatusFilter);
+            _presenter.LoadAppointments(SelectedStatusFilter, IsDateFilterEnabled ? (DateTime?)SelectedDateFilter : null);
         }
 
         #endregion
@@ -172,7 +174,21 @@ namespace HospitalManagement.Views.UserControls.Patient
         {
             if (_presenter != null)
             {
-                _presenter.LoadAppointments(SelectedStatusFilter);
+                _presenter.LoadAppointments(SelectedStatusFilter, IsDateFilterEnabled ? (DateTime?)SelectedDateFilter : null);
+            }
+        }
+
+        private void chkEnableDate_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpDateFilter.Enabled = chkEnableDate.Checked;
+            RefreshList();
+        }
+
+        private void dtpDateFilter_ValueChanged(object sender, EventArgs e)
+        {
+            if (IsDateFilterEnabled)
+            {
+                RefreshList();
             }
         }
 

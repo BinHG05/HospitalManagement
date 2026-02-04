@@ -40,6 +40,17 @@ namespace HospitalManagement.Views.Forms.Doctor
             _statusTimer.Start();
         }
 
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            if (_statusTimer != null)
+            {
+                _statusTimer.Stop();
+                _statusTimer.Dispose();
+                _statusTimer = null;
+            }
+        }
+
         private void StatusTimer_Tick(object sender, EventArgs e)
         {
             try
@@ -63,8 +74,10 @@ namespace HospitalManagement.Views.Forms.Doctor
 
                     if (completedPayment != null && !_notifiedSuccessPayments.Contains(completedPayment.PaymentID))
                     {
-                        _notifiedSuccessPayments.Add(completedPayment.PaymentID);
-                        ShowPaymentSuccessNotification(completedPayment.PatientName, completedPayment.Amount);
+                        // _notifiedSuccessPayments.Add(completedPayment.PaymentID);
+                        // ShowPaymentSuccessNotification(completedPayment.PatientName, completedPayment.Amount);
+                        // [MODIFIED] User requested to disable Doctor notification for payments.
+                        // Notification should be sent to Patient instead.
                     }
                 }
             }
@@ -100,7 +113,7 @@ namespace HospitalManagement.Views.Forms.Doctor
         private void InitializeUserInfo()
         {
             lblUserName.Text = CurrentUser.FullName ?? "User";
-            lblHeaderDate.Text = DateTime.Now.ToString("dddd, dd MMMM yyyy");
+            lblHeaderDate.Text = DateTime.Now.ToString("dddd, dd/MM/yyyy", new System.Globalization.CultureInfo("en-US"));
         }
 
         #region IDashboardView Implementation
@@ -140,6 +153,9 @@ namespace HospitalManagement.Views.Forms.Doctor
                     break;
                 case "Đăng ký ca trực":
                     LoadShiftRegistration();
+                    break;
+                case "Hàng đợi dịch vụ":
+                    LoadServiceQueue();
                     break;
                 default:
                     ShowPlaceholder(contentName);
@@ -228,7 +244,31 @@ namespace HospitalManagement.Views.Forms.Doctor
             var doctorId = GetDoctorId();
             var registration = new UserControls.Doctor.UC_ShiftRegistration(doctorId, CurrentUser.UserID);
             registration.Dock = DockStyle.Fill;
+            registration.Dock = DockStyle.Fill;
             contentPanel.Controls.Add(registration);
+        }
+
+        private void LoadServiceQueue()
+        {
+            var doctorId = GetDoctorId();
+            var serviceQueue = new UserControls.Doctor.UC_ServiceQueue(doctorId);
+            serviceQueue.Dock = DockStyle.Fill;
+            serviceQueue.OnExecuteRequest += (s, requestId) => LoadServiceExecution(requestId);
+            contentPanel.Controls.Add(serviceQueue);
+        }
+
+        private void LoadServiceExecution(int requestId)
+        {
+            contentPanel.Controls.Clear();
+            UpdateHeaderTitle("Thực hiện dịch vụ");
+            
+            var execution = new UserControls.Doctor.UC_ServiceExecution(GetDoctorId());
+            execution.Dock = DockStyle.Fill;
+            execution.SetRequest(requestId);
+            execution.OnComplete += (s, e) => LoadServiceQueue();
+            execution.OnCancel += (s, e) => LoadServiceQueue();
+            
+            contentPanel.Controls.Add(execution);
         }
 
         public void LoadPrescription(int examinationId)
@@ -436,6 +476,12 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             SetActiveButton(btnShiftRegistration);
             _presenter.NavigateTo("Đăng ký ca trực");
+        }
+
+        private void btnServiceQueue_Click(object sender, EventArgs e)
+        {
+            SetActiveButton(btnServiceQueue);
+            _presenter.NavigateTo("Hàng đợi dịch vụ");
         }
 
         #endregion
