@@ -95,12 +95,23 @@ namespace HospitalManagement.Presenters.Patient
             }
         }
 
-        public void LoadQueueNumbers(int scheduleId, DateTime date, int maxPatients)
+        public void LoadQueueNumbers(int departmentId, DateTime date, int shiftId, int maxPatients)
         {
             try
             {
-                var bookedNumbers = _appointmentService.GetBookedQueueNumbers(scheduleId, date);
-                var suggestedNumber = _appointmentService.GetNextAvailableQueueNumber(scheduleId, date, maxPatients);
+                // [NEW] Dynamic selection of least-busy doctor
+                var bestScheduleId = _appointmentService.GetBestScheduleForSlot(departmentId, date, shiftId);
+                
+                if (bestScheduleId <= 0)
+                {
+                    _view.ShowError("Không có bác sĩ nào trực trong khung giờ này.");
+                    return;
+                }
+
+                _view.SetSelectedSchedule(bestScheduleId);
+
+                var bookedNumbers = _appointmentService.GetBookedQueueNumbers(bestScheduleId, date);
+                var suggestedNumber = _appointmentService.GetNextAvailableQueueNumber(bestScheduleId, date, maxPatients);
                 
                 _view.ShowQueueNumbers(bookedNumbers, suggestedNumber, maxPatients);
                 _view.GoToQueueSelection();

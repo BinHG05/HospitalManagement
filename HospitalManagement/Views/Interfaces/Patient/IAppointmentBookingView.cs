@@ -32,5 +32,8 @@ namespace HospitalManagement.Views.Interfaces.Patient
         void GoToTimeSlotSelection();
         void GoToQueueSelection();
         void GoBackToWeeklyView();
+        
+        // Navigation & Assignment
+        void SetSelectedSchedule(int scheduleId);
     }
 }

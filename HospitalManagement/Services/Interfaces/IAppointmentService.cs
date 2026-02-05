@@ -21,7 +21,9 @@ namespace HospitalManagement.Services.Interfaces
         // Lấy STT nhỏ nhất còn trống
         int GetNextAvailableQueueNumber(int scheduleId, DateTime date, int maxPatients);
 
-        // Đặt lịch khám
+        // Lấy lịch khám tối ưu nhất (vắng nhất) trong khoa cho khung giờ cụ thể
+        int GetBestScheduleForSlot(int departmentId, DateTime date, int shiftId);
+
         // Đặt lịch khám (Return AppointmentID if success, -1 if fail)
         int BookAppointment(int patientId, int scheduleId, DateTime appointmentDate, 
                             int queueNumber, string reason);

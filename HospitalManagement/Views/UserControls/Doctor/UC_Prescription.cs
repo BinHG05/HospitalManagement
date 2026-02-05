@@ -14,7 +14,6 @@ namespace HospitalManagement.Views.UserControls.Doctor
         private List<MedicineDto> _medicines = new List<MedicineDto>();
         private List<PrescriptionItemDto> _prescriptionItems = new List<PrescriptionItemDto>();
         private Action _onBack;
-        private ContextMenuStrip menuExport;
 
         public int RecordId { get; set; }
         public int ExaminationId { get; set; }
@@ -27,48 +26,6 @@ namespace HospitalManagement.Views.UserControls.Doctor
         {
             InitializeComponent();
             SetupDataGridView();
-            InitializeExportMenu();
-        }
-
-        private void InitializeExportMenu()
-        {
-            menuExport = new ContextMenuStrip();
-            menuExport.Items.Add("💾 Lưu vào cơ sở dữ liệu", null, (s, e) => SaveRequested?.Invoke(this, EventArgs.Empty));
-            menuExport.Items.Add(new ToolStripSeparator());
-            menuExport.Items.Add("📄 Xuất file PDF (.pdf)", null, (s, e) => ExportToFile("PDF"));
-            menuExport.Items.Add("📝 Xuất file Word (.docx)", null, (s, e) => ExportToFile("Word"));
-            menuExport.Items.Add("📊 Xuất file Excel (.xlsx)", null, (s, e) => ExportToFile("Excel"));
-            
-            // Change btnSave text to indicate dropdown
-            btnSave.Text = "💾 Lưu đơn ▾";
-        }
-
-        private void ExportToFile(string format)
-        {
-            if (!_prescriptionItems.Any())
-            {
-                ShowError("Đơn thuốc rỗng, không thể xuất file.");
-                return;
-            }
-
-            using (SaveFileDialog sfd = new SaveFileDialog())
-            {
-                sfd.Filter = $"{format} file|*.{(format == "PDF" ? "pdf" : format == "Word" ? "docx" : "xlsx")}";
-                sfd.FileName = $"DonThuoc_{lblPatientName.Text}_{DateTime.Now:yyyyMMdd}";
-                
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    ShowLoading(true);
-                    // Simulate export process
-                    Timer timer = new Timer { Interval = 1500 };
-                    timer.Tick += (s, e) => {
-                        timer.Stop();
-                        ShowLoading(false);
-                        ShowSuccess($"Đã xuất đơn thuốc ra file {format} thành công tại:\n{sfd.FileName}");
-                    };
-                    timer.Start();
-                }
-            }
         }
 
         public void Initialize(int examinationId, Action onBack)
@@ -323,7 +280,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            menuExport.Show(btnSave, new Point(0, btnSave.Height));
+            SaveRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void btnPrint_Click(object sender, EventArgs e)

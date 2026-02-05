@@ -203,7 +203,7 @@ namespace HospitalManagement.Views.Forms.Admin
         private void CreateQuickActionCards()
         {
             string[] icons = { "👤", "👨‍⚕️", "🏢", "📊" };
-            string[] titles = { "Users", "Bác sĩ", "Phòng ban", "Báo cáo" };
+            string[] titles = { "Quản lý User", "Quản lý Bác sĩ", "Phòng ban", "Báo cáo" };
             Color[] colors = { 
                 Color.FromArgb(0, 102, 204), 
                 Color.FromArgb(0, 168, 107), 
@@ -253,6 +253,24 @@ namespace HospitalManagement.Views.Forms.Admin
             };
 
             card.Controls.AddRange(new Control[] { iconLabel, titleLabel, accentBar });
+
+            // Click events for navigation
+            Action<object, EventArgs> clickHandler = (s, e) => {
+                // Determine which button to highlight
+                if (title == "Quản lý User") SetActiveButton(btnUsers);
+                else if (title == "Quản lý Bác sĩ") SetActiveButton(btnDoctors);
+                else if (title == "Phòng ban") SetActiveButton(btnDepts);
+                else if (title == "Báo cáo") SetActiveButton(btnReports);
+                
+                // Navigate
+                _presenter.NavigateTo(title);
+            };
+
+            card.Click += new EventHandler(clickHandler);
+            foreach (Control ctrl in card.Controls)
+            {
+                ctrl.Click += new EventHandler(clickHandler);
+            }
 
             card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 249, 250);
             card.MouseLeave += (s, e) => card.BackColor = Color.White;

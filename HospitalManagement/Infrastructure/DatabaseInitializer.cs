@@ -102,11 +102,37 @@ namespace HospitalManagement.Infrastructure
                         ALTER TABLE Prescriptions ADD Instructions NVARCHAR(500);
                 ");
 
-                Console.WriteLine("Schema update check complete.");
+                // Thêm cột cho Departments
+                context.Database.ExecuteSqlRaw(@"
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('[dbo].[Departments]') AND name = 'DepartmentType')
+                    BEGIN
+                        ALTER TABLE Departments ADD DepartmentType NVARCHAR(20);
+                    END
+                ");
+
+                // Update Department types using flexible matching to handle corrupted characters (like ?)
+                // Using wildcards for Vietnamese letters that often get corrupted
+                int serviceCount = context.Database.ExecuteSqlRaw(@"
+                    UPDATE Departments SET DepartmentType = 'service' 
+                    WHERE (DepartmentName LIKE N'%Xét nghi%m%' 
+                       OR DepartmentName LIKE N'%Ch%n %o%n h%nh %nh%'
+                       OR DepartmentName LIKE '%X_t nghi_m%'
+                       OR DepartmentName LIKE '%Ch_n _o_n h_nh _nh%');
+                ");
+
+                int clinicalCount = context.Database.ExecuteSqlRaw(@"
+                    UPDATE Departments SET DepartmentType = 'clinical' 
+                    WHERE (DepartmentType IS NULL OR DepartmentType = '');
+                ");
+
+                Console.WriteLine($"Schema update check complete. Updated {serviceCount} service depts and {clinicalCount} clinical depts.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Warning: Could not apply schema patches: {ex.Message}");
+                Console.WriteLine($"CRITICAL: Could not apply schema patches: {ex.Message}");
+                // Log detailed error for the user
+                System.Diagnostics.Debug.WriteLine($"DB Patch Error: {ex.ToString()}");
+                System.Windows.Forms.MessageBox.Show($"Lỗi cập nhật Database: {ex.Message}\n\nChi tiết đã được ghi vào Debug log.", "Database Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             }
         }
 
@@ -115,12 +141,12 @@ namespace HospitalManagement.Infrastructure
             // 1. Departments (6 khoa chính)
             var depts = new List<Departments>
             {
-                new Departments { DepartmentName = "Khoa Nội tổng quát", Description = "Khám lâm sàng nội khoa" },
-                new Departments { DepartmentName = "Khoa Ngoại", Description = "Phẫu thuật và thủ thuật" },
-                new Departments { DepartmentName = "Khoa Nhi", Description = "Chuyên khoa nhi nhi" },
-                new Departments { DepartmentName = "Khoa Sản", Description = "Sản phụ khoa" },
-                new Departments { DepartmentName = "Khoa Chẩn đoán hình ảnh", Description = "Siêu âm, X-Quang, CT" },
-                new Departments { DepartmentName = "Khoa Xét nghiệm", Description = "Xét nghiệm máu, sinh hóa" }
+                new Departments { DepartmentName = "Khoa Nội tổng quát", Description = "Khám lâm sàng nội khoa", DepartmentType = "clinical" },
+                new Departments { DepartmentName = "Khoa Ngoại", Description = "Phẫu thuật và thủ thuật", DepartmentType = "clinical" },
+                new Departments { DepartmentName = "Khoa Nhi", Description = "Chuyên khoa nhi nhi", DepartmentType = "clinical" },
+                new Departments { DepartmentName = "Khoa Sản", Description = "Sản phụ khoa", DepartmentType = "clinical" },
+                new Departments { DepartmentName = "Khoa Chẩn đoán hình ảnh", Description = "Siêu âm, X-Quang, CT", DepartmentType = "service" },
+                new Departments { DepartmentName = "Khoa Xét nghiệm", Description = "Xét nghiệm máu, sinh hóa", DepartmentType = "service" }
             };
             if (!context.Departments.Any())
             {

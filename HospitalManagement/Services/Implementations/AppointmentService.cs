@@ -91,25 +91,71 @@ namespace HospitalManagement.Services.Implementations
 
                 var result = new List<TimeSlotInfo>();
 
-                foreach (var schedule in schedules)
+                // Group by Shift to avoid duplicates when multiple doctors are in the same shift
+                var groupedSchedules = schedules.GroupBy(s => s.ShiftID);
+
+                foreach (var group in groupedSchedules)
                 {
-                    var bookedCount = context.Appointments
-                        .Count(a => a.ScheduleID == schedule.ScheduleID
-                                 && (a.Status == "pending" || a.Status == "confirmed"));
+                    var first = group.First();
+                    var shiftId = group.Key ?? 0;
+
+                    // Tổng số slot của tất cả bác sĩ trong ca này tại khoa này
+                    var totalMax = group.Sum(s => s.AvailableSlots ?? 20);
+                    
+                    // Tổng số đã đặt của tất cả bác sĩ trong ca này
+                    var scheduleIds = group.Select(s => s.ScheduleID).ToList();
+                    var totalBooked = context.Appointments
+                        .Count(a => scheduleIds.Contains(a.ScheduleID ?? 0)
+                                 && (a.Status == "pending" || a.Status == "confirmed" || a.Status == "examining"));
 
                     result.Add(new TimeSlotInfo
                     {
-                        ScheduleId = schedule.ScheduleID,
-                        ShiftId = schedule.ShiftID ?? 0,
-                        StartTime = schedule.Shift?.StartTime ?? TimeSpan.Zero,
-                        EndTime = schedule.Shift?.EndTime ?? TimeSpan.Zero,
-                        MaxPatients = schedule.AvailableSlots ?? 20,
-                        BookedCount = bookedCount,
-                        RoomNumber = schedule.RoomNumber ?? schedule.Doctor?.DefaultRoom
+                        ScheduleId = first.ScheduleID, // Still keep one for ref, but UI should handle intelligently
+                        ShiftId = shiftId,
+                        StartTime = first.Shift?.StartTime ?? TimeSpan.Zero,
+                        EndTime = first.Shift?.EndTime ?? TimeSpan.Zero,
+                        MaxPatients = totalMax,
+                        BookedCount = totalBooked,
+                        RoomNumber = group.Count() > 1 ? "Nhiều phòng" : (first.RoomNumber ?? first.Doctor?.DefaultRoom)
                     });
                 }
 
                 return result.OrderBy(t => t.StartTime).ToList();
+            }
+        }
+
+        public int GetBestScheduleForSlot(int departmentId, DateTime date, int shiftId)
+        {
+            using (var context = new HospitalDbContext())
+            {
+                // Lấy tất cả các bác sĩ (schedules) của khoa trong ca trực đó
+                var schedules = context.DoctorSchedules
+                    .Where(ds => ds.DepartmentID == departmentId 
+                              && ds.ScheduleDate.Date == date.Date 
+                              && ds.ShiftID == shiftId
+                              && ds.IsActive == true)
+                    .ToList();
+
+                if (!schedules.Any()) return -1;
+                if (schedules.Count == 1) return schedules[0].ScheduleID;
+
+                // Tìm bác sĩ có ít lịch hẹn nhất (load balancing)
+                var scheduleIds = schedules.Select(s => s.ScheduleID).ToList();
+                var bookingCounts = context.Appointments
+                    .Where(a => scheduleIds.Contains(a.ScheduleID ?? 0) 
+                             && a.Status != "cancelled")
+                    .GroupBy(a => a.ScheduleID)
+                    .Select(g => new { ScheduleId = g.Key, Count = g.Count() })
+                    .ToList();
+
+                // Gán Count = 0 cho những bác sĩ chưa có lịch nào
+                var finalCounts = schedules.Select(s => new {
+                    s.ScheduleID,
+                    Count = bookingCounts.FirstOrDefault(b => b.ScheduleId == s.ScheduleID)?.Count ?? 0
+                });
+
+                // Chọn bác sĩ ít việc nhất
+                return finalCounts.OrderBy(f => f.Count).First().ScheduleID;
             }
         }
 

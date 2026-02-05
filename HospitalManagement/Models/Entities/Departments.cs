@@ -30,6 +30,8 @@ namespace HospitalManagement.Models.Entities
         public string Location { get; set; }
         [StringLength(15)]
         public string Phone { get; set; }
+        [StringLength(20)]
+        public string DepartmentType { get; set; } // "clinical" or "service"
         public int? HeadDoctorID { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }

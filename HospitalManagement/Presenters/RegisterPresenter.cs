@@ -1,3 +1,4 @@
+using HospitalManagement.Infrastructure.Helpers;
 using HospitalManagement.Services.Interfaces;
 using HospitalManagement.Views.Interfaces;
 
@@ -32,17 +33,11 @@ namespace HospitalManagement.Presenters
 
             if (username.Length < 4)
             {
-                _view.ShowError("Tên đăng nhập phải có ít nhất 4 ký tự!");
+                _view.ShowError("Tên đăng nhập phải có nhất 4 ký tự!");
                 return;
             }
 
-            if (string.IsNullOrEmpty(password))
-            {
-                _view.ShowError("Vui lòng nhập mật khẩu!");
-                return;
-            }
-
-            if (password.Length < 6)
+            if (!ValidationHelper.IsValidPassword(password))
             {
                 _view.ShowError("Mật khẩu phải có ít nhất 6 ký tự!");
                 return;
@@ -54,27 +49,15 @@ namespace HospitalManagement.Presenters
                 return;
             }
 
-            if (string.IsNullOrEmpty(email))
+            if (!ValidationHelper.IsValidEmail(email))
             {
-                _view.ShowError("Vui lòng nhập email!");
+                _view.ShowError("Email không đúng định dạng!");
                 return;
             }
 
-            if (!email.Contains("@") || !email.Contains("."))
+            if (!ValidationHelper.IsValidPhone(phone))
             {
-                _view.ShowError("Email không hợp lệ!");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(phone))
-            {
-                _view.ShowError("Vui lòng nhập số điện thoại!");
-                return;
-            }
-
-            if (phone.Length < 10)
-            {
-                _view.ShowError("Số điện thoại không hợp lệ!");
+                _view.ShowError("Số điện thoại phải bao gồm 10 chữ số!");
                 return;
             }
 

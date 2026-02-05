@@ -1,6 +1,7 @@
 using HospitalManagement.Models.EF;
 using HospitalManagement.Models.Entities;
 using HospitalManagement.Services.Interfaces;
+using HospitalManagement.Infrastructure.Helpers;
 using System;
 using System.Linq;
 
@@ -14,33 +15,22 @@ namespace HospitalManagement.Services.Implementations
             {
                 using (var db = new HospitalDbContext())
                 {
-                    // Debug: Log all users
-                    var allUsers = db.Users.ToList();
-                    System.Diagnostics.Debug.WriteLine($"Total users in DB: {allUsers.Count}");
-                    foreach (var u in allUsers)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"User: {u.Username}, Pass: {u.Password}, Status: {u.Status}");
-                    }
-
                     var user = db.Users.FirstOrDefault(u =>
                         u.Username == username &&
                         u.Status == "active");
 
                     if (user == null)
                     {
-                        System.Diagnostics.Debug.WriteLine($"User not found: {username}");
                         return null;
                     }
 
                     // Simple password check (in production, use hashing)
                     if (user.Password == password)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Login successful for: {username}");
                         return user;
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine($"Password mismatch for: {username}. Expected: {user.Password}, Got: {password}");
                         return null;
                     }
                 }
@@ -56,6 +46,13 @@ namespace HospitalManagement.Services.Implementations
         {
             try
             {
+                // Validation
+                if (string.IsNullOrWhiteSpace(username)) return (false, "Tên đăng nhập không được để trống!");
+                if (!ValidationHelper.IsValidPassword(password)) return (false, "Mật khẩu phải có ít nhất 6 ký tự!");
+                if (!ValidationHelper.IsValidEmail(email)) return (false, "Email không đúng định dạng!");
+                if (!ValidationHelper.IsValidPhone(phone)) return (false, "Số điện thoại phải bao gồm 10 chữ số!");
+                if (string.IsNullOrWhiteSpace(fullName)) return (false, "Họ và tên không được để trống!");
+
                 using (var db = new HospitalDbContext())
                 {
                     // Check if username exists
@@ -80,7 +77,7 @@ namespace HospitalManagement.Services.Implementations
                     var newUser = new Users
                     {
                         Username = username,
-                        Password = password, // In production, hash this!
+                        Password = password,
                         Email = email,
                         Phone = phone,
                         FullName = fullName,

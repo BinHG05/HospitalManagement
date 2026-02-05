@@ -41,7 +41,11 @@ namespace HospitalManagement.Views.UserControls.Admin
                     _presenter.DeleteDoctor(_selectedDoctorId.Value);
             };
             btnClear.Click += (s, e) => ClearInputs();
-            btnAddNew.Click += (s, e) => ClearInputs();
+            btnAddNew.Click += (s, e) => 
+            {
+                ClearInputs();
+                cmbUser.Focus(); // Give visual feedback that we are in add mode
+            };
             btnSearch.Click += (s, e) => _presenter.LoadData(); // Re-load triggers logic if I impl search filter in Presenter
             cmbFilterDepartment.SelectedIndexChanged += (s, e) => _presenter.LoadData();
             
@@ -89,7 +93,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             }
         }
 
-        #region IDoctorManagementView Implementation
+        # region IDoctorManagementView Implementation
 
         public string Specialization => txtSpecialization.Text.Trim();
         public string LicenseNumber => txtLicense.Text.Trim();
@@ -105,6 +109,13 @@ namespace HospitalManagement.Views.UserControls.Admin
             }
         }
         public bool IsActive => chkIsActive.Checked;
+
+        // New Account Information
+        public string NewFullName => txtNewFullName.Text.Trim();
+        public string NewUsername => txtNewUsername.Text.Trim();
+        public string NewPassword => txtNewPassword.Text.Trim();
+        public string NewEmail => txtNewEmail.Text.Trim();
+        public string NewPhone => txtNewPhone.Text.Trim();
 
         public int SelectedUserId 
         {
@@ -242,6 +253,13 @@ namespace HospitalManagement.Views.UserControls.Admin
             txtFee.Clear();
             txtQualifications.Clear();
             
+            // Clear New Account fields
+            txtNewFullName.Clear();
+            txtNewUsername.Clear();
+            txtNewPassword.Clear();
+            txtNewEmail.Clear();
+            txtNewPhone.Clear();
+
             chkIsActive.Checked = true;
 
             SetEditMode(false);
@@ -265,6 +283,8 @@ namespace HospitalManagement.Views.UserControls.Admin
                 cmbUser.Enabled = true;
             }
         }
+
+
 
         #endregion
     }

@@ -184,27 +184,46 @@ namespace HospitalManagement.Views.Forms.Patient
             };
             card.Controls.Add(lblFootnote);
 
-            // 8. Nút bấm
+            // 8. Chấp nhận điều khoản / Xác nhận thông tin
+            var chkConfirm = new CheckBox
+            {
+                Text = "Tôi xác nhận các thông tin cá nhân trên là chính xác",
+                Font = new Font("Segoe UI", 9.5F),
+                ForeColor = Color.FromArgb(71, 85, 105),
+                Location = new Point(30, detailY + 125),
+                Size = new Size(405, 25),
+                Cursor = Cursors.Hand
+            };
+            card.Controls.Add(chkConfirm);
+
+            // 9. Nút bấm
             var btnConfirm = new Button
             {
                 Text = "XÁC NHẬN & THANH TOÁN",
                 Size = new Size(405, 45),
-                Location = new Point(30, 640),
-                BackColor = Color.FromArgb(16, 185, 129),
+                Location = new Point(30, 645),
+                BackColor = Color.FromArgb(203, 213, 225), // Màu xám (Disabled)
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                Enabled = false // Khóa mặc định
             };
             btnConfirm.FlatAppearance.BorderSize = 0;
             btnConfirm.Click += (s, e) => { this.DialogResult = DialogResult.OK; this.Close(); };
             card.Controls.Add(btnConfirm);
 
+            // Sự kiện thay đổi checkbox
+            chkConfirm.CheckedChanged += (s, e) => {
+                btnConfirm.Enabled = chkConfirm.Checked;
+                btnConfirm.BackColor = chkConfirm.Checked ? Color.FromArgb(16, 185, 129) : Color.FromArgb(203, 213, 225);
+            };
+
             var btnEdit = new Button
             {
                 Text = "Thay đổi thông tin cá nhân",
                 Size = new Size(405, 30),
-                Location = new Point(30, 695),
+                Location = new Point(30, 700),
                 BackColor = Color.Transparent,
                 ForeColor = Color.FromArgb(37, 99, 235),
                 FlatStyle = FlatStyle.Flat,
