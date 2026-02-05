@@ -15,6 +15,7 @@ namespace HospitalManagement.Views.Forms.Doctor
         private Button _activeMenuButton;
         private Timer _statusTimer;
         private System.Collections.Generic.HashSet<int> _notifiedSuccessPayments = new System.Collections.Generic.HashSet<int>();
+        private bool _isServiceDoctor = false; // true if doctor is in service department (lab, radiology)
 
         public Users CurrentUser { get; set; }
 
@@ -26,6 +27,7 @@ namespace HospitalManagement.Views.Forms.Doctor
             _presenter = new DashboardPresenter(this);
             
             InitializeUserInfo();
+            ConfigureMenuVisibility(); // Configure menu based on department type
             SetActiveButton(btnHome);
             LoadHomeContent();
             SetDashboardIcon();
@@ -114,6 +116,46 @@ namespace HospitalManagement.Views.Forms.Doctor
         {
             lblUserName.Text = CurrentUser.FullName ?? "User";
             lblHeaderDate.Text = DateTime.Now.ToString("dddd, dd/MM/yyyy", new System.Globalization.CultureInfo("en-US"));
+        }
+
+        private void ConfigureMenuVisibility()
+        {
+            try
+            {
+                using (var context = new Models.EF.HospitalDbContext())
+                {
+                    var doctor = context.Doctors
+                        .Where(d => d.UserID == CurrentUser.UserID)
+                        .Select(d => new { d.DoctorID, d.Department.DepartmentType })
+                        .FirstOrDefault();
+
+                    if (doctor != null)
+                    {
+                        _isServiceDoctor = doctor.DepartmentType == "service";
+                        Console.WriteLine($"DEBUG: DoctorID={doctor.DoctorID}, DeptType='{doctor.DepartmentType}', IsService={_isServiceDoctor}");
+
+                        if (_isServiceDoctor)
+                        {
+                            // Service doctor: hide clinical menus, show service queue
+                            btnQueue.Visible = false;      // Hàng đợi khám
+                            btnExam.Visible = false;       // Khám bệnh
+                            btnPrescription.Visible = false; // Kê đơn thuốc
+                            btnPatients.Visible = false;   // Hồ sơ bệnh nhân
+                            btnServiceQueue.Visible = true; // Hàng đợi dịch vụ
+                        }
+                        else
+                        {
+                            // Clinical doctor: show clinical menus, hide service queue
+                            btnQueue.Visible = true;
+                            btnExam.Visible = true;
+                            btnPrescription.Visible = true;
+                            btnPatients.Visible = true;
+                            btnServiceQueue.Visible = false; // Service queue not for clinical doctors
+                        }
+                    }
+                }
+            }
+            catch { /* Silently fail, show all menus by default */ }
         }
 
         #region IDashboardView Implementation
@@ -354,16 +396,33 @@ namespace HospitalManagement.Views.Forms.Doctor
 
         private void CreateQuickActionCards()
         {
-            string[] icons = { "👥", "🩺", "📆", "📁" };
-            string[] titles = { "Hàng đợi", "Khám bệnh", "Lịch làm việc", "Hồ sơ BN" };
-            Color[] colors = { 
-                Color.FromArgb(0, 102, 204), 
-                Color.FromArgb(0, 168, 107), 
-                Color.FromArgb(241, 196, 15), 
-                Color.FromArgb(231, 76, 60) 
-            };
+            string[] icons;
+            string[] titles;
+            Color[] colors;
 
-            for (int i = 0; i < 4; i++)
+            if (_isServiceDoctor)
+            {
+                icons = new[] { "📊", "📆", "📁" };
+                titles = new[] { "Hàng đợi dịch vụ", "Lịch làm việc", "Hồ sơ bệnh nhân" };
+                colors = new[] { 
+                    Color.FromArgb(155, 89, 182), // Purple for service
+                    Color.FromArgb(241, 196, 15), 
+                    Color.FromArgb(231, 76, 60) 
+                };
+            }
+            else
+            {
+                icons = new[] { "👥", "🩺", "📆", "📁" };
+                titles = new[] { "Hàng đợi khám", "Khám bệnh", "Lịch làm việc", "Hồ sơ bệnh nhân" };
+                colors = new[] { 
+                    Color.FromArgb(0, 102, 204), 
+                    Color.FromArgb(0, 168, 107), 
+                    Color.FromArgb(241, 196, 15), 
+                    Color.FromArgb(231, 76, 60) 
+                };
+            }
+
+            for (int i = 0; i < titles.Length; i++)
             {
                 var card = CreateQuickActionCard(icons[i], titles[i], colors[i]);
                 card.Location = new Point(10 + (i * 220), 150);
@@ -405,6 +464,23 @@ namespace HospitalManagement.Views.Forms.Doctor
             };
 
             card.Controls.AddRange(new Control[] { iconLabel, titleLabel, accentBar });
+
+            // Click events for navigation
+            Action<object, EventArgs> clickHandler = (s, e) => {
+                // Determine which button to highlight
+                if (title == "Hàng đợi khám") SetActiveButton(btnQueue);
+                else if (title == "Khám bệnh") SetActiveButton(btnExam);
+                else if (title == "Lịch làm việc") SetActiveButton(btnSchedule);
+                else if (title == "Hồ sơ bệnh nhân") SetActiveButton(btnPatients);
+                else if (title == "Hàng đợi dịch vụ") SetActiveButton(btnServiceQueue);
+                
+                // Navigate
+                _presenter.NavigateTo(title);
+            };
+
+            card.Click += new EventHandler(clickHandler);
+            iconLabel.Click += new EventHandler(clickHandler);
+            titleLabel.Click += new EventHandler(clickHandler);
 
             card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 249, 250);
             card.MouseLeave += (s, e) => card.BackColor = Color.White;

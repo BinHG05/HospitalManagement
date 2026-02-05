@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <P>..\packages</P>
+        <Lib>lib\netstandard2.0</Lib>
+        <Lib45>lib\net45</Lib45>
+        <Lib46>lib\net46</Lib46>
+        <Lib461>lib\net461</Lib461>
+
+        <EF_Core_P>$(P)\Microsoft.EntityFrameworkCore.3.1.32\$(Lib)</EF_Core_P>
+        <EF_Abs_P>$(P)\Microsoft.EntityFrameworkCore.Abstractions.3.1.32\$(Lib)</EF_Abs_P>
+        <EF_Rel_P>$(P)\Microsoft.EntityFrameworkCore.Relational.3.1.32\$(Lib)</EF_Rel_P>
+        <EF_Sql_P>$(P)\Microsoft.EntityFrameworkCore.SqlServer.3.1.32\$(Lib)</EF_Sql_P>
+        <EF_Des_P>$(P)\Microsoft.EntityFrameworkCore.Design.3.1.32\$(Lib)</EF_Des_P>
+
+        <Ex_C_A_P>$(P)\Microsoft.Extensions.Caching.Abstractions.3.1.32\$(Lib)</Ex_C_A_P>
+        <Ex_C_M_P>$(P)\Microsoft.Extensions.Caching.Memory.3.1.32\$(Lib)</Ex_C_M_P>
+        <Ex_Cfg_P>$(P)\Microsoft.Extensions.Configuration.3.1.32\$(Lib)</Ex_Cfg_P>
+        <Ex_CfgA_P>$(P)\Microsoft.Extensions.Configuration.Abstractions.3.1.32\$(Lib)</Ex_CfgA_P>
+        <Ex_CfgB_P>$(P)\Microsoft.Extensions.Configuration.Binder.3.1.32\$(Lib)</Ex_CfgB_P>
+        <Ex_DI_P>$(P)\Microsoft.Extensions.DependencyInjection.3.1.32\lib\net461</Ex_DI_P>
+        <Ex_DIA_P>$(P)\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.32\$(Lib)</Ex_DIA_P>
+        <Ex_Log_P>$(P)\Microsoft.Extensions.Logging.3.1.32\$(Lib)</Ex_Log_P>
+        <Ex_LogA_P>$(P)\Microsoft.Extensions.Logging.Abstractions.3.1.32\$(Lib)</Ex_LogA_P>
+        <Ex_Opt_P>$(P)\Microsoft.Extensions.Options.3.1.32\$(Lib)</Ex_Opt_P>
+        <Ex_Pri_P>$(P)\Microsoft.Extensions.Primitives.3.1.32\$(Lib)</Ex_Pri_P>
+
+        <Id_Cli_P>$(P)\Microsoft.Identity.Client.3.0.8\lib\net45</Id_Cli_P>
+        <Id_Jwt_P>$(P)\Microsoft.IdentityModel.JsonWebTokens.5.5.0\lib\net461</Id_Jwt_P>
+        <Id_Log_P>$(P)\Microsoft.IdentityModel.Logging.5.5.0\lib\net461</Id_Log_P>
+        <Id_Tok_P>$(P)\Microsoft.IdentityModel.Tokens.5.5.0\lib\net461</Id_Tok_P>
+        <Id_PrO_P>$(P)\Microsoft.IdentityModel.Protocols.OpenIdConnect.5.5.0\lib\net461</Id_PrO_P>
+        <Id_Prt_P>$(P)\Microsoft.IdentityModel.Protocols.5.5.0\lib\net461</Id_Prt_P>
+
+        <Sys_Buf_P>$(P)\System.Buffers.4.5.1\lib\net461</Sys_Buf_P>
+        <Sys_Imm_P>$(P)\System.Collections.Immutable.1.7.1\lib\net461</Sys_Imm_P>
+        <Sys_Ann_P>$(P)\System.ComponentModel.Annotations.4.7.0\lib\net461</Sys_Ann_P>
+        <Sys_Mem_P>$(P)\System.Memory.4.5.4\lib\net461</Sys_Mem_P>
+        <Sys_Unsafe_P>$(P)\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461</Sys_Unsafe_P>
+        <Sys_Tasks_P>$(P)\System.Threading.Tasks.Extensions.4.5.4\lib\net461</Sys_Tasks_P>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="EntityFramework">
+            <HintPath>$(P)\EntityFramework.6.1.0\$(Lib45)\EntityFramework.dll</HintPath>
+        </Reference>
+        <Reference Include="EntityFramework.SqlServer">
+            <HintPath>$(P)\EntityFramework.6.1.0\$(Lib45)\EntityFramework.SqlServer.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AspNet.Identity.Core">
+            <HintPath>
+                $(P)\Microsoft.AspNet.Identity.Core.2.2.4\$(Lib45)\Microsoft.AspNet.Identity.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+            <HintPath>
+                $(P)\Microsoft.AspNet.Identity.EntityFramework.2.2.4\$(Lib45)\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Bcl.AsyncInterfaces">
+            <HintPath>
+                $(P)\Microsoft.Bcl.AsyncInterfaces.1.1.1\$(Lib461)\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Bcl.HashCode">
+            <HintPath>$(P)\Microsoft.Bcl.HashCode.1.1.1\$(Lib461)\Microsoft.Bcl.HashCode.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Data.SqlClient">
+            <HintPath>$(P)\Microsoft.Data.SqlClient.1.1.3\$(Lib46)\Microsoft.Data.SqlClient.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.EntityFrameworkCore">
+            <HintPath>$(EF_Core_P)\Microsoft.EntityFrameworkCore.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.EntityFrameworkCore.Abstractions">
+            <HintPath>$(EF_Abs_P)\Microsoft.EntityFrameworkCore.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.EntityFrameworkCore.Design">
+            <HintPath>$(EF_Des_P)\Microsoft.EntityFrameworkCore.Design.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.EntityFrameworkCore.Relational">
+            <HintPath>$(EF_Rel_P)\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.EntityFrameworkCore.SqlServer">
+            <HintPath>$(EF_Sql_P)\Microsoft.EntityFrameworkCore.SqlServer.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Caching.Abstractions">
+            <HintPath>$(Ex_C_A_P)\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Caching.Memory">
+            <HintPath>$(Ex_C_M_P)\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Configuration">
+            <HintPath>$(Ex_Cfg_P)\Microsoft.Extensions.Configuration.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+            <HintPath>$(Ex_CfgA_P)\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Configuration.Binder">
+            <HintPath>$(Ex_CfgB_P)\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.DependencyInjection">
+            <HintPath>$(Ex_DI_P)\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+            <HintPath>$(Ex_DIA_P)\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Logging">
+            <HintPath>$(Ex_Log_P)\Microsoft.Extensions.Logging.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+            <HintPath>$(Ex_LogA_P)\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Options">
+            <HintPath>$(Ex_Opt_P)\Microsoft.Extensions.Options.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Primitives">
+            <HintPath>$(Ex_Pri_P)\Microsoft.Extensions.Primitives.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.Identity.Client">
+            <HintPath>$(Id_Cli_P)\Microsoft.Identity.Client.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.IdentityModel.JsonWebTokens">
+            <HintPath>$(Id_Jwt_P)\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.IdentityModel.Logging">
+            <HintPath>$(Id_Log_P)\Microsoft.IdentityModel.Logging.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.IdentityModel.Protocols">
+            <HintPath>$(Id_Prt_P)\Microsoft.IdentityModel.Protocols.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect">
+            <HintPath>$(Id_PrO_P)\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.IdentityModel.Tokens">
+            <HintPath>$(Id_Tok_P)\Microsoft.IdentityModel.Tokens.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>$(P)\Newtonsoft.Json.10.0.1\$(Lib45)\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Buffers">
+            <HintPath>$(Sys_Buf_P)\System.Buffers.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Collections.Immutable">
+            <HintPath>$(Sys_Imm_P)\System.Collections.Immutable.dll</HintPath>
+        </Reference>
+        <Reference Include="System.ComponentModel.Annotations">
+            <HintPath>$(Sys_Ann_P)\System.ComponentModel.Annotations.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Data.Common">
+            <HintPath>$(P)\System.Data.Common.4.3.0\lib\net451\System.Data.Common.dll</HintPath>
+            <Private>True</Private>
+        </Reference>
+        <Reference Include="System.Diagnostics.DiagnosticSource">
+            <HintPath>
+                $(P)\System.Diagnostics.DiagnosticSource.4.7.1\$(Lib46)\System.Diagnostics.DiagnosticSource.dll</HintPath>
+        </Reference>
+        <Reference Include="System.IdentityModel.Tokens.Jwt">
+            <HintPath>
+                $(P)\System.IdentityModel.Tokens.Jwt.5.5.0\$(Lib461)\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Memory">
+            <HintPath>$(Sys_Mem_P)\System.Memory.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Numerics.Vectors">
+            <HintPath>$(P)\System.Numerics.Vectors.4.5.0\$(Lib46)\System.Numerics.Vectors.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.CompilerServices.Unsafe">
+            <HintPath>$(Sys_Unsafe_P)\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Threading.Tasks.Extensions">
+            <HintPath>$(Sys_Tasks_P)\System.Threading.Tasks.Extensions.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+</Project>

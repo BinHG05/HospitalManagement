@@ -13,6 +13,13 @@ namespace HospitalManagement.Views.Interfaces.Admin
         string Qualifications { get; }
         decimal ConsultationFee { get; }
         bool IsActive { get; }
+
+        // New Account Information (Optional)
+        string NewFullName { get; }
+        string NewUsername { get; }
+        string NewPassword { get; }
+        string NewEmail { get; }
+        string NewPhone { get; }
         
         // Selections
         int SelectedUserId { get; } // ID of the User account linked to this doctor

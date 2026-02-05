@@ -28,6 +28,17 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpInfo = new System.Windows.Forms.GroupBox();
             this.lblUser = new System.Windows.Forms.Label();
             this.cmbUser = new System.Windows.Forms.ComboBox();
+            this.lblNewAccount = new System.Windows.Forms.Label();
+            this.lblNewFullName = new System.Windows.Forms.Label();
+            this.txtNewFullName = new System.Windows.Forms.TextBox();
+            this.lblNewUsername = new System.Windows.Forms.Label();
+            this.txtNewUsername = new System.Windows.Forms.TextBox();
+            this.lblNewPassword = new System.Windows.Forms.Label();
+            this.txtNewPassword = new System.Windows.Forms.TextBox();
+            this.lblNewEmail = new System.Windows.Forms.Label();
+            this.txtNewEmail = new System.Windows.Forms.TextBox();
+            this.lblNewPhone = new System.Windows.Forms.Label();
+            this.txtNewPhone = new System.Windows.Forms.TextBox();
             this.lblDept = new System.Windows.Forms.Label();
             this.cmbDepartment = new System.Windows.Forms.ComboBox();
             this.lblSpec = new System.Windows.Forms.Label();
@@ -85,12 +96,10 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpSearch.Location = new System.Drawing.Point(25, 60);
             this.grpSearch.Name = "grpSearch";
             this.grpSearch.Size = new System.Drawing.Size(550, 80);
+            this.grpSearch.TabIndex = 0;
+            this.grpSearch.TabStop = false;
             this.grpSearch.Text = "Tìm kiếm & Lọc";
 
-            // 
-            // txtSearch
-            // 
-            this.btnSearch.ForeColor = System.Drawing.Color.White;
             // 
             // lblFilterDept
             // 
@@ -99,6 +108,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.lblFilterDept.Name = "lblFilterDept";
             this.lblFilterDept.Size = new System.Drawing.Size(43, 19);
             this.lblFilterDept.Text = "Khoa:";
+
             // 
             // cmbFilterDepartment
             // 
@@ -107,12 +117,14 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.cmbFilterDepartment.Location = new System.Drawing.Point(65, 28);
             this.cmbFilterDepartment.Name = "cmbFilterDepartment";
             this.cmbFilterDepartment.Size = new System.Drawing.Size(180, 25);
+
             // 
             // txtSearch
             // 
             this.txtSearch.Location = new System.Drawing.Point(260, 28);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(180, 25);
+
             // 
             // btnSearch
             // 
@@ -124,13 +136,12 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.btnSearch.ForeColor = System.Drawing.Color.White;
 
             // 
-            // 
             // dgvDoctors
             // 
             this.dgvDoctors.ColumnHeadersHeight = 30;
             this.dgvDoctors.Location = new System.Drawing.Point(25, 150);
             this.dgvDoctors.Name = "dgvDoctors";
-            this.dgvDoctors.Size = new System.Drawing.Size(600, 500);
+            this.dgvDoctors.Size = new System.Drawing.Size(600, 520);
             this.dgvDoctors.ReadOnly = true;
             this.dgvDoctors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvDoctors.MultiSelect = false;
@@ -144,6 +155,17 @@ namespace HospitalManagement.Views.UserControls.Admin
             // 
             this.grpInfo.Controls.Add(this.lblUser);
             this.grpInfo.Controls.Add(this.cmbUser);
+            this.grpInfo.Controls.Add(this.lblNewAccount);
+            this.grpInfo.Controls.Add(this.lblNewFullName);
+            this.grpInfo.Controls.Add(this.txtNewFullName);
+            this.grpInfo.Controls.Add(this.lblNewUsername);
+            this.grpInfo.Controls.Add(this.txtNewUsername);
+            this.grpInfo.Controls.Add(this.lblNewPassword);
+            this.grpInfo.Controls.Add(this.txtNewPassword);
+            this.grpInfo.Controls.Add(this.lblNewEmail);
+            this.grpInfo.Controls.Add(this.txtNewEmail);
+            this.grpInfo.Controls.Add(this.lblNewPhone);
+            this.grpInfo.Controls.Add(this.txtNewPhone);
             this.grpInfo.Controls.Add(this.lblDept);
             this.grpInfo.Controls.Add(this.cmbDepartment);
             this.grpInfo.Controls.Add(this.lblSpec);
@@ -163,29 +185,82 @@ namespace HospitalManagement.Views.UserControls.Admin
             this.grpInfo.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.grpInfo.Location = new System.Drawing.Point(640, 60);
             this.grpInfo.Name = "grpInfo";
-            this.grpInfo.Size = new System.Drawing.Size(380, 590);
+            this.grpInfo.Size = new System.Drawing.Size(380, 610);
+            this.grpInfo.TabStop = false;
             this.grpInfo.Text = "Thông tin chi tiết";
             this.grpInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 
             // Layout helper vars
-            int left = 20;
-            int right = 150;
+            int left = 15;
+            int right = 140;
             int w = 220;
-            int y = 30;
-            int gap = 45;
+            int y = 25;
+            int gap = 38;
 
-            // User (Account)
-            this.lblUser.Text = "Tài khoản (User):";
+            // User Selection
+            this.lblUser.Text = "Tài khoản liên kết:";
             this.lblUser.Location = new System.Drawing.Point(left, y);
+            this.lblUser.AutoSize = true;
             this.cmbUser.Location = new System.Drawing.Point(right, y);
             this.cmbUser.Size = new System.Drawing.Size(w, 25);
             this.cmbUser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             y += gap;
 
+            // New Account Section Divider
+            this.lblNewAccount.Text = "--- Tạo tài khoản mới (nếu chưa có) ---";
+            this.lblNewAccount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
+            this.lblNewAccount.Location = new System.Drawing.Point(left, y);
+            this.lblNewAccount.Size = new System.Drawing.Size(350, 20);
+            this.lblNewAccount.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.lblNewAccount.ForeColor = System.Drawing.Color.DarkBlue;
+            y += 22;
+
+            // New Full Name
+            this.lblNewFullName.Text = "Họ và tên:";
+            this.lblNewFullName.Location = new System.Drawing.Point(left, y);
+            this.lblNewFullName.AutoSize = true;
+            this.txtNewFullName.Location = new System.Drawing.Point(right, y);
+            this.txtNewFullName.Size = new System.Drawing.Size(w, 25);
+            y += gap;
+
+            // New Username
+            this.lblNewUsername.Text = "Tên đăng nhập:";
+            this.lblNewUsername.Location = new System.Drawing.Point(left, y);
+            this.lblNewUsername.AutoSize = true;
+            this.txtNewUsername.Location = new System.Drawing.Point(right, y);
+            this.txtNewUsername.Size = new System.Drawing.Size(w, 25);
+            y += gap;
+
+            // New Password
+            this.lblNewPassword.Text = "Mật khẩu:";
+            this.lblNewPassword.Location = new System.Drawing.Point(left, y);
+            this.lblNewPassword.AutoSize = true;
+            this.txtNewPassword.Location = new System.Drawing.Point(right, y);
+            this.txtNewPassword.Size = new System.Drawing.Size(w, 25);
+            this.txtNewPassword.UseSystemPasswordChar = true;
+            y += gap;
+
+            // New Email
+            this.lblNewEmail.Text = "Email:";
+            this.lblNewEmail.Location = new System.Drawing.Point(left, y);
+            this.lblNewEmail.AutoSize = true;
+            this.txtNewEmail.Location = new System.Drawing.Point(right, y);
+            this.txtNewEmail.Size = new System.Drawing.Size(w, 25);
+            y += gap;
+
+            // New Phone
+            this.lblNewPhone.Text = "Số điện thoại:";
+            this.lblNewPhone.Location = new System.Drawing.Point(left, y);
+            this.lblNewPhone.AutoSize = true;
+            this.txtNewPhone.Location = new System.Drawing.Point(right, y);
+            this.txtNewPhone.Size = new System.Drawing.Size(w, 25);
+            y += gap;
+
             // Department
             this.lblDept.Text = "Phòng ban:";
             this.lblDept.Location = new System.Drawing.Point(left, y);
+            this.lblDept.AutoSize = true;
             this.cmbDepartment.Location = new System.Drawing.Point(right, y);
             this.cmbDepartment.Size = new System.Drawing.Size(w, 25);
             this.cmbDepartment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -194,6 +269,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             // Specialization
             this.lblSpec.Text = "Chuyên khoa:";
             this.lblSpec.Location = new System.Drawing.Point(left, y);
+            this.lblSpec.AutoSize = true;
             this.txtSpecialization.Location = new System.Drawing.Point(right, y);
             this.txtSpecialization.Size = new System.Drawing.Size(w, 25);
             y += gap;
@@ -201,13 +277,15 @@ namespace HospitalManagement.Views.UserControls.Admin
             // License
             this.lblLicense.Text = "Số chứng chỉ:";
             this.lblLicense.Location = new System.Drawing.Point(left, y);
+            this.lblLicense.AutoSize = true;
             this.txtLicense.Location = new System.Drawing.Point(right, y);
             this.txtLicense.Size = new System.Drawing.Size(w, 25);
             y += gap;
 
             // Experience
-            this.lblExp.Text = "Kinh nghiệm (năm):";
+            this.lblExp.Text = "Kinh nghiệm:";
             this.lblExp.Location = new System.Drawing.Point(left, y);
+            this.lblExp.AutoSize = true;
             this.numExp.Location = new System.Drawing.Point(right, y);
             this.numExp.Size = new System.Drawing.Size(w, 25);
             y += gap;
@@ -215,6 +293,7 @@ namespace HospitalManagement.Views.UserControls.Admin
             // Fee
             this.lblFee.Text = "Phí khám (VND):";
             this.lblFee.Location = new System.Drawing.Point(left, y);
+            this.lblFee.AutoSize = true;
             this.txtFee.Location = new System.Drawing.Point(right, y);
             this.txtFee.Size = new System.Drawing.Size(w, 25);
             y += gap;
@@ -222,42 +301,38 @@ namespace HospitalManagement.Views.UserControls.Admin
             // Qualifications
             this.lblQual.Text = "Bằng cấp/Mô tả:";
             this.lblQual.Location = new System.Drawing.Point(left, y);
-            this.txtQualifications.Location = new System.Drawing.Point(left, y + 25);
-            this.txtQualifications.Size = new System.Drawing.Size(350, 80);
+            this.lblQual.AutoSize = true;
+            this.txtQualifications.Location = new System.Drawing.Point(right, y);
+            this.txtQualifications.Size = new System.Drawing.Size(w, 50);
             this.txtQualifications.Multiline = true;
-            y += 115; // larger gap
+            y += gap + 15;
 
             // Active
             this.chkIsActive.Text = "Đang hoạt động";
             this.chkIsActive.Location = new System.Drawing.Point(left, y);
             this.chkIsActive.Checked = true;
-            y += gap;
+            y += 35;
 
             // Buttons
             this.btnSave.Text = "Thêm mới";
             this.btnSave.Location = new System.Drawing.Point(left, y);
-            this.btnSave.Size = new System.Drawing.Size(110, 35);
+            this.btnSave.Size = new System.Drawing.Size(100, 35);
             this.btnSave.BackColor = System.Drawing.Color.FromArgb(0, 168, 107);
             this.btnSave.ForeColor = System.Drawing.Color.White;
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 
-            this.btnDelete.Text = "Xóa/Vô hiệu";
-            this.btnDelete.Location = new System.Drawing.Point(left + 120, y);
-            this.btnDelete.Size = new System.Drawing.Size(110, 35);
+            this.btnDelete.Text = "Vô hiệu";
+            this.btnDelete.Location = new System.Drawing.Point(left + 110, y);
+            this.btnDelete.Size = new System.Drawing.Size(100, 35);
             this.btnDelete.BackColor = System.Drawing.Color.Gray;
             this.btnDelete.ForeColor = System.Drawing.Color.White;
+            this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDelete.Enabled = false;
 
             this.btnClear.Text = "Làm mới";
-            this.btnClear.Location = new System.Drawing.Point(left + 240, y);
+            this.btnClear.Location = new System.Drawing.Point(left + 220, y);
             this.btnClear.Size = new System.Drawing.Size(100, 35);
-
-            // Add all to GroupBox
-            this.grpInfo.Controls.Add(this.lblTitle); // wait, title shouldn't be in grpInfo
-            // Add labels
-            this.grpInfo.Controls.AddRange(new System.Windows.Forms.Control[] { 
-                this.lblUser, this.lblDept, this.lblSpec, this.lblLicense, 
-                this.lblExp, this.lblFee, this.lblQual
-            });
+            this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 
             // 
             // UC_DoctorManagement
@@ -282,6 +357,7 @@ namespace HospitalManagement.Views.UserControls.Admin
         }
 
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Button btnAddNew;
         private System.Windows.Forms.GroupBox grpSearch;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Button btnSearch;
@@ -292,6 +368,18 @@ namespace HospitalManagement.Views.UserControls.Admin
         
         private System.Windows.Forms.Label lblUser;
         private System.Windows.Forms.ComboBox cmbUser;
+        private System.Windows.Forms.Label lblNewAccount;
+        private System.Windows.Forms.Label lblNewFullName;
+        private System.Windows.Forms.TextBox txtNewFullName;
+        private System.Windows.Forms.Label lblNewUsername;
+        private System.Windows.Forms.TextBox txtNewUsername;
+        private System.Windows.Forms.Label lblNewPassword;
+        private System.Windows.Forms.TextBox txtNewPassword;
+        private System.Windows.Forms.Label lblNewEmail;
+        private System.Windows.Forms.TextBox txtNewEmail;
+        private System.Windows.Forms.Label lblNewPhone;
+        private System.Windows.Forms.TextBox txtNewPhone;
+
         private System.Windows.Forms.Label lblDept;
         private System.Windows.Forms.ComboBox cmbDepartment;
         private System.Windows.Forms.Label lblSpec;
@@ -309,6 +397,5 @@ namespace HospitalManagement.Views.UserControls.Admin
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnAddNew;
     }
 }

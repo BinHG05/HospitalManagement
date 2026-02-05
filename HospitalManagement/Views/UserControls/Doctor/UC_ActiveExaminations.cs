@@ -57,7 +57,7 @@ namespace HospitalManagement.Views.UserControls.Doctor
 
                 foreach (ActiveExamInfo exam in activeExams)
                 {
-                    dgvExaminations.Rows.Add(
+                    int rowIndex = dgvExaminations.Rows.Add(
                         index++,
                         exam.PatientName,
                         exam.Age,
@@ -69,7 +69,11 @@ namespace HospitalManagement.Views.UserControls.Doctor
                     );
                     
                     // Store appointment ID in tag
-                    dgvExaminations.Rows[dgvExaminations.Rows.Count - 1].Tag = exam.AppointmentId;
+                    dgvExaminations.Rows[rowIndex].Tag = exam.AppointmentId;
+                    
+                    // Color code by status
+                    Color rowColor = GetStatusColor(exam.Status);
+                    dgvExaminations.Rows[rowIndex].DefaultCellStyle.BackColor = rowColor;
                 }
 
                 if (dgvExaminations.Rows.Count == 0)
@@ -102,6 +106,21 @@ namespace HospitalManagement.Views.UserControls.Doctor
         {
              if (string.IsNullOrEmpty(status)) return "-";
              return status;
+        }
+
+        private Color GetStatusColor(string status)
+        {
+            switch (status)
+            {
+                case "examining":
+                    return Color.FromArgb(254, 249, 195); // Yellow light - đang khám
+                case "service_pending":
+                    return Color.FromArgb(255, 237, 213); // Orange light - chờ dịch vụ
+                case "service_completed":
+                    return Color.FromArgb(220, 252, 231); // Green light - đã có kết quả
+                default:
+                    return Color.White;
+            }
         }
 
         private void BtnRefresh_Click(object sender, EventArgs e)

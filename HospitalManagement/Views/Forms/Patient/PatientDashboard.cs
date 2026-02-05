@@ -465,6 +465,17 @@ namespace HospitalManagement.Views.Forms.Patient
 
             card.Controls.AddRange(new Control[] { accentBar, iconLabel, titleLabel, descLabel });
 
+            // Click event for navigation
+            Action<object, EventArgs> clickHandler = (s, e) => {
+                SwitchToSection(title);
+            };
+
+            card.Click += new EventHandler(clickHandler);
+            foreach (Control ctrl in card.Controls)
+            {
+                ctrl.Click += new EventHandler(clickHandler);
+            }
+
             // Hover effects
             card.MouseEnter += (s, e) => {
                 card.BackColor = Color.FromArgb(248, 250, 252);

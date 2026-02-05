@@ -21,7 +21,7 @@ namespace HospitalManagement
 
             // Initialize database connection
             // NOTE: Set to true ONLY when you need to reset database completely
-            HospitalManagement.Infrastructure.DatabaseInitializer.Initialize(false);
+            //HospitalManagement.Infrastructure.DatabaseInitializer.Initialize(false);
 
             // Login loop
             while (true)

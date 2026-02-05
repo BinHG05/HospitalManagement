@@ -229,6 +229,11 @@ namespace HospitalManagement.Views.UserControls.Patient
             panelQueueSelection.Visible = false;
         }
 
+        public void SetSelectedSchedule(int scheduleId)
+        {
+            _selectedScheduleId = scheduleId;
+        }
+
         #endregion
 
         #region Weekly Calendar
@@ -633,7 +638,7 @@ namespace HospitalManagement.Views.UserControls.Patient
             _currentRangeStart = startRange;
             _currentRangeEnd = endRange;
             
-            _presenter.LoadQueueNumbers(_selectedScheduleId, _selectedDate, 60); // Load up to max context
+            _presenter.LoadQueueNumbers(_selectedDepartmentId, _selectedDate, slotInfo.ShiftId, 60); 
             
             // Still disable confirm
             btnConfirmBooking.Enabled = false;

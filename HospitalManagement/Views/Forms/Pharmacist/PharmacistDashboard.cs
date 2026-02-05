@@ -132,7 +132,7 @@ namespace HospitalManagement.Views.Forms.Pharmacist
         private void CreateQuickActionCards()
         {
             string[] icons = { "💊", "📦", "📊" };
-            string[] titles = { "Cấp phát", "Kho thuốc", "Báo cáo" };
+            string[] titles = { "Cấp phát thuốc", "Kho thuốc", "Báo cáo" };
             Color[] colors = { 
                 Color.FromArgb(14, 165, 233), // Sky
                 Color.FromArgb(16, 185, 129), // Emerald
@@ -181,6 +181,21 @@ namespace HospitalManagement.Views.Forms.Pharmacist
             };
 
             card.Controls.AddRange(new Control[] { iconLabel, titleLabel, accentBar });
+
+            // Click events for navigation
+            Action<object, EventArgs> clickHandler = (s, e) => {
+                // Determine which button to highlight
+                if (title == "Cấp phát thuốc") SetActiveButton(btnSales);
+                
+                // Navigate
+                _presenter.NavigateTo(title);
+            };
+
+            card.Click += new EventHandler(clickHandler);
+            foreach (Control ctrl in card.Controls)
+            {
+                ctrl.Click += new EventHandler(clickHandler);
+            }
 
             card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 250, 252);
             card.MouseLeave += (s, e) => card.BackColor = Color.White;

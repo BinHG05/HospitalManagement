@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using HospitalManagement.Models.EF;
+using HospitalManagement.Infrastructure.Helpers;
 
 namespace HospitalManagement.Presenters.Admin
 {
@@ -114,43 +115,80 @@ namespace HospitalManagement.Presenters.Admin
                 var specialization = _view.Specialization;
                 var license = _view.LicenseNumber;
                 
-                // Validation
-                if (userId <= 0) { _view.ShowError("Vui lòng chọn tài khoản liên kết (User)."); return; }
+                // Validation for Doctor info
                 if (deptId <= 0) { _view.ShowError("Vui lòng chọn phòng ban."); return; }
                 if (string.IsNullOrWhiteSpace(specialization)) { _view.ShowError("Vui lòng nhập chuyên khoa."); return; }
                 if (string.IsNullOrWhiteSpace(license)) { _view.ShowError("Vui lòng nhập số chứng chỉ hành nghề."); return; }
 
                 using (var context = new HospitalDbContext())
                 {
-                    if (_view.SelectedDoctorId.HasValue)
+                    // Case: Create New Doctor + (Optionally) New User
+                    if (!_view.SelectedDoctorId.HasValue)
                     {
-                        // Update
-                        var doctor = context.Doctors.Find(_view.SelectedDoctorId.Value);
-                        if (doctor != null)
+                        // 1. Handle User Account
+                        if (userId <= 0)
                         {
-                            doctor.UserID = userId;
-                            doctor.DepartmentID = deptId;
-                            doctor.Specialization = specialization;
-                            doctor.LicenseNumber = license;
-                            doctor.YearsOfExperience = _view.YearsOfExperience;
-                            doctor.Qualifications = _view.Qualifications;
-                            doctor.ConsultationFee = _view.ConsultationFee;
-                            doctor.IsActive = _view.IsActive;
+                            // Try to create new user
+                            var newName = _view.NewFullName;
+                            var newUsername = _view.NewUsername;
+                            var newPassword = _view.NewPassword;
+                            var newEmail = _view.NewEmail;
+                            var newPhone = _view.NewPhone;
 
-                            context.SaveChanges();
-                            _view.ShowMessage("Cập nhật thông tin bác sĩ thành công!");
+                            if (string.IsNullOrWhiteSpace(newName)) { _view.ShowError("Vui lòng nhập họ và tên bác sĩ."); return; }
+                            if (string.IsNullOrWhiteSpace(newUsername)) { _view.ShowError("Vui lòng nhập tên đăng nhập."); return; }
+                            
+                            // Validation
+                            if (!ValidationHelper.IsValidPassword(newPassword))
+                            {
+                                _view.ShowError("Mật khẩu phải có ít nhất 6 ký tự.");
+                                return;
+                            }
+                            if (!string.IsNullOrWhiteSpace(newEmail) && !ValidationHelper.IsValidEmail(newEmail))
+                            {
+                                _view.ShowError("Email không đúng định dạng.");
+                                return;
+                            }
+                            if (!string.IsNullOrWhiteSpace(newPhone) && !ValidationHelper.IsValidPhone(newPhone))
+                            {
+                                _view.ShowError("Số điện thoại phải bao gồm 10 chữ số.");
+                                return;
+                            }
+
+                            if (context.Users.Any(u => u.Username == newUsername))
+                            {
+                                _view.ShowError("Tên đăng nhập đã tồn tại.");
+                                return;
+                            }
+
+                            // Create the user
+                            var newUser = new Users
+                            {
+                                Username = newUsername,
+                                Password = newPassword,
+                                FullName = newName,
+                                Role = "doctor",
+                                Email = string.IsNullOrWhiteSpace(newEmail) ? newUsername + "@hospital.com" : newEmail,
+                                Phone = string.IsNullOrWhiteSpace(newPhone) ? "0000000000" : newPhone,
+                                Status = "active",
+                                CreatedAt = DateTime.Now
+                            };
+
+                            context.Users.Add(newUser);
+                            context.SaveChanges(); // Need ID for Doctor
+                            userId = newUser.UserID;
                         }
-                    }
-                    else
-                    {
-                        // Check if user is already a doctor
-                        if (context.Doctors.Any(d => d.UserID == userId))
+                        else
                         {
-                            _view.ShowError("Tài khoản này đã được liên kết với một hồ sơ bác sĩ khác.");
-                            return;
+                            // Check if existing user is already a doctor
+                            if (context.Doctors.Any(d => d.UserID == userId))
+                            {
+                                _view.ShowError("Tài khoản này đã được liên kết với một hồ sơ bác sĩ khác.");
+                                return;
+                            }
                         }
 
-                        // Add New
+                        // 2. Create Doctor
                         var doctor = new Doctors
                         {
                             UserID = userId,
@@ -168,14 +206,41 @@ namespace HospitalManagement.Presenters.Admin
                         context.SaveChanges();
                         _view.ShowMessage("Thêm hồ sơ bác sĩ thành công!");
                     }
+                    else
+                    {
+                        // Case: Update Existing Doctor
+                        var doctor = context.Doctors.Include(d => d.User).FirstOrDefault(d => d.DoctorID == _view.SelectedDoctorId.Value);
+                        if (doctor != null)
+                        {
+                            doctor.UserID = userId > 0 ? userId : doctor.UserID;
+                            doctor.DepartmentID = deptId;
+                            doctor.Specialization = specialization;
+                            doctor.LicenseNumber = license;
+                            doctor.YearsOfExperience = _view.YearsOfExperience;
+                            doctor.Qualifications = _view.Qualifications;
+                            doctor.ConsultationFee = _view.ConsultationFee;
+                            doctor.IsActive = _view.IsActive;
+
+                            // Also update FullName if provided in NewFullName field
+                            if (!string.IsNullOrWhiteSpace(_view.NewFullName))
+                            {
+                                doctor.User.FullName = _view.NewFullName;
+                            }
+
+                            context.SaveChanges();
+                            _view.ShowMessage("Cập nhật thông tin bác sĩ thành công!");
+                        }
+                    }
 
                     LoadDoctorList(context, _view.FilterDepartmentId);
+                    LoadInitialData(); // Refresh user list for combo
                     _view.ClearInputs();
                 }
             }
             catch (Exception ex)
             {
-                _view.ShowError("Lỗi lưu thông tin: " + ex.Message);
+                var inner = ex.InnerException != null ? "\nChi tiết: " + ex.InnerException.Message : "";
+                _view.ShowError("Lỗi lưu thông tin: " + ex.Message + inner);
             }
         }
 
